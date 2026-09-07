@@ -27,10 +27,10 @@ describe.skipIf(!up)("live server", () => {
     render(<MemoryRouter initialEntries={[`/game/${created.id}?k=${created.owner_token}`]}><Routes><Route path="/game/:id" element={<Game />} /></Routes></MemoryRouter>);
     await waitFor(() => expect(screen.getByText(/It's your turn/)).toBeInTheDocument(), { timeout: 15000 });
     expect(document.querySelector(".tline")!.textContent).toMatch(/your cards:/);
-    expect(document.querySelectorAll(".tboard .token").length).toBe(6); // all six suspect tokens are always on the board
+    expect(document.querySelectorAll("svg.board .token").length).toBe(6); // all six suspect tokens are always on the board
     await act(async () => { fireEvent.keyDown(document.body, { key: "r" }); });
     await waitFor(() => expect(screen.getByText(/You rolled/)).toBeInTheDocument(), { timeout: 10000 });
-    const hl = document.querySelectorAll(".tboard .hl");
+    const hl = document.querySelectorAll("svg.board .hl");
     expect(hl.length).toBeGreaterThan(0);
     await act(async () => { hl[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); });
     await waitFor(() => expect(document.querySelectorAll(".log .line").length).toBeGreaterThan(2), { timeout: 10000 });

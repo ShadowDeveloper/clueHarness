@@ -8,7 +8,7 @@ export default function App() {
   return (
     <>
       <nav className="nav">
-        <span className="brand">CLUE harness</span>
+        <span className="brand">Clue</span>
         <NavLink to="/" end>Play</NavLink>
         <NavLink to="/replays">Replays</NavLink>
         <NavLink to="/tournaments">Tournaments</NavLink>

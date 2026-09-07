@@ -102,12 +102,12 @@ export default function Game() {
         <div className="curtain"><h1>{s.handoff_pending}'s turn</h1><p className="dim">Pass the device; switch the view to continue.</p><button className="primary" onClick={() => setSp({ k, view: s.handoff_pending! })}>Switch to {s.handoff_pending}</button></div>
       )}
       <div className="col board-col">
-        <div className="tpanel" data-title="Board">
+        <div className="tpanel" data-title="Hill House — ground floor">
           <Board geo={geo} tokens={s.board.token_positions} weapons={s.board.weapon_positions} players={s.board.players} highlights={boardPick.hl} here={s.you?.position ?? null} you={s.you?.suspect_token ?? null} onPick={boardPick.fn ?? undefined} />
         </div>
       </div>
       <div className="col mid-col">
-        <div className="tpanel grow" data-title={s.omniscient ? "All hands (omniscient) — v to view one seat" : s.notebook ? (me ? "Notebook  ✔ has  ✘ hasn't  ? unknown" : `Notebook of ${s.notebook.viewer}`) : "Notebook"}>
+        <div className="tpanel grow" data-title={s.omniscient ? "All hands (omniscient) — v to view one seat" : s.notebook ? (me ? "Detective notes  ✔ has  ✘ hasn't  ? unknown" : `Notebook of ${s.notebook.viewer}`) : "Notebook"}>
           {s.omniscient ? <Omniscient state={s} /> : s.notebook ? <Notebook state={s} nb={s.notebook} onNote={canAct ? async (n) => { await guard(() => api.note(id, k, n, s.hotseat || s.remote ? me ?? undefined : undefined)); } : undefined} /> : <div className="dim">Table view: no private information.</div>}
         </div>
         {s.notebook && <div className="tpanel" data-title={me ? "Deductions" : `Deductions of ${s.notebook.viewer}`}><Deductions nb={s.notebook} /></div>}
@@ -127,7 +127,7 @@ export default function Game() {
         <div className="tpanel grow log-panel" data-title={s.viewer === "__omni__" ? "What happened (un-redacted)" : "What happened"}>
           <EventLog events={v.events} me={me} />
         </div>
-        <div className="tpanel move" data-title={canAct ? "Your move" : s.finished ? "Game over" : "Waiting"}>
+        <div className="tpanel move" data-title={canAct ? "Your move" : s.finished ? "Game over" : "Waiting — the butler is watching"}>
           {canAct ? <ActionPanel state={s} request={v.request} busy={busy} onSubmit={submit} onPickFromBoard={(fn, hl) => setBoardPick({ fn, hl })} /> : <div className="action"><div className="banner dim">{s.finished ? `Game over — ${s.winner ? `${s.winner} wins` : "no winner"}.` : s.turn.acting ? `${s.turn.acting} is ${s.turn.phase === "disprove" ? "choosing a card to show" : "thinking"}…` : "…"}</div></div>}
           {v.finished && <div className="banner" style={{ marginTop: 6 }}><b>GAME OVER — {v.finished.summary.winner ? (v.finished.summary.winner === me ? "You win! 🎉" : `${v.finished.summary.winner} wins.`) : "Nobody solved it."}</b><br />Solution: {v.finished.solution.join(" · ")} <span className="dim">· {v.finished.summary.turns} turns · replays: {v.finished.replays.map((r) => r.split("/").pop()).join(", ")}</span></div>}
           {v.stopped !== false && <div className="banner warn" style={{ marginTop: 6 }}>Game stopped{v.stopped ? ` — checkpoint ${v.stopped}` : ""}. Resume from the lobby.</div>}
