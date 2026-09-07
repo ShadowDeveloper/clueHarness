@@ -45,6 +45,9 @@ def describe_event(e: dict[str, Any]) -> str:
         return f"GAME OVER. Winner: {e.get('winner')}. Solution: {e.get('solution')}"
     if t == "turn_start":
         return f"--- Turn {e['turn']}: {p} ---"
+    if t == "game_start":
+        ps = e.get("players") or []
+        return f"Game start (seed {e.get('seed')}): " + ", ".join(f"{q.get('id')} {q.get('kind')}{':' + q['bot'] if q.get('bot') else ''}" for q in ps if isinstance(q, dict))
     if t == "boxed_in":
         return f"{p} is boxed in and cannot move"
     return f"{t} {e}"

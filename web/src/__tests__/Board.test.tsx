@@ -13,10 +13,13 @@ test("highlights are clickable and fire onPick with room or square", () => {
   const onPick = vi.fn();
   const { container } = render(<Board geo={geo} tokens={{ "Miss Scarlet": "24,7", "Prof. Plum": "Lounge" }} weapons={{ Rope: "Lounge" }} highlights={["Lounge", "19,7"]} onPick={onPick} />);
   expect(container.querySelectorAll(".cell.hl")).toHaveLength(1);
-  (container.querySelector(".cell.hl") as SVGElement).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  expect(container.querySelector(".cell.hl")!.textContent).toBe("◆");
+  (container.querySelector(".cell.hl") as HTMLElement).click();
   expect(onPick).toHaveBeenCalledWith("19,7");
-  (container.querySelector(".room.hl") as SVGElement).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  (container.querySelector(".room.hl") as HTMLElement).click();
   expect(onPick).toHaveBeenCalledWith("Lounge");
-  expect(container.querySelectorAll(".token")).toHaveLength(2);
-  expect(container.textContent).toContain("rope");
+  expect(container.querySelectorAll(".tboard .token")).toHaveLength(2); // Scarlet on 24,7 + Plum inside the Lounge
+  expect(container.querySelector(".tboard .weapon")!.textContent).toBe("r"); // rope initial bottom-left of the room
+  expect(container.querySelector(".tboard .door")!.textContent).not.toBe("·");
+  expect(container.textContent).toContain("Miss Scarlet"); // legend
 });

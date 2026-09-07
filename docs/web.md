@@ -18,7 +18,7 @@ API docs (OpenAPI): `/api/docs`.
 | Page | What it does |
 |---|---|
 | **Play** (`/`) | Lobby: 3–6 seats (`human` / `baseline: heuristic·expert·random` / `llm: strategy·tool mode·model`), seed, dice, uneven-deal toggle, AI pace, ponder, provider. Lists resumable checkpoints (`saves/`) and games running on the server. |
-| **Game** (`/game/<id>?k=<token>`) | SVG board (click a highlighted square/room to move), guided action panel, hand, notebook with private notes, un-redacted log for spectators, omniscient "all hands" table, coach mode, pause/speed, save, quit-and-save. |
+| **Game** (`/game/<id>?k=<token>`) | Same screen as the TUI, in monospace: **Board** (character grid — `·` corridor, `▢` door, `⇄` passage, `░` cellar, coloured token glyphs, `◆` reachable squares you can click) \| **Notebook** (`✔ has  ✘ hasn't  ? unknown`, status column `yours` / `P3 has it` / `ENVELOPE!`) + **Deductions** + Coach \| **What happened** log + **Your move** panel; a status line (`You are ♛ Miss Scarlet (P1) in the Ballroom · your cards: …`) and the key bar at the bottom. |
 | **Replays** (`/replays`) | Step through any replay file; choose the viewer (omniscient for unredacted files, or any seat) — redaction is applied server-side; shows the seat's private reasoning records. |
 | **Tournaments** (`/tournaments`) | Start AI-only tournaments (games, seed, `workers` 0 = all cores, ponder, `max $`), watch progress live, win-rate with 95 % CI, ELO, candidate-count curves, download CSV/JSON/MD. |
 

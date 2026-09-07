@@ -131,7 +131,7 @@ export default function ActionPanel({ state, request, busy, onSubmit, onPickFrom
         {!done && <div className="choices">{opts.map((c) => <button key={c} onClick={() => setBuild({ ...build, [step]: c })}>{c}<span className="tag">{tag(c)}</span></button>)}</div>}
         <div className="row" style={{ marginTop: 8 }}>
           {done && <button className={mode === "accuse" ? "danger" : "primary"} disabled={busy} onClick={() => submit(final)}>{mode === "accuse" ? "Accuse!" : "Suggest"}</button>}
-          <button onClick={back}>Back <kbd>Esc</kbd></button>
+          <button onClick={back}>Back (esc)</button>
         </div>
       </div>
     );
@@ -145,14 +145,14 @@ export default function ActionPanel({ state, request, busy, onSubmit, onPickFrom
   if (types.has("move") && !types.has("roll")) lines.push("Choose where to move");
   return (
     <div className="action panel">
-      <div className="banner"><b>It's your turn.</b> <span className="dim">{lines.join(" · ")}</span></div>
+      <div className="banner"><b>It's your turn.</b>{lines.map((l) => <div key={l}>• {l}</div>)}{types.has("accuse") && <div className="dim">Accuse only when sure — a wrong accusation eliminates you.</div>}</div>
       <div className="row">
-        {types.has("roll") && <button className="primary" disabled={busy} onClick={() => submit({ type: "roll" })}>Roll <kbd>r</kbd></button>}
-        {types.has("passage") && <button disabled={busy} onClick={() => submit(legal.find((a) => a.type === "passage")!)}>Passage <kbd>p</kbd></button>}
+        {types.has("roll") && <button className="primary" disabled={busy} onClick={() => submit({ type: "roll" })}>Roll (r)</button>}
+        {types.has("passage") && <button disabled={busy} onClick={() => submit(legal.find((a) => a.type === "passage")!)}>Passage (p)</button>}
         {types.has("move") && <button disabled={busy} onClick={() => setMode("move")}>Move</button>}
-        {types.has("suggest") && <button className="primary" disabled={busy} onClick={() => setMode("suggest")}>Suggest <kbd>s</kbd></button>}
-        {types.has("accuse") && <button className="danger" disabled={busy} onClick={() => setMode("accuse")}>Accuse <kbd>a</kbd></button>}
-        {types.has("end_turn") && <button disabled={busy} onClick={() => submit({ type: "end_turn" })}>End turn <kbd>e</kbd></button>}
+        {types.has("suggest") && <button className="success" disabled={busy} onClick={() => setMode("suggest")}>Suggest (s)</button>}
+        {types.has("accuse") && <button className="danger" disabled={busy} onClick={() => setMode("accuse")}>Accuse (a)</button>}
+        {types.has("end_turn") && <button disabled={busy} onClick={() => submit({ type: "end_turn" })}>End turn (e)</button>}
       </div>
     </div>
   );

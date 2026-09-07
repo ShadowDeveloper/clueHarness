@@ -6,7 +6,7 @@ import ActionPanel from "../components/ActionPanel";
 import Board from "../components/Board";
 import EventLog from "../components/EventLog";
 import HotseatGate from "../components/HotseatGate";
-import Notebook from "../components/Notebook";
+import Notebook, { Deductions } from "../components/Notebook";
 import Omniscient from "../components/Omniscient";
 import RemoteLobby from "../components/RemoteLobby";
 import StatusBar from "../components/StatusBar";
@@ -87,7 +87,7 @@ export default function Game() {
   const inRemoteLobby = s.remote && !s.started && !s.finished && v.stopped === false;
 
   return (
-    <div className="page game-layout">
+    <div className="tui">
       {inRemoteLobby && <RemoteLobby state={s} role={role} me={me} invites={role === "owner" ? invites : null} onStart={role === "owner" ? () => guard(() => api.control(id, k, { start: true })) : undefined} />}
       {!inRemoteLobby && showInvites && s.remote && role === "owner" && (
         <div className="curtain" onClick={() => setShowInvites(false)}>
@@ -101,37 +101,39 @@ export default function Game() {
       {s.hotseat && s.handoff_pending && role === "owner" && (view ?? s.humans[0]) !== s.handoff_pending && (
         <div className="curtain"><h1>{s.handoff_pending}'s turn</h1><p className="dim">Pass the device; switch the view to continue.</p><button className="primary" onClick={() => setSp({ k, view: s.handoff_pending! })}>Switch to {s.handoff_pending}</button></div>
       )}
-      <div className="board panel">
-        <Board geo={geo} tokens={s.board.token_positions} weapons={s.board.weapon_positions} players={s.board.players} highlights={boardPick.hl} here={s.you?.position ?? null} onPick={boardPick.fn ?? undefined} />
-        <div className="row" style={{ marginTop: 8, fontSize: 12 }}>
-          {s.board.players.map((p) => <span key={p.id} className="pill" style={{ borderColor: p.id === s.turn.current_player ? "var(--accent)" : undefined, opacity: p.eliminated ? 0.5 : 1 }}>{p.id} {p.suspect_token} <span className="dim">{p.label}{p.name ? ` · ${p.name}` : ""} · {p.hand_size} cards</span>{p.eliminated ? " ✗" : ""}</span>)}
+      <div className="col board-col">
+        <div className="tpanel" data-title="Board">
+          <Board geo={geo} tokens={s.board.token_positions} weapons={s.board.weapon_positions} players={s.board.players} highlights={boardPick.hl} here={s.you?.position ?? null} you={s.you?.suspect_token ?? null} onPick={boardPick.fn ?? undefined} />
         </div>
-        {s.you && <div className="row" style={{ marginTop: 8 }}><span className="dim">Your hand:</span>{s.you.hand.map((c) => <span key={c} className="pill ok">{c}</span>)}{s.cards.faceup.length > 0 && <span className="dim">face-up: {s.cards.faceup.join(", ")}</span>}</div>}
-        {v.finished && <div className="panel" style={{ marginTop: 8, borderColor: "var(--accent)" }}><b>Game over.</b> {v.finished.summary.winner ? `${v.finished.summary.winner} wins` : "No winner"} after {v.finished.summary.turns} turns. Solution: <b>{v.finished.solution.join(" · ")}</b>. Replays: {v.finished.replays.map((r) => <span key={r} className="mono dim"> {r.split("/").pop()}</span>)}</div>}
-        {v.stopped !== false && <div className="panel warn" style={{ marginTop: 8 }}>Game stopped{v.stopped ? ` — checkpoint ${v.stopped}` : ""}. Resume from the lobby.</div>}
       </div>
-      <div className="right">
-        <StatusBar state={s} connected={v.connected} role={role} viewers={viewers} onInvites={s.remote && role === "owner" ? () => setShowInvites((x) => !x) : undefined} view={view ?? viewers[0] ?? s.viewer} onView={(vw) => setSp({ k, view: vw })} onPause={onPause} onDelay={onDelay} onSave={onSave} onQuit={onQuit} onCoach={me ? () => setCoachOn((c) => !c) : undefined} coachOn={coachOn} />
-        {canAct ? <ActionPanel state={s} request={v.request} busy={busy} onSubmit={submit} onPickFromBoard={(fn, hl) => setBoardPick({ fn, hl })} /> : <div className="action panel"><div className="banner dim">{s.finished ? `Game over — ${s.winner ? `${s.winner} wins` : "no winner"}.` : s.turn.acting ? `${s.turn.acting} is ${s.turn.phase === "disprove" ? "choosing a card to show" : "thinking"}…` : "…"}</div></div>}
+      <div className="col mid-col">
+        <div className="tpanel grow" data-title={s.omniscient ? "All hands (omniscient) — v to view one seat" : s.notebook ? (me ? "Notebook  ✔ has  ✘ hasn't  ? unknown" : `Notebook of ${s.notebook.viewer}`) : "Notebook"}>
+          {s.omniscient ? <Omniscient state={s} /> : s.notebook ? <Notebook state={s} nb={s.notebook} onNote={canAct ? async (n) => { await guard(() => api.note(id, k, n, s.hotseat || s.remote ? me ?? undefined : undefined)); } : undefined} /> : <div className="dim">Table view: no private information.</div>}
+        </div>
+        {s.notebook && <div className="tpanel" data-title={me ? "Deductions" : `Deductions of ${s.notebook.viewer}`}><Deductions nb={s.notebook} /></div>}
         {coachOn && me && (
-          <div className="coach">
-            <b>Coach</b> {coach ? <>· <b>{coach.candidates}</b> envelope combination(s) possible{coach.most_likely && <> · most likely {coach.most_likely.suspect} · {coach.most_likely.weapon} · {coach.most_likely.room} ({Math.round(coach.most_likely.p * 100)}%)</>}
+          <div className="tpanel coach" data-title="Coach">
+            {coach ? <>
+              <div><b>{coach.candidates}</b> envelope combination(s) possible{coach.most_likely && <> · most likely {coach.most_likely.suspect} · {coach.most_likely.weapon} · {coach.most_likely.room} ({Math.round(coach.most_likely.p * 100)}%)</>}</div>
               {coach.deductions.map((d, i) => <div key={i} className="ok">✓ {d}</div>)}
               {coach.expert_action && <div className="info">expert would: {coach.expert_action.key}</div>}
               {coach.error && <div className="dim">no recommendation ({coach.error})</div>}
-            </> : <span className="dim">· hints appear on your turn</span>}
-            <span className="dim"> — uses of coach are logged in the replay</span>
+            </> : <span className="dim">hints appear on your turn</span>}
+            <div className="dim" style={{ fontSize: 11 }}>uses of coach are logged in the replay</div>
           </div>
         )}
-        <div className="panel" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-          <h3>Log{s.viewer === "__omni__" ? " (un-redacted)" : me ? ` (as ${me})` : ""}{s.remote && <span className="dim" style={{ fontWeight: 400, marginLeft: 8, fontSize: 12 }}>{s.humans.map((h) => <span key={h} title={(s.presence[h] ?? 0) > 0 ? `${h} connected` : `${h} disconnected`}><span className={(s.presence[h] ?? 0) > 0 ? "ok" : "bad"}>●</span>{h} </span>)}</span>}</h3>
+      </div>
+      <div className="col right-col">
+        <div className="tpanel grow log-panel" data-title={s.viewer === "__omni__" ? "What happened (un-redacted)" : "What happened"}>
           <EventLog events={v.events} me={me} />
         </div>
-        <div className="panel" style={{ maxHeight: 420, overflow: "auto" }}>
-          <h3>{s.omniscient ? "All hands (omniscient)" : s.notebook ? `Notebook — ${s.notebook.viewer}` : "Notebook"}</h3>
-          {s.omniscient ? <Omniscient state={s} /> : s.notebook ? <Notebook state={s} nb={s.notebook} onNote={canAct ? async (n) => { await guard(() => api.note(id, k, n, s.hotseat ? me ?? undefined : undefined)); } : undefined} /> : <div className="dim">Table view: no private information.</div>}
+        <div className="tpanel move" data-title={canAct ? "Your move" : s.finished ? "Game over" : "Waiting"}>
+          {canAct ? <ActionPanel state={s} request={v.request} busy={busy} onSubmit={submit} onPickFromBoard={(fn, hl) => setBoardPick({ fn, hl })} /> : <div className="action"><div className="banner dim">{s.finished ? `Game over — ${s.winner ? `${s.winner} wins` : "no winner"}.` : s.turn.acting ? `${s.turn.acting} is ${s.turn.phase === "disprove" ? "choosing a card to show" : "thinking"}…` : "…"}</div></div>}
+          {v.finished && <div className="banner" style={{ marginTop: 6 }}><b>GAME OVER — {v.finished.summary.winner ? (v.finished.summary.winner === me ? "You win! 🎉" : `${v.finished.summary.winner} wins.`) : "Nobody solved it."}</b><br />Solution: {v.finished.solution.join(" · ")} <span className="dim">· {v.finished.summary.turns} turns · replays: {v.finished.replays.map((r) => r.split("/").pop()).join(", ")}</span></div>}
+          {v.stopped !== false && <div className="banner warn" style={{ marginTop: 6 }}>Game stopped{v.stopped ? ` — checkpoint ${v.stopped}` : ""}. Resume from the lobby.</div>}
         </div>
       </div>
+      <StatusBar state={s} connected={v.connected} role={role} viewers={viewers} onInvites={s.remote && role === "owner" ? () => setShowInvites((x) => !x) : undefined} view={view ?? viewers[0] ?? s.viewer} onView={(vw) => setSp({ k, view: vw })} onPause={onPause} onDelay={onDelay} onSave={onSave} onQuit={onQuit} onCoach={me ? () => setCoachOn((c) => !c) : undefined} coachOn={coachOn} />
       {toast && <div className="toast" role="alert">{toast}</div>}
     </div>
   );
