@@ -33,6 +33,8 @@ export function reduce(v: GameView, f: Frame | { type: "_conn"; connected: boole
       return { ...v, request: f.request, pendingFor: f.pending_for, handoffPending: f.handoff_pending, state: v.state ? { ...v.state, active_seat: f.active_seat, handoff_pending: f.handoff_pending } : v.state };
     case "control":
       return { ...v, state: v.state ? { ...v.state, paused: f.paused, delay: f.delay } : v.state };
+    case "presence":
+      return { ...v, state: v.state ? { ...v.state, presence: f.presence, waiting_for: f.waiting_for, started: f.started } : v.state };
     case "finished":
       return { ...v, finished: { summary: f.summary, replays: f.replays, solution: f.solution }, request: null, state: v.state ? { ...v.state, finished: true, winner: f.summary.winner } : v.state };
     case "stopped":

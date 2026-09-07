@@ -62,7 +62,7 @@ python -m clue tournament  --games N [--config F | --players LIST] [--seed N] [-
                            [--provider P] [--report elo.csv] [--replay-dir D] [--ponder] [--workers N|0]
 python -m clue eval        [--games N] [--seed N] [--out DIR] [--live]
 python -m clue replay      PATH [--viewer Pn] [--tui]
-python -m clue web         [--host H] [--port N] [--hotseat] [--open] [--saves-dir D] [--replay-dir D] [--max-usd X] [--dev-origin URL]
+python -m clue web         [--host H] [--port N] [--hotseat] [--no-remote] [--open] [--saves-dir D] [--replay-dir D] [--max-usd X] [--dev-origin URL]
 ```
 * `--strategy F` applies `F` to every LLM seat that has no strategy of its own.
 * `--no-tools` flips `tools: false` for all LLM seats (ablation).

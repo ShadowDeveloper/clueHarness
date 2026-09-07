@@ -16,7 +16,8 @@ class WebSettings(BaseSettings):
     secret: str = ""  # HMAC salt for per-game tokens; random per process when empty
     replay_dir: Path = Path("replays")
     saves_dir: Path = Path("saves")
-    hotseat: bool = False  # allow several human seats in one browser
+    hotseat: bool = False  # allow several human seats in one browser (pass-the-device)
+    remote: bool = True  # allow several human seats in different browsers (one invite link per seat)
     max_concurrent_games: int = 8
     idle_human_timeout: float = 600.0  # seconds a game may wait on a human with no browser connected before it is checkpointed and stopped
     max_concurrent_tournaments: int = 2

@@ -53,6 +53,7 @@ def catalog(st: WebSettings = Depends(settings)) -> dict[str, Any]:
         "config_schema": GameConfig.model_json_schema(),
         "cards": {"suspects": list(suspects("classic")), "weapons": list(WEAPONS), "rooms": list(ROOMS)},
         "hotseat": st.hotseat,
+        "remote": st.remote,
         "saves_dir": str(st.saves_dir),
         "replay_dir": str(st.replay_dir),
     }

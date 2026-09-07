@@ -40,6 +40,7 @@ class GameSession:
         autosave: str | None = None,
         replay_dir: Path | None = None,
         hotseat: bool = False,
+        remote: bool = False,
     ) -> None:
         self.id = sid
         self.gm = gm
@@ -50,6 +51,7 @@ class GameSession:
         self.autosave = autosave
         self.replay_dir = replay_dir
         self.hotseat = hotseat
+        self.remote = remote  # each human seat has its own link; the game waits in the lobby until all have joined
         self.created = time.time()
         self.paused = False
         self.stopping = False
@@ -62,6 +64,9 @@ class GameSession:
         self.active_seat: str | None = self.humans[0] if self.humans else None
         self.handoff_pending: str | None = None  # seat that must acknowledge before its private data is sent
         self.coach_used: dict[str, int] = {}
+        self.presence: dict[str, int] = {pid: 0 for pid in self.humans}  # human seat -> open sockets
+        self.joined: set[str] = set()  # human seats that connected at least once
+        self.started = threading.Event()  # remote games wait here until every seat joined (or the host forces start)
         self._lock = threading.RLock()
         self._subs: dict[int, tuple[str, Subscriber]] = {}  # sub id -> (viewer, callback)
         self._sub_seq = 0
@@ -78,6 +83,12 @@ class GameSession:
         self.thread.start()
 
     def _run(self) -> None:
+        if self.remote and self.waiting_for():
+            while not self.started.wait(0.2):
+                if self.stopping:
+                    self._broadcast(lambda v: {"type": "stopped", "resumable": self.autosave})
+                    return
+        self.started.set()
         try:
             run_game(
                 self.gm,
@@ -163,6 +174,29 @@ class GameSession:
             self.pending = None
             req.reply.put(act)
 
+    # ------------------------------------------------------------------ remote seats: presence / lobby gate
+    def waiting_for(self) -> list[str]:
+        if not self.remote or self.started.is_set():
+            return []
+        return [p for p in self.humans if p not in self.joined]
+
+    def force_start(self) -> None:
+        self.started.set()
+        self._broadcast(lambda v: {"type": "presence", **self.render_presence()})
+
+    def _touch_presence(self, viewer: str, delta: int) -> None:
+        if viewer not in self.presence:
+            return
+        self.presence[viewer] = max(0, self.presence[viewer] + delta)
+        if delta > 0:
+            self.joined.add(viewer)
+        if self.remote and not self.waiting_for():
+            self.started.set()
+        self._broadcast(lambda v: {"type": "presence", **self.render_presence()})
+
+    def render_presence(self) -> dict[str, Any]:
+        return {"presence": dict(self.presence), "waiting_for": self.waiting_for(), "started": self.started.is_set() or not self.remote}
+
     def acknowledge_seat(self, player: str) -> None:
         with self._lock:
             if player not in self.humans:
@@ -199,13 +233,17 @@ class GameSession:
             self._sub_seq += 1
             self._subs[self._sub_seq] = (viewer, cb)
             self.idle_since = None
-            return self._sub_seq
+            sub_id = self._sub_seq
+        self._touch_presence(viewer, +1)
+        return sub_id
 
     def unsubscribe(self, sub_id: int) -> None:
         with self._lock:
-            self._subs.pop(sub_id, None)
+            ent = self._subs.pop(sub_id, None)
             if not self._subs:
                 self.idle_since = time.time()
+        if ent is not None:
+            self._touch_presence(ent[0], -1)
 
     def _broadcast(self, make: Any) -> None:
         with self._lock:
@@ -270,6 +308,8 @@ class GameSession:
             "delay": self.delay,
             "humans": list(self.humans),
             "hotseat": self.hotseat,
+            "remote": self.remote,
+            **self.render_presence(),
             "active_seat": self.active_seat,
             "handoff_pending": self.handoff_pending,
             "n_events": len(gm.events),

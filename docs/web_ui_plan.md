@@ -1,6 +1,7 @@
 # Web UI — Plan (Phase 7)
 
-Status: **implemented (M0–M6)**; M7 (remote multi-browser seats) remains a stretch goal. User guide: `web.md`.
+Status: **implemented (M0–M7)**, including remote multi-browser seats (per-seat HMAC tokens, waiting room with
+presence, host force-start, reconnection via snapshot). User guide: `web.md`.
 Deviations from the plan: Playwright cannot run in the build sandbox, so browser smoke tests are jsdom + real
 WebSocket integration tests (`web/src/__tests__/live.integration.test.tsx`, skipped when no server is up); abandoned
 human games are checkpointed and reclaimed after `idle_human_timeout` so the concurrent-game cap is never exhausted.
@@ -28,7 +29,6 @@ Hard constraints carried over from the spec: the rules engine and manager stay U
 5. Hot-seat: `--hotseat` lets N human seats share one browser with a "pass the device" privacy screen between turns.
 
 **Non-goals for this phase** (kept as explicit later milestones)
-- Remote multi-browser seats (M7). The API is designed so this is additive (seat tokens), not a rewrite.
 - Accounts, OAuth, TLS termination, Docker image, per-user LLM budgets (public deployment was not chosen).
 - Mobile-first layout (it should not be broken on a tablet, but desktop is the target).
 - Replacing the TUI. Both UIs share the same adapter layer; the TUI stays the CLI default.

@@ -10,10 +10,11 @@ const DEFAULT: PlayerSpec[] = [
   { id: "P4", kind: "llm", strategy: "bayesian_probabilist", prompt_profile: "compact" },
 ];
 
-export function saveTokens(id: string, owner: string, spectator: string) {
-  localStorage.setItem(`clue:${id}`, JSON.stringify({ owner, spectator }));
+export interface Tokens { owner?: string; spectator?: string; seats?: Record<string, string>; seat?: string }
+export function saveTokens(id: string, t: Tokens) {
+  localStorage.setItem(`clue:${id}`, JSON.stringify({ ...loadTokens(id), ...t }));
 }
-export function loadTokens(id: string): { owner?: string; spectator?: string } {
+export function loadTokens(id: string): Tokens {
   try { return JSON.parse(localStorage.getItem(`clue:${id}`) ?? "{}"); } catch { return {}; }
 }
 
@@ -29,6 +30,7 @@ export default function Lobby() {
   const [provider, setProvider] = useState<string>("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [remote, setRemote] = useState(false);
   const [games, setGames] = useState<GameListItem[]>([]);
   const [saves, setSaves] = useState<{ name: string; seed: number; turn: number; labels: string[] }[]>([]);
 
@@ -46,8 +48,9 @@ export default function Lobby() {
     try {
       const cfg: Record<string, unknown> = { num_players: seats.length, dice };
       if (uneven) cfg.uneven_deal = uneven;
-      const g = await api.createGame(resume ? { resume, delay } : { players: seats.map((s, i) => ({ ...s, id: `P${i + 1}` })), seed: seed === "" ? null : Number(seed), config: cfg, ponder, delay, provider: provider || null });
-      saveTokens(g.id, g.owner_token, g.spectator_token);
+      const wantRemote = remote || (humans > 1 && !cat?.hotseat);
+      const g = await api.createGame(resume ? { resume, delay } : { players: seats.map((s, i) => ({ ...s, id: `P${i + 1}` })), seed: seed === "" ? null : Number(seed), config: cfg, ponder, delay, provider: provider || null, remote: wantRemote });
+      saveTokens(g.id, { owner: g.owner_token, spectator: g.spectator_token, seats: g.seat_tokens });
       nav(`/game/${g.id}?k=${g.owner_token}`);
     } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); } finally { setBusy(false); }
   };
@@ -72,8 +75,16 @@ export default function Lobby() {
         <datalist id="models">{cat?.known_models.map((m) => <option key={m} value={m} />)}</datalist>
         <div className="row" style={{ marginTop: 6 }}>
           <button disabled={seats.length >= 6} onClick={() => setSeats([...seats, { id: `P${seats.length + 1}`, kind: "baseline", bot: "heuristic" }])}>+ seat</button>
-          {humans > 1 && !cat?.hotseat && <span className="warn">several human seats need the server started with <span className="mono">--hotseat</span></span>}
-          {humans > 1 && cat?.hotseat && <span className="pill hot">hot-seat: {humans} humans share this browser</span>}
+          {humans > 1 && cat && (cat.remote || cat.hotseat) && (
+            <label className="row" title="each human gets their own invite link and plays from their own browser">
+              <select value={remote || !cat.hotseat ? "remote" : "hotseat"} onChange={(e) => setRemote(e.target.value === "remote")}>
+                {cat.hotseat && <option value="hotseat">hot-seat: {humans} humans share this browser</option>}
+                {cat.remote && <option value="remote">remote: one invite link per human</option>}
+              </select>
+            </label>
+          )}
+          {humans === 1 && cat?.remote && <label className="row dim" style={{ fontSize: 12 }}><input type="checkbox" checked={remote} onChange={(e) => setRemote(e.target.checked)} /> play from another device (invite link)</label>}
+          {humans > 1 && cat && !cat.remote && !cat.hotseat && <span className="warn">several human seats need the server started with <span className="mono">--hotseat</span> or remote seats enabled</span>}
         </div>
         <hr style={{ borderColor: "var(--border)", margin: "12px 0" }} />
         <div className="row">
@@ -101,7 +112,8 @@ export default function Lobby() {
           {games.length === 0 && <div className="dim">none yet</div>}
           {games.map((g) => {
             const t = loadTokens(g.id);
-            return <div className="row" key={g.id} style={{ justifyContent: "space-between" }}><span><span className="mono">{g.id}</span> <span className="dim">seed {g.seed} · turn {g.turn} · {Object.values(g.labels).join(", ")}{g.finished ? ` · winner ${g.winner ?? "—"}` : ""}</span></span>{t.owner ? <a href={`/game/${g.id}?k=${t.owner}`}>open</a> : <span className="dim">need link</span>}</div>;
+            const mine = t.owner ?? t.seat ?? t.spectator;
+            return <div className="row" key={g.id} style={{ justifyContent: "space-between" }}><span><span className="mono">{g.id}</span> <span className="dim">seed {g.seed} · turn {g.turn} · {Object.values(g.labels).join(", ")}{g.finished ? ` · winner ${g.winner ?? "—"}` : ""}{g.remote ? ` · remote${g.waiting_for.length ? ` · waiting for ${g.waiting_for.join(", ")}` : ""}` : ""}</span></span>{mine ? <a href={`/game/${g.id}?k=${mine}`}>open</a> : <span className="dim">need link</span>}</div>;
           })}
         </div>
       </div>

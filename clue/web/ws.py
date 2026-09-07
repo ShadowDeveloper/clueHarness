@@ -66,7 +66,7 @@ async def game_ws(ws: WebSocket, game_id: str, k: str | None = None, view: str |
     reg: Registry = ws.app.state.registry
     st: WebSettings = ws.app.state.settings
     sess = reg.games.get(game_id)
-    role = role_of(st.secret, game_id, k) if sess else None
+    role = role_of(st.secret, game_id, k, sess.humans if sess.remote else None) if sess else None
     if sess is None or role is None:
         await ws.close(code=4403)
         return

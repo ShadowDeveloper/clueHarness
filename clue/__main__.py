@@ -253,7 +253,8 @@ def eval(games: int = typer.Option(50), seed: int = typer.Option(0), out: str = 
 def web(
     host: str = typer.Option("0.0.0.0", help="bind address (0.0.0.0 = reachable on the LAN)"),
     port: int = typer.Option(8000),
-    hotseat: bool = typer.Option(False, "--hotseat", help="allow several human seats sharing one browser"),
+    hotseat: bool = typer.Option(False, "--hotseat", help="allow several human seats sharing one browser (pass the device)"),
+    no_remote: bool = typer.Option(False, "--no-remote", help="disable remote seats (one invite link per human, several browsers)"),
     replay_dir: str = typer.Option("replays"),
     saves_dir: str = typer.Option("saves"),
     open_browser: bool = typer.Option(False, "--open", help="open the UI in a browser"),
@@ -267,7 +268,7 @@ def web(
     except ImportError as e:  # pragma: no cover
         raise typer.BadParameter(f"web extras not installed: pip install -e '.[web]' ({e})") from e
     _budget(max_usd)
-    st = WebSettings(host=host, port=port, hotseat=hotseat, replay_dir=Path(replay_dir), saves_dir=Path(saves_dir), dev_origin=dev_origin)
+    st = WebSettings(host=host, port=port, hotseat=hotseat, remote=not no_remote, replay_dir=Path(replay_dir), saves_dir=Path(saves_dir), dev_origin=dev_origin)
     console.print(f"[bold]Clue web UI[/bold] http://{'localhost' if host in ('0.0.0.0', '127.0.0.1') else host}:{port}/  (API docs at /api/docs)")
     serve(st, open_browser=open_browser)
 

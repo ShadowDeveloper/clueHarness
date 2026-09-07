@@ -257,10 +257,109 @@ def test_hotseat_withholds_other_seat_until_acknowledged(client: TestClient) -> 
         client.delete(f"/api/games/{gid}", params={"k": k})
 
 
-def test_multiple_humans_rejected_without_hotseat(tmp_path: Path) -> None:
-    c = TestClient(create_app(WebSettings(replay_dir=tmp_path, saves_dir=tmp_path, secret="t", hotseat=False)))
+def test_multiple_humans_rejected_without_hotseat_or_remote(tmp_path: Path) -> None:
+    c = TestClient(create_app(WebSettings(replay_dir=tmp_path, saves_dir=tmp_path, secret="t", hotseat=False, remote=False)))
     r = c.post("/api/games", json={"players_arg": "human,human,baseline"})
     assert r.status_code == 422
+
+
+# ---------------------------------------------------------------- remote seats (M7)
+
+
+def test_remote_seats_two_browsers_play_to_completion_with_per_seat_privacy(tmp_path: Path) -> None:
+    """Two seat links in two 'browsers': the game waits until both joined, each token only controls its own seat,
+    and no frame sent to a seat contains the other hand or the solution before game over."""
+    c = TestClient(create_app(WebSettings(replay_dir=tmp_path / "r", saves_dir=tmp_path / "s", secret="t", hotseat=False)))
+    r = c.post("/api/games", json={"players_arg": "human,human,baseline:expert", "seed": 21, "delay": 0})
+    assert r.status_code == 201, r.text
+    g = r.json()
+    gid, host = g["id"], g["owner_token"]
+    assert g["remote"] and set(g["seat_tokens"]) == {"P1", "P2"}
+    k1, k2 = g["seat_tokens"]["P1"], g["seat_tokens"]["P2"]
+    inv = c.get(f"/api/games/{gid}/invites", params={"k": host}).json()
+    assert inv["seats"] == g["seat_tokens"] and inv["waiting_for"] == ["P1", "P2"]
+    assert c.get(f"/api/games/{gid}/invites", params={"k": k1}).status_code == 403
+    sess = c.app.state.registry.games[gid]  # type: ignore[attr-defined]
+    gm: GameManager = sess.gm
+    hands = {p.id: list(p.hand) for p in gm.state.players}
+    solution = list(gm.state.solution)
+    frames: dict[str, list[dict[str, Any]]] = {"P1": [], "P2": []}
+    with c.websocket_connect(f"/ws/games/{gid}?k={k1}&view=P2") as ws1:  # `view` must be ignored for seat tokens
+        s1 = ws1.receive_json()
+        frames["P1"].append(s1)
+        assert s1["state"]["viewer"] == "P1" and s1["state"]["waiting_for"] == ["P2"] and s1["request"] is None
+        assert not sess.started.is_set() and sess.pending is None
+        # a seat token cannot act for another seat
+        with c.websocket_connect(f"/ws/games/{gid}?k={k2}") as ws2:
+            s2 = ws2.receive_json()
+            frames["P2"].append(s2)
+            assert s2["state"]["viewer"] == "P2" and s2["state"]["you"]["hand"] == hands["P2"]
+            socks = {"P1": ws1, "P2": ws2}
+            toks = {"P1": k1, "P2": k2}
+            # both are joined now -> game starts; drive whichever seat is asked
+            done = False
+            steps = 0
+            while not done and steps < 800:
+                for pid, ws in socks.items():
+                    f = ws.receive_json()
+                    frames[pid].append(f)
+                    if f["type"] in ("finished", "stopped", "error"):
+                        done = True
+                        break
+                    req = f.get("request") if f["type"] in ("request", "snapshot") else None
+                    if req:
+                        other = "P2" if pid == "P1" else "P1"
+                        bad = c.post(f"/api/games/{gid}/act", params={"k": toks[other]}, json={"request_id": req["request_id"], **_first_legal(req)})
+                        assert bad.status_code in (403, 409), bad.text  # other seat's link cannot answer
+                        ok = c.post(f"/api/games/{gid}/act", params={"k": toks[pid]}, json={"request_id": req["request_id"], "player": pid, **_first_legal(req)})
+                        assert ok.status_code == 200, ok.text
+                        steps += 1
+            assert gm.finished, "game did not finish"
+            assert sum(gm.illegal_attempts.values()) == 0
+    for pid in ("P1", "P2"):
+        for f in frames[pid]:
+            st_ = f.get("state", {})
+            assert "omniscient" not in st_ and st_.get("viewer", pid) == pid
+            if "you" in st_:
+                assert st_["you"]["hand"] == hands[pid]
+            for e in f.get("events", []):
+                if e["type"] == "disproved" and "card" in e:
+                    assert pid in (e.get("suggester"), e.get("disprover"))
+                assert "hands" not in e and (e["type"] == "game_over" or "solution" not in e)
+            if f["type"] != "finished":
+                assert "solution" not in json.dumps(f.get("state", {}))
+    assert solution  # sanity
+    # seat tokens survive a stop/resume: presence is tracked per seat
+    lst = c.get("/api/games").json()
+    me = next(x for x in lst if x["id"] == gid)
+    assert me["remote"] and me["presence"] == {"P1": 0, "P2": 0}
+
+
+def test_remote_host_can_force_start_and_idle_lobby_is_reclaimed(tmp_path: Path) -> None:
+    c = TestClient(create_app(WebSettings(replay_dir=tmp_path / "r", saves_dir=tmp_path / "s", secret="t", hotseat=False, idle_human_timeout=0.0)))
+    g = c.post("/api/games", json={"players_arg": "human,human,baseline", "seed": 3, "delay": 0}).json()
+    gid, host = g["id"], g["owner_token"]
+    sess = c.app.state.registry.games[gid]  # type: ignore[attr-defined]
+    assert sess.waiting_for() == ["P1", "P2"] and not sess.started.is_set()
+    # spectator/host tokens do not count as seats joining
+    with c.websocket_connect(f"/ws/games/{gid}?k={g['spectator_token']}") as ws:
+        s = ws.receive_json()
+        assert s["state"]["viewer"] == "__table__" and s["state"]["waiting_for"] == ["P1", "P2"]
+    assert not sess.started.is_set()
+    # host forces the start (missing seats' bots... no: the human seats still exist; the game just proceeds and waits on them)
+    assert c.post(f"/api/games/{gid}/control", params={"k": host}, json={"start": True}).status_code == 200
+    t0 = time.time()
+    while sess.pending is None and time.time() - t0 < 10:
+        time.sleep(0.05)
+    assert sess.started.is_set() and sess.pending is not None and sess.pending.player == "P1"
+    # nobody connected -> gc checkpoints and frees the slot
+    c.app.state.registry.gc()  # type: ignore[attr-defined]
+    assert sess.stopping and Path(sess.autosave).exists()  # type: ignore[arg-type]
+    # a second lobby that nobody ever joins is reclaimed too
+    g2 = c.post("/api/games", json={"players_arg": "human,human,baseline", "seed": 4, "delay": 0}).json()
+    s2 = c.app.state.registry.games[g2["id"]]  # type: ignore[attr-defined]
+    c.app.state.registry.gc()  # type: ignore[attr-defined]
+    assert s2.stopping
 
 
 # ---------------------------------------------------------------- replays

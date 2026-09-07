@@ -14,7 +14,7 @@ clue/
   tools/      exact deduction solver, opponent model, symbolic tools shared by LLM agents and bots
   eval/       tournament runner (multiprocess), Wilson CIs / paired tests / fingerprints, offline + live eval
 strategies/   D) strategy prompt fragments (*.md) — appended to the base prompt, never change legality
-tests/        119 pytest tests (+12 vitest): rules, manager, TUI (headless), web API/WS privacy, ponder, solver, expert bot, LLM client, stats, glue
+tests/        121 pytest tests (+13 vitest): rules, manager, TUI (headless), web API/WS privacy, ponder, solver, expert bot, LLM client, stats, glue
 web/          React + Vite + TypeScript source of the web UI (npm run build -> clue/web/static; node not needed to run)
 docs/         full documentation set (see docs/README.md)
 RULES_SPEC.md rules edition + every edge-case decision
@@ -25,7 +25,7 @@ game.yaml     example config     demo_game.md  example transcript     eval/repor
 | | |
 |---|---|
 | [docs/playing.md](docs/playing.md) | TUI guide (panels, notebook symbols, hotkeys), plain CLI, spectating, save/resume |
-| [docs/web.md](docs/web.md) | web UI: `clue web`, pages, secret links & server-side redaction, hot-seat, API, development |
+| [docs/web.md](docs/web.md) | web UI: `clue web`, pages, secret links & server-side redaction, hot-seat, remote seats (invite links), API, development |
 | [docs/configuration.md](docs/configuration.md) | `game.yaml`, `--players` shorthand, `.env` providers, every CLI flag |
 | [docs/architecture.md](docs/architecture.md) | the four layers, data flow, privacy & determinism model |
 | [docs/observation_schema.md](docs/observation_schema.md) | every field an agent sees, with a real example |
@@ -70,7 +70,7 @@ clue live-eval --model nvidia/nemotron-3-super-120b-a12b:free --games 5 --max-us
 
 clue replay replays/game_7.jsonl           # pretty-print a replay
 clue replay replays/game_7.jsonl --tui     # step through it on the board (n/b, space, v = viewer redaction)
-pytest -q && ruff check clue tests && mypy clue      # 119 tests (~7 min), 93 % coverage, lint + strict types; CI: .github/workflows/ci.yml
+pytest -q && ruff check clue tests && mypy clue      # 121 tests (~7 min), 93 % coverage, lint + strict types; CI: .github/workflows/ci.yml
 ```
 
 ### The TUI
@@ -237,8 +237,8 @@ measure it; the tournament table reports win-rate, `avg_turns_to_win` (accusatio
 - [x] Valid-JSON rate: mock 100 %; live (nemotron free) 95.7 % first try with tools, 30.8 % without; invalid → 1 retry → heuristic fallback (`test_llm_agent_retry_then_fallback`)
 - [x] Strategy swapping measurable via tournament labels (live) — see above
 - [x] Tools ablation — 50-game offline eval above + live paired ablation (`eval/live_report_nemotron_free.md`)
-- [x] Web UI (optional `[web]` extra): human seat over HTTP finishes a game with 0 illegal moves, per-frame privacy, API save/resume reproduces the replay hash, hot-seat gating, tournament API == direct run (`tests/test_web.py`, 13 tests) + 12 vitest tests
-- [x] `pytest` (119 passed), `ruff check` + `ruff format --check` clean, `mypy --strict` clean; total coverage 93 % (CI gate 90 %)
+- [x] Web UI (optional `[web]` extra): human seat over HTTP finishes a game with 0 illegal moves, per-frame privacy, API save/resume reproduces the replay hash, hot-seat gating, **remote seats** (two browsers, per-seat links, per-seat privacy to completion), tournament API == direct run (`tests/test_web.py`, 15 tests) + 13 vitest tests
+- [x] `pytest` (121 passed), `ruff check` + `ruff format --check` clean, `mypy --strict` clean; total coverage 93 % (CI gate 90 %)
 - [x] Exact solver verified against brute force; expert bot 0 illegal moves / 0 false accusations (gamble off) across all tournaments
 
 ## Tech stack & why

@@ -92,7 +92,7 @@ class Registry:
         for gid, g in list(self.games.items()):
             if (g.gm.finished or g.stopping) and now - g.created > max_age:
                 del self.games[gid]
-            elif not g.gm.finished and not g.stopping and g.pending is not None and g.idle_since is not None and now - g.idle_since > idle:
+            elif not g.gm.finished and not g.stopping and (g.pending is not None or g.waiting_for()) and g.idle_since is not None and now - g.idle_since > idle:
                 try:
                     g.stop(save=True)  # abandoned browser tab: keep the game resumable, free the slot
                 except Exception:

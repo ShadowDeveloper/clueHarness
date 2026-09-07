@@ -21,12 +21,15 @@ class CreateGame(BaseModel):
     provider: str | None = None
     autosave: bool = True
     resume: str | None = Field(None, description="checkpoint file name inside the saves dir")
+    remote: bool = Field(False, description="each human seat gets its own invite link (several browsers); game waits until all seats joined")
 
 
 class GameCreated(BaseModel):
     id: str
     owner_token: str
     spectator_token: str
+    seat_tokens: dict[str, str] = Field(default_factory=dict, description="remote games: per-human-seat invite tokens")
+    remote: bool = False
     seats: list[dict[str, Any]]
     humans: list[str]
     resumed: bool = False
@@ -44,6 +47,7 @@ class ControlBody(BaseModel):
     pause: bool | None = None
     delay: float | None = None
     acknowledge_seat: str | None = None  # hot-seat handoff
+    start: bool | None = None  # remote: host starts without waiting for every seat to join
 
 
 class NoteBody(BaseModel):
@@ -70,6 +74,9 @@ class GameListItem(BaseModel):
     turn: int
     created: float
     winner: str | None
+    remote: bool = False
+    presence: dict[str, int] = Field(default_factory=dict)
+    waiting_for: list[str] = Field(default_factory=list)
 
 
 class OpenReplay(BaseModel):

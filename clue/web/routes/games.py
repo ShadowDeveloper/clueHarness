@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from clue.agents.factory import parse_players_arg
 from clue.manager.game_manager import GameManager
 from clue.rules import GameConfig, IllegalAction
-from clue.web.auth import token
+from clue.web.auth import seat_role, token
 from clue.web.deps import Access, access, registry, settings
 from clue.web.game_session import GameSession, build_agents
 from clue.web.schemas import ActBody, ControlBody, CreateGame, GameCreated, GameListItem, NoteBody, OkPath, SaveBody
@@ -37,6 +37,7 @@ def create_game(body: CreateGame, request: Request, reg: Registry = Depends(regi
         agents = build_agents(specs, gm.seed, body.provider)
         restored = gm.restore_agents(agents)
         resumed = True
+        remote = body.remote or (sum(1 for s in specs if s.kind == "human") > 1 and not st.hotseat)
         autosave: str | None = str(path)
     else:
         if body.players:
@@ -51,8 +52,9 @@ def create_game(body: CreateGame, request: Request, reg: Registry = Depends(regi
         if not 3 <= len(specs) <= 6:
             raise HTTPException(422, "3-6 players")
         humans = [s for s in specs if s.kind == "human"]
-        if len(humans) > 1 and not st.hotseat:
-            raise HTTPException(422, "several human seats need the server started with --hotseat")
+        remote = body.remote or (len(humans) > 1 and not st.hotseat)
+        if remote and not st.remote:
+            raise HTTPException(422, "several human seats need --hotseat (one device) or remote seats enabled on the server")
         cfg = body.config or GameConfig(num_players=len(specs))
         if cfg.num_players != len(specs):
             cfg = cfg.model_copy(update={"num_players": len(specs)})
@@ -65,7 +67,9 @@ def create_game(body: CreateGame, request: Request, reg: Registry = Depends(regi
         autosave = str(st.saves_dir / f"game_{seed}.json") if body.autosave else None
     try:
         sess = reg.add_game(
-            lambda gid: GameSession(gid, gm, agents, delay=body.delay, ponder=body.ponder, ponder_grace=body.ponder_grace, autosave=autosave, replay_dir=st.replay_dir, hotseat=st.hotseat)
+            lambda gid: GameSession(
+                gid, gm, agents, delay=body.delay, ponder=body.ponder, ponder_grace=body.ponder_grace, autosave=autosave, replay_dir=st.replay_dir, hotseat=st.hotseat and not remote, remote=remote
+            )
         )
     except RuntimeError as e:
         raise HTTPException(429, str(e)) from e
@@ -73,6 +77,8 @@ def create_game(body: CreateGame, request: Request, reg: Registry = Depends(regi
         id=sess.id,
         owner_token=token(st.secret, sess.id, "owner"),
         spectator_token=token(st.secret, sess.id, "spectator"),
+        seat_tokens={p: token(st.secret, sess.id, seat_role(p)) for p in sess.humans} if remote else {},
+        remote=remote,
         seats=[{"id": s.id, "label": s.label(), "kind": s.kind, "name": s.name} for s in specs],
         humans=sess.humans,
         resumed=resumed,
@@ -95,6 +101,9 @@ def list_games(reg: Registry = Depends(registry)) -> list[GameListItem]:
                 turn=g.gm.state.turn_number,
                 created=g.created,
                 winner=g.gm.winner,
+                remote=g.remote,
+                presence=dict(g.presence),
+                waiting_for=g.waiting_for(),
             )
         )
     return out
@@ -103,6 +112,16 @@ def list_games(reg: Registry = Depends(registry)) -> list[GameListItem]:
 @router.get("/games/{game_id}")
 def get_game(acc: Access = Depends(access)) -> dict[str, Any]:
     return acc.session.render_frame(acc.viewer)
+
+
+@router.get("/games/{game_id}/invites")
+def invites(acc: Access = Depends(access), st: WebSettings = Depends(settings)) -> dict[str, Any]:
+    """Host only: per-seat invite tokens for a remote game (share each with exactly one player)."""
+    if acc.role != "owner":
+        raise HTTPException(403, "owner only")
+    if not acc.session.remote:
+        return {"remote": False, "seats": {}}
+    return {"remote": True, "seats": {p: token(st.secret, acc.session.id, seat_role(p)) for p in acc.session.humans}, **acc.session.render_presence()}
 
 
 @router.post("/games/{game_id}/act", response_model=OkPath)
@@ -128,6 +147,8 @@ def control(body: ControlBody, acc: Access = Depends(access)) -> OkPath:
         acc.session.set_pause(body.pause)
     if body.delay is not None:
         acc.session.set_delay(body.delay)
+    if body.start:
+        acc.session.force_start()
     if body.acknowledge_seat is not None:
         if not acc.session.hotseat:
             raise HTTPException(409, "hot-seat mode is disabled")

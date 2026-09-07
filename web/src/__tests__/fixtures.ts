@@ -9,7 +9,7 @@ export const state: GameState = {
     { id: "P3", name: null, label: "baseline:heuristic", kind: "baseline", suspect_token: "Mrs. White", position: "0,9", eliminated: false, hand_size: 6 },
   ] },
   cards: { suspects: ["Miss Scarlet", "Col. Mustard", "Mrs. White", "Mr. Green", "Mrs. Peacock", "Prof. Plum"], weapons: ["Candlestick", "Knife", "Lead Pipe", "Revolver", "Rope", "Wrench"], rooms: ["Kitchen", "Ballroom", "Conservatory", "Dining Room", "Lounge", "Hall", "Study", "Library", "Billiard Room"], faceup: [] },
-  config: { dice: 2, edition: "classic" }, finished: false, winner: null, paused: false, delay: 0.6, humans: ["P1"], hotseat: false, active_seat: "P1", handoff_pending: null,
+  config: { dice: 2, edition: "classic" }, finished: false, winner: null, paused: false, delay: 0.6, humans: ["P1"], hotseat: false, remote: false, presence: {}, waiting_for: [], started: true, active_seat: "P1", handoff_pending: null,
   n_events: 1, illegal_attempts: {}, error: null, stopped: false, autosave: null, ponder: {}, llm: {},
   you: { id: "P1", hand: ["Knife", "Hall"], position: "24,7", eliminated: false, may_suggest: false, suspect_token: "Miss Scarlet" },
   notebook: { viewer: "P1", my_hand: ["Knife", "Hall"], faceup: [], known_holder: { Knife: "P1", Hall: "P1", Rope: "P2" }, not_held: { P3: ["Rope"] }, has_one_of: [{ player: "P3", cards: ["Wrench", "Study"] }], notes: [] },
