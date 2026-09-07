@@ -4,7 +4,7 @@
   --accent: #d4a94a; --ok: #7fb069; --bad: #c8412f; --info: #7fb2c9; --warn: #e08b3a;
   --paper: #efe6cf; --ink: #2a1f1a; --brass: #c9a961;
   --S: #c8102e; --M: #d9a41b; --W: #e9e4d8; --G: #2e7d4f; --K: #1f4fa0; --P: #6a2a7b;
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif; font-size: 14px;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif; font-size: clamp(11.5px, 0.55vw + 8px, 14.5px);
 }
 h1, h2, h3, .brand, .tpanel::before, .room-label { font-family: "Playfair Display", "Didot", "Bodoni MT", Georgia, serif; }
 * { box-sizing: border-box; }
@@ -63,7 +63,8 @@ table.tbl th { color: var(--dim); font-weight: 500; font-size: 12px; text-transf
 .progress > div { height: 100%; background: var(--accent); transition: width 0.3s; }
 
 /* ================= Game screen: the TUI layout (Board | Notebook+Deductions | Log+Your move) with graphics ================= */
-.tui { display: grid; grid-template-columns: minmax(380px, 30vw) minmax(330px, 1fr) minmax(360px, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 10px; padding: 10px 12px; height: calc(100vh - 42px); }
+.tui { display: grid; grid-template-columns: minmax(280px, 28vw) minmax(260px, 1fr) minmax(280px, 1.1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 0.6rem; padding: 0.6rem 0.8rem; height: calc(100vh - 42px); font-size: 1rem; }
+.tui .col { min-height: 0; }
 .tui .col { display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; }
 .tpanel { position: relative; border: 1px solid var(--border); border-radius: 6px; padding: 16px 12px 10px; background: var(--panel); min-height: 0; overflow: auto; box-shadow: inset 0 0 0 1px #0006, 0 2px 8px #0008; }
 .tpanel::before { content: attr(data-title); position: absolute; top: -9px; left: 12px; padding: 0 8px; background: var(--panel); color: var(--brass); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
@@ -91,9 +92,13 @@ table.tbl th { color: var(--dim); font-weight: 500; font-size: 12px; text-transf
 .tkeys select { padding: 1px 4px; font-size: 12px; }
 /* board */
 .board-wrap { display: flex; flex-direction: column; gap: 8px; }
-svg.board { width: 100%; height: auto; max-height: calc(100vh - 220px); display: block; border-radius: 4px; user-select: none; }
+svg.board { width: 100%; height: auto; max-height: min(calc(100vh - 230px), 92vw); margin: 0 auto; display: block; border-radius: 4px; user-select: none; }
 svg.board .cell { fill: #cbbf9f; stroke: #a89a78; stroke-width: 0.04; }
-svg.board .cell.door { fill: #e7d9a8; stroke: #b08a2a; stroke-width: 0.08; }
+svg.board .cell.door { fill: #f0dc9a; stroke: #9a7420; stroke-width: 0.1; }
+svg.board .doorleaf rect { fill: #d9b25a; stroke: #3a2a10; stroke-width: 0.05; }
+svg.board .doorleaf line { stroke: #6b4f1a; stroke-width: 0.04; }
+svg.board .doorleaf circle { fill: #3a2a10; }
+svg.board .doorleaf { pointer-events: none; }
 svg.board .cell.hl { fill: #f2c94c; stroke: #8a6a26; stroke-width: 0.1; cursor: pointer; }
 svg.board .cell.hl:hover { fill: #ffe08a; }
 svg.board .room-tint { fill: #000; opacity: 0.22; transition: opacity 0.15s; }
@@ -102,7 +107,7 @@ svg.board .room.hl { cursor: pointer; }
 svg.board .room.hl:hover .room-tint { opacity: 0.5; }
 svg.board .room.here .room-tint { fill: #7fb2c9; opacity: 0.18; }
 svg.board .wall { stroke: #0d0906; stroke-width: 0.22; stroke-linecap: square; }
-svg.board .doorway { stroke: #e7d9a8; stroke-width: 0.16; }
+svg.board .doorway { stroke: #f0dc9a; stroke-width: 0.2; }
 svg.board .room-label { fill: #f3e8c8; font-size: 1.05px; font-weight: 700; text-anchor: middle; dominant-baseline: central; letter-spacing: 0.06px; pointer-events: none; paint-order: stroke; stroke: #000; stroke-width: 0.12px; stroke-opacity: 0.75; }
 svg.board .weapon rect { fill: #c9a961; stroke: #5a4318; stroke-width: 0.05; }
 svg.board .weapon text { fill: #2a1f1a; font-size: 0.4px; font-weight: 700; text-anchor: middle; dominant-baseline: central; letter-spacing: 0.03px; font-family: Georgia, serif; }
@@ -141,4 +146,26 @@ table.nb .truth { color: #1f4fa0; }
 .tui .action .choices { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); max-height: 200px; }
 .tui .action .choices button .tag { color: #6d5d4a; }
 .tui button { border-radius: 3px; padding: 5px 12px; }
-@media (max-width: 1150px) { .tui { grid-template-columns: minmax(340px, 45vw) 1fr; height: auto; } .tui .right-col { grid-column: 1 / -1; } }
+/* responsive: 3 columns → 2 (board | notebook, then log/move full width) → 1 stacked column on narrow panes */
+@media (max-width: 1100px) {
+  .tui { grid-template-columns: minmax(260px, 42vw) 1fr; grid-template-rows: auto auto auto; height: auto; min-height: calc(100vh - 42px); }
+  .tui .right-col { grid-column: 1 / -1; }
+  .tui .right-col .tpanel.grow { max-height: 40vh; }
+  svg.board { max-height: 60vh; }
+}
+@media (max-width: 720px) {
+  .tui { grid-template-columns: 1fr; padding: 0.5rem; }
+  .tui .col, .tui .right-col { grid-column: 1 / -1; }
+  svg.board { max-height: 90vw; }
+  .tline { white-space: normal; }
+  .nav { gap: 10px; padding: 6px 10px; }
+  .nav a { letter-spacing: 0.5px; }
+}
+/* size-relative typography inside the game screen so it shrinks with the pane */
+.tpanel::before { font-size: 0.8rem; }
+.tline { font-size: 0.9rem; }
+.tkeys { font-size: 0.82rem; }
+table.nb { font-size: 0.86rem; } table.nb th { font-size: 0.75rem; } table.nb tr.cat td { font-size: 0.72rem; }
+.facts { font-size: 0.86rem; } .log { font-size: 0.85rem; } .legend { font-size: 0.82rem; } .legend .keys { font-size: 0.75rem; }
+.tui .action .banner { font-size: 0.95rem; }
+.tui button { padding: 0.3rem 0.75rem; font-size: 0.9rem; }

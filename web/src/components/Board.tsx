@@ -128,6 +128,18 @@ export default function Board({ geo, tokens, weapons, players, highlights = [], 
         })}
         {/* walls + door openings */}
         {walls.map((s, i) => <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} className={s.door ? "doorway" : "wall"} />)}
+        {/* door leaves: a brass door drawn across each opening so doors are obvious at any size */}
+        {walls.filter((s) => s.door).map((s, i) => {
+          const horiz = s.y1 === s.y2;
+          const mx = (s.x1 + s.x2) / 2, my = (s.y1 + s.y2) / 2;
+          return (
+            <g key={`d${i}`} className="doorleaf" transform={`translate(${mx}, ${my})${horiz ? "" : " rotate(90)"}`}>
+              <rect x={-0.5} y={-0.11} width={1} height={0.22} rx={0.04} />
+              <line x1={-0.36} y1={0} x2={0.36} y2={0} />
+              <circle cx={0.28} cy={0} r={0.045} />
+            </g>
+          );
+        })}
         {/* corridor tokens */}
         {Object.entries(tokens).map(([s, pos]) => { const rc = parseSq(pos); return rc ? <Pawn key={s} suspect={s} x={rc[1] + 0.5} y={rc[0] + 0.5} seat={seatBySuspect[s]} /> : null; })}
       </svg>
