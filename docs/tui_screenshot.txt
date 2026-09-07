@@ -1,0 +1,48 @@
+ ⭘                                      Clue — P1: human  P2: baseline:heuristic  P3: baseline:heuristic  P4: baseline:heuristic                                          
+╭─ Board ──────────────────────────────────────────────╮╭─ Notebook  ✔ has  ✘ hasn't  ? unknown ─────────────╮╭─ What happened ──────────────────────────────────────────╮
+│     0 1 2 3 4 5 6 7 8 9 1011121314151617181920212223 ││ Card           P1  P2  P3  P4                      ││  P3 showed a card to P2                                  │
+│  0                    ·         ·                    ││ Miss Scarlet   ?   ?   ✘   ?                       ││--- Turn 18: P3 ---                                       │
+│  1              · · · ·         · · · ·              ││ Col. Mustard   ✔   ·   ·   ·   yours               ││P3 suggests: Col. Mustard with the Wrench in the          │
+│  2              · ·                 · ·              ││ Mrs. White     ✘   ?   ?   ?                       ││Conservatory                                              │
+│  3    KITCHEN   · ·                 · ·   CONSERV.   ││ Mr. Green      ✔   ·   ·   ·   yours               ││  P4 cannot disprove                                      │
+│  4    ♣         · ·     BALLROOM    · ·              ││ Mrs. Peacock   ?   ?   ✘   ?                       ││  P1 can disprove...                                      │
+│  5              · ▢   ♛ ✚ ✎         ▢ · l r       ⇄  ││ Prof. Plum     ?   ?   ?   ✘                       ││  P1 showed the Col. Mustard to P3                        │
+│  6  d         ⇄ · ·                 · ★ ▢ · · · · ·  ││ Candlestick    ?   ?   ?   ?                       ││--- Turn 19: P4 ---                                       │
+│  7    · · · ▢ · · · r w             · · · · · · ·    ││ Dagger         ?   ?   ?   ?                       ││P4 rolled [3, 5] = 8                                      │
+│  8    · · · · · · · · ▢ · · · · ▢ · · ·              ││ Lead Pipe      ✔   ·   ·   ·   yours               ││P4 moved Conservatory -> Ballroom                         │
+│  9                  · · · · · · · · · ▢              ││ Revolver       ✔   ·   ·   ·   yours               ││P4 suggests: Mrs. White with the Wrench in the Ballroom   │
+│ 10                  · ░░░░░░░░░░░░· · ·   BILLIARD   ││ Rope           ✘   ?   ?   ✘                       ││  P1 can disprove...                                      │
+│ 11                  · ░░░░░░░░░░░░· · ·              ││ Wrench         ✔   ·   ·   ·   yours               ││  P1 showed the Wrench to P4                              │
+│ 12      DINING      ▢ ░░░░░░░░░░░░· · ·              ││ Hall           ?   ?   ✘   ?                       ││━━━ YOUR TURN ━━━                                         │
+│ 13    ❋             · ░░░░░░░░░░░░· · · · · ▢ · ▢    ││ Lounge         ?   ?   ✘   ?                       ││P1 rolled [2, 6] = 8                                      │
+│ 14                  · ░░░░░░░░░░░░· ·                ││ Dining Room    ?   ?   ?   ?                       ││P1 moved Ballroom -> Billiard Room                        │
+│ 15  c               · ░░░░░░░░░░░░· ·                ││ Kitchen        ?   ?   ?   ?                       ││--- Turn 21: P2 ---                                       │
+│ 16    · · · · · ▢ · · ░░░░░░░░░░░░· ▢   LIBRARY      ││ Ballroom       ?   ?   ?   ✘                       ││P2 rolled [1, 1] = 2                                      │
+│ 17  · · · · · · · · · · · ▢ ▢ · · · ·                ││ Conservatory   ✘   ?   ?   ✘                       ││P2 moved Conservatory -> 6,17                             │
+│ 18    · · · · · ▢ · ·             · ·                ││ Billiard Room  ?   ?   ?   ?                       ││--- Turn 22: P3 ---                                       │
+│ 19                · ·             · · · · · · · · ·  ││ Library        ?   ?   ?   ?                       ││P3 suggests: Miss Scarlet with the Wrench in the          │
+│ 20                · ▢             · · ▢ · · · · ·    ││ Study          ?   ?   ?   ?                       ││Ballroom                                                  │
+│ 21      LOUNGE    · ·     HALL    · ·                ││                                                    ││  P4 can disprove...                                    ▃▃│
+│ 22                · ·             · ·     STUDY      ││                                                    ││  P4 showed a card to P3                                  │
+│ 23                · ·             · ·                ││                                                    ││--- Turn 23: P4 ---                                       │
+│ 24              ⇄ ·                               ⇄  ││                                                    ││P4 rolled [6, 2] = 8                                      │
+│                                                      ││                                                    ││P4 moved Ballroom -> Kitchen                              │
+│  ♛   Miss Scarlet  ← you                             ││                                                    ││P4 suggests: Mr. Green with the Dagger in the Kitchen     │
+│  ★   Col. Mustard                                    ││                                                    ││  P1 can disprove...                                      │
+│  ✚   Mrs. White                                      ││                                                    ││  P1 showed the Mr. Green to P4                           │
+│  ♣   Mr. Green                                       ││                                                    ││━━━ YOUR TURN ━━━                                         │
+│  ❋   Mrs. Peacock                                    ││                                                    │╰──────────────────────────────────────────────────────────╯
+│  ✎   Prof. Plum                                      ││                                                    │┏━ Your move ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+│  ▢ door   ⇄ passage   ◆ reachable   ░ cellar         ││                                                    │┃ It's your turn.                                          ┃
+│                                                      │╰────────────────────────────────────────────────────╯┃ • Roll the dice and move                                 ┃
+│                                                      │╭─ Deductions ───────────────────────────────────────╮┃ • Suggest here in the Ballroom (you were brought here —  ┃
+│                                                      ││ • P4 holds at least one of Mrs. Peacock, Wrench,   │┃ no need to move)                                         ┃
+│                                                      ││ Lounge                                             │┃ Accuse only when sure — a wrong accusation eliminates    ┃
+│                                                      ││ • P4 holds at least one of Mrs. Peacock, Dagger,   │┃ you.                                                     ┃
+│                                                      ││ Dining Room                                        │┃                                                          ┃
+│                                                      ││ • P3 holds at least one of Mrs. White, Wrench,     │┃ ▔▔▔▔▔▔▔▔▔▔ ▔▔▔▔▔▔▔▔▔▔▔▔▔ ▔▔▔▔▔▔▔▔▔▔▔▔                    ┃
+│                                                      ││ Conservatory                                       │┃  Roll (r)   Suggest (s)   Accuse (a)                     ┃
+│                                                      ││ • P4 holds at least one of Miss Scarlet, Wrench,   │┃ ▁▁▁▁▁▁▁▁▁▁ ▁▁▁▁▁▁▁▁▁▁▁▁▁ ▁▁▁▁▁▁▁▁▁▁▁▁                    ┃
+╰──────────────────────────────────────────────────────╯╰────────────────────────────────────────────────────╯┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ You are ♛ Miss Scarlet (P1) in the Ballroom   ·   your cards: Col. Mustard, Lead Pipe, Mr. Green, Revolver, Wrench   ·   turn 24                                         
+ r Roll  p Passage  s Suggest  a Accuse  e End turn  esc Back  space Pause  + Faster  - Slower  q Quit                                                        ▏^p palette 

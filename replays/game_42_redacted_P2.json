@@ -1,0 +1,7238 @@
+[
+ {
+  "seq": 0,
+  "kind": "event",
+  "type": "game_start",
+  "turn": 0,
+  "player": null,
+  "seed": 42,
+  "players": [
+   {
+    "id": "P1",
+    "name": "You",
+    "kind": "human",
+    "bot": null,
+    "model": null,
+    "strategy": null,
+    "temperature": null,
+    "tools": true
+   },
+   {
+    "id": "P2",
+    "name": null,
+    "kind": "llm",
+    "bot": null,
+    "model": "mock",
+    "strategy": "strategies/bayesian_probabilist.md",
+    "temperature": 0.2,
+    "tools": true
+   },
+   {
+    "id": "P3",
+    "name": null,
+    "kind": "llm",
+    "bot": null,
+    "model": "mock",
+    "strategy": "strategies/deceptive_misdirector.md",
+    "temperature": null,
+    "tools": true
+   },
+   {
+    "id": "P4",
+    "name": null,
+    "kind": "baseline",
+    "bot": "heuristic",
+    "model": null,
+    "strategy": null,
+    "temperature": null,
+    "tools": true
+   }
+  ],
+  "config": {
+   "edition": "classic",
+   "dice": 2,
+   "deal_remainder": "uneven",
+   "num_players": 4,
+   "max_turns": 400
+  },
+  "faceup": []
+ },
+ {
+  "seq": 1,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 0,
+  "player": "P1"
+ },
+ {
+  "seq": 2,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 3,
+  "kind": "event",
+  "type": "roll",
+  "turn": 0,
+  "player": "P1",
+  "dice": [
+   5,
+   3
+  ],
+  "total": 8
+ },
+ {
+  "seq": 4,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Hall"
+ },
+ {
+  "seq": 5,
+  "kind": "event",
+  "type": "move",
+  "turn": 0,
+  "player": "P1",
+  "from": "24,7",
+  "to": "Hall"
+ },
+ {
+  "seq": 6,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Miss Scarlet",
+  "weapon": "Rope",
+  "room": "Hall"
+ },
+ {
+  "seq": 7,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 0,
+  "player": "P1",
+  "suspect": "Miss Scarlet",
+  "weapon": "Rope",
+  "room": "Hall"
+ },
+ {
+  "seq": 8,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 0,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 9,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 10,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 0,
+  "player": "P2",
+  "suggester": "P1",
+  "disprover": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 11,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 12,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 1,
+  "player": "P2"
+ },
+ {
+  "seq": 13,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 14,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 144,
+   "combos": {
+    "Miss Scarlet | Candlestick | Hall": 0.0069,
+    "Miss Scarlet | Candlestick | Lounge": 0.0069,
+    "Miss Scarlet | Candlestick | Conservatory": 0.0069,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0069,
+    "Miss Scarlet | Candlestick | Library": 0.0069,
+    "Miss Scarlet | Candlestick | Study": 0.0069,
+    "Miss Scarlet | Lead Pipe | Hall": 0.0069,
+    "Miss Scarlet | Lead Pipe | Lounge": 0.0069,
+    "Miss Scarlet | Lead Pipe | Conservatory": 0.0069,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0069
+   },
+   "cards": {
+    "Candlestick": 0.25,
+    "Lead Pipe": 0.25,
+    "Revolver": 0.25,
+    "Wrench": 0.25,
+    "Miss Scarlet": 0.1667,
+    "Hall": 0.1667,
+    "Lounge": 0.1667,
+    "Conservatory": 0.1667,
+    "Billiard Room": 0.1667,
+    "Library": 0.1667,
+    "Study": 0.1667,
+    "Col. Mustard": 0.1667,
+    "Mrs. White": 0.1667,
+    "Mr. Green": 0.1667,
+    "Mrs. Peacock": 0.1667,
+    "Prof. Plum": 0.1667
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0069
+  }
+ },
+ {
+  "seq": 15,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0069,
+   "n_possible": 144,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 16,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 17,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 18,
+  "kind": "event",
+  "type": "roll",
+  "turn": 1,
+  "player": "P2",
+  "dice": [
+   1,
+   2
+  ],
+  "total": 3
+ },
+ {
+  "seq": 19,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 20,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 144,
+   "combos": {
+    "Miss Scarlet | Candlestick | Hall": 0.0069,
+    "Miss Scarlet | Candlestick | Lounge": 0.0069,
+    "Miss Scarlet | Candlestick | Conservatory": 0.0069,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0069,
+    "Miss Scarlet | Candlestick | Library": 0.0069,
+    "Miss Scarlet | Candlestick | Study": 0.0069,
+    "Miss Scarlet | Lead Pipe | Hall": 0.0069,
+    "Miss Scarlet | Lead Pipe | Lounge": 0.0069,
+    "Miss Scarlet | Lead Pipe | Conservatory": 0.0069,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0069
+   },
+   "cards": {
+    "Candlestick": 0.25,
+    "Lead Pipe": 0.25,
+    "Revolver": 0.25,
+    "Wrench": 0.25,
+    "Miss Scarlet": 0.1667,
+    "Hall": 0.1667,
+    "Lounge": 0.1667,
+    "Conservatory": 0.1667,
+    "Billiard Room": 0.1667,
+    "Library": 0.1667,
+    "Study": 0.1667,
+    "Col. Mustard": 0.1667,
+    "Mrs. White": 0.1667,
+    "Mr. Green": 0.1667,
+    "Mrs. Peacock": 0.1667,
+    "Prof. Plum": 0.1667
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0069
+  }
+ },
+ {
+  "seq": 21,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0069,
+   "n_possible": 144,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 22,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"17,3\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 23,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "17,3"
+ },
+ {
+  "seq": 24,
+  "kind": "event",
+  "type": "move",
+  "turn": 1,
+  "player": "P2",
+  "from": "17,0",
+  "to": "17,3"
+ },
+ {
+  "seq": 25,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 26,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 144,
+   "combos": {
+    "Miss Scarlet | Candlestick | Hall": 0.0069,
+    "Miss Scarlet | Candlestick | Lounge": 0.0069,
+    "Miss Scarlet | Candlestick | Conservatory": 0.0069,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0069,
+    "Miss Scarlet | Candlestick | Library": 0.0069,
+    "Miss Scarlet | Candlestick | Study": 0.0069,
+    "Miss Scarlet | Lead Pipe | Hall": 0.0069,
+    "Miss Scarlet | Lead Pipe | Lounge": 0.0069,
+    "Miss Scarlet | Lead Pipe | Conservatory": 0.0069,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0069
+   },
+   "cards": {
+    "Candlestick": 0.25,
+    "Lead Pipe": 0.25,
+    "Revolver": 0.25,
+    "Wrench": 0.25,
+    "Miss Scarlet": 0.1667,
+    "Hall": 0.1667,
+    "Lounge": 0.1667,
+    "Conservatory": 0.1667,
+    "Billiard Room": 0.1667,
+    "Library": 0.1667,
+    "Study": 0.1667,
+    "Col. Mustard": 0.1667,
+    "Mrs. White": 0.1667,
+    "Mr. Green": 0.1667,
+    "Mrs. Peacock": 0.1667,
+    "Prof. Plum": 0.1667
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0069
+  }
+ },
+ {
+  "seq": 27,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0069,
+   "n_possible": 144,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 28,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 29,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 30,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 2,
+  "player": "P3"
+ },
+ {
+  "seq": 35,
+  "kind": "action",
+  "type": "roll",
+  "player": "P3"
+ },
+ {
+  "seq": 36,
+  "kind": "event",
+  "type": "roll",
+  "turn": 2,
+  "player": "P3",
+  "dice": [
+   6,
+   4
+  ],
+  "total": 10
+ },
+ {
+  "seq": 41,
+  "kind": "action",
+  "type": "move",
+  "player": "P3",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 42,
+  "kind": "event",
+  "type": "move",
+  "turn": 2,
+  "player": "P3",
+  "from": "0,9",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 48,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Mr. Green",
+  "weapon": "Dagger",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 49,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 2,
+  "player": "P3",
+  "suspect": "Mr. Green",
+  "weapon": "Dagger",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 50,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 2,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 51,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 2,
+  "player": "P1",
+  "suggester": "P3"
+ },
+ {
+  "seq": 52,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 53,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 2,
+  "player": "P1",
+  "suggester": "P3",
+  "disprover": "P1"
+ },
+ {
+  "seq": 58,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 59,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 3,
+  "player": "P4"
+ },
+ {
+  "seq": 60,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Revolver",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 61,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 3,
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Revolver",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 62,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 3,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 63,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 64,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 3,
+  "player": "P1",
+  "suggester": "P4",
+  "disprover": "P1"
+ },
+ {
+  "seq": 65,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 66,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 4,
+  "player": "P1"
+ },
+ {
+  "seq": 67,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 68,
+  "kind": "event",
+  "type": "roll",
+  "turn": 4,
+  "player": "P1",
+  "dice": [
+   3,
+   3
+  ],
+  "total": 6
+ },
+ {
+  "seq": 69,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Lounge"
+ },
+ {
+  "seq": 70,
+  "kind": "event",
+  "type": "move",
+  "turn": 4,
+  "player": "P1",
+  "from": "Hall",
+  "to": "Lounge"
+ },
+ {
+  "seq": 71,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Dagger",
+  "room": "Lounge"
+ },
+ {
+  "seq": 72,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 4,
+  "player": "P1",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Dagger",
+  "room": "Lounge"
+ },
+ {
+  "seq": 73,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 4,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 74,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Dagger"
+ },
+ {
+  "seq": 75,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 4,
+  "player": "P2",
+  "suggester": "P1",
+  "disprover": "P2",
+  "card": "Dagger"
+ },
+ {
+  "seq": 76,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 77,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 5,
+  "player": "P2"
+ },
+ {
+  "seq": 78,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 79,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 144,
+   "combos": {
+    "Miss Scarlet | Lead Pipe | Hall": 0.0455,
+    "Miss Scarlet | Wrench | Study": 0.0455,
+    "Col. Mustard | Candlestick | Lounge": 0.0455,
+    "Mrs. White | Wrench | Billiard Room": 0.0455,
+    "Mrs. Peacock | Revolver | Library": 0.0455,
+    "Mrs. Peacock | Wrench | Lounge": 0.0455,
+    "Mrs. Peacock | Wrench | Library": 0.0455,
+    "Miss Scarlet | Candlestick | Lounge": 0.0227,
+    "Miss Scarlet | Lead Pipe | Lounge": 0.0227,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0227
+   },
+   "cards": {
+    "Wrench": 0.3409,
+    "Miss Scarlet": 0.2955,
+    "Mrs. Peacock": 0.2955,
+    "Candlestick": 0.25,
+    "Lounge": 0.2273,
+    "Billiard Room": 0.2273,
+    "Lead Pipe": 0.2045,
+    "Revolver": 0.2045,
+    "Library": 0.1818,
+    "Col. Mustard": 0.1818,
+    "Hall": 0.1591,
+    "Study": 0.1364,
+    "Mrs. White": 0.1136,
+    "Prof. Plum": 0.1136,
+    "Conservatory": 0.0682,
+    "Mr. Green": 0.0
+   },
+   "best": [
+    "Miss Scarlet",
+    "Lead Pipe",
+    "Hall"
+   ],
+   "best_prob": 0.0455
+  }
+ },
+ {
+  "seq": 80,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Lead Pipe",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 144,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 81,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 82,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 83,
+  "kind": "event",
+  "type": "roll",
+  "turn": 5,
+  "player": "P2",
+  "dice": [
+   2,
+   2
+  ],
+  "total": 4
+ },
+ {
+  "seq": 84,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 85,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 144,
+   "combos": {
+    "Miss Scarlet | Lead Pipe | Lounge": 0.0455,
+    "Col. Mustard | Candlestick | Lounge": 0.0455,
+    "Col. Mustard | Candlestick | Conservatory": 0.0455,
+    "Col. Mustard | Lead Pipe | Conservatory": 0.0455,
+    "Col. Mustard | Lead Pipe | Library": 0.0455,
+    "Mrs. Peacock | Revolver | Lounge": 0.0455,
+    "Mrs. Peacock | Wrench | Library": 0.0455,
+    "Prof. Plum | Candlestick | Hall": 0.0455,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0227,
+    "Miss Scarlet | Candlestick | Study": 0.0227
+   },
+   "cards": {
+    "Candlestick": 0.2955,
+    "Lead Pipe": 0.2955,
+    "Wrench": 0.2727,
+    "Col. Mustard": 0.25,
+    "Miss Scarlet": 0.2273,
+    "Conservatory": 0.2273,
+    "Mrs. Peacock": 0.2273,
+    "Hall": 0.2045,
+    "Lounge": 0.2045,
+    "Prof. Plum": 0.2045,
+    "Billiard Room": 0.1818,
+    "Revolver": 0.1364,
+    "Library": 0.1136,
+    "Mrs. White": 0.0909,
+    "Study": 0.0682,
+    "Mr. Green": 0.0
+   },
+   "best": [
+    "Miss Scarlet",
+    "Lead Pipe",
+    "Lounge"
+   ],
+   "best_prob": 0.0455
+  }
+ },
+ {
+  "seq": 86,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Lead Pipe",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 144,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 87,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"18,6\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 88,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "18,6"
+ },
+ {
+  "seq": 89,
+  "kind": "event",
+  "type": "move",
+  "turn": 5,
+  "player": "P2",
+  "from": "17,3",
+  "to": "18,6"
+ },
+ {
+  "seq": 90,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 91,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 144,
+   "combos": {
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0455,
+    "Mrs. Peacock | Wrench | Lounge": 0.0455,
+    "Mrs. Peacock | Wrench | Library": 0.0455,
+    "Miss Scarlet | Candlestick | Library": 0.0227,
+    "Miss Scarlet | Lead Pipe | Library": 0.0227,
+    "Miss Scarlet | Revolver | Library": 0.0227,
+    "Miss Scarlet | Wrench | Study": 0.0227,
+    "Col. Mustard | Candlestick | Conservatory": 0.0227,
+    "Col. Mustard | Candlestick | Study": 0.0227,
+    "Col. Mustard | Lead Pipe | Hall": 0.0227
+   },
+   "cards": {
+    "Lead Pipe": 0.3409,
+    "Candlestick": 0.2955,
+    "Mrs. Peacock": 0.2727,
+    "Wrench": 0.2273,
+    "Col. Mustard": 0.2273,
+    "Library": 0.2045,
+    "Prof. Plum": 0.2045,
+    "Lounge": 0.1818,
+    "Conservatory": 0.1818,
+    "Study": 0.1818,
+    "Hall": 0.1591,
+    "Mrs. White": 0.1591,
+    "Revolver": 0.1364,
+    "Miss Scarlet": 0.1364,
+    "Billiard Room": 0.0909,
+    "Mr. Green": 0.0
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.0455
+  }
+ },
+ {
+  "seq": 92,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Lead Pipe",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 144,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 93,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 94,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 95,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 6,
+  "player": "P3"
+ },
+ {
+  "seq": 100,
+  "kind": "action",
+  "type": "roll",
+  "player": "P3"
+ },
+ {
+  "seq": 101,
+  "kind": "event",
+  "type": "roll",
+  "turn": 6,
+  "player": "P3",
+  "dice": [
+   3,
+   1
+  ],
+  "total": 4
+ },
+ {
+  "seq": 106,
+  "kind": "action",
+  "type": "move",
+  "player": "P3",
+  "to": "10,8"
+ },
+ {
+  "seq": 107,
+  "kind": "event",
+  "type": "move",
+  "turn": 6,
+  "player": "P3",
+  "from": "Ballroom",
+  "to": "10,8"
+ },
+ {
+  "seq": 112,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 113,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 7,
+  "player": "P4"
+ },
+ {
+  "seq": 114,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 115,
+  "kind": "event",
+  "type": "roll",
+  "turn": 7,
+  "player": "P4",
+  "dice": [
+   1,
+   4
+  ],
+  "total": 5
+ },
+ {
+  "seq": 116,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Conservatory"
+ },
+ {
+  "seq": 117,
+  "kind": "event",
+  "type": "move",
+  "turn": 7,
+  "player": "P4",
+  "from": "Ballroom",
+  "to": "Conservatory"
+ },
+ {
+  "seq": 118,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Col. Mustard",
+  "weapon": "Wrench",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 119,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 7,
+  "player": "P4",
+  "suspect": "Col. Mustard",
+  "weapon": "Wrench",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 120,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 7,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 121,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 122,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 7,
+  "player": "P1",
+  "suggester": "P4",
+  "disprover": "P1"
+ },
+ {
+  "seq": 123,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 124,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 8,
+  "player": "P1"
+ },
+ {
+  "seq": 125,
+  "kind": "action",
+  "type": "passage",
+  "player": "P1"
+ },
+ {
+  "seq": 126,
+  "kind": "event",
+  "type": "passage",
+  "turn": 8,
+  "player": "P1",
+  "from": "Lounge",
+  "to": "Conservatory"
+ },
+ {
+  "seq": 127,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 128,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 8,
+  "player": "P1",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 129,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 8,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 130,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 8,
+  "player": "P3",
+  "suggester": "P1"
+ },
+ {
+  "seq": 131,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P3"
+ },
+ {
+  "seq": 132,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 8,
+  "player": "P3",
+  "suggester": "P1",
+  "disprover": "P3"
+ },
+ {
+  "seq": 133,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 134,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 9,
+  "player": "P2"
+ },
+ {
+  "seq": 135,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Conservatory",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 136,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 142,
+   "combos": {
+    "Col. Mustard | Wrench | Study": 0.1333,
+    "Mrs. Peacock | Lead Pipe | Study": 0.1333,
+    "Col. Mustard | Candlestick | Hall": 0.0667,
+    "Col. Mustard | Revolver | Library": 0.0667,
+    "Mrs. White | Candlestick | Billiard Room": 0.0667,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.0667,
+    "Mrs. Peacock | Lead Pipe | Lounge": 0.0667,
+    "Mrs. Peacock | Lead Pipe | Billiard Room": 0.0667,
+    "Mrs. Peacock | Revolver | Library": 0.0667,
+    "Mrs. Peacock | Wrench | Conservatory": 0.0667
+   },
+   "cards": {
+    "Mrs. Peacock": 0.4667,
+    "Lead Pipe": 0.4,
+    "Billiard Room": 0.2667,
+    "Study": 0.2667,
+    "Col. Mustard": 0.2667,
+    "Revolver": 0.2,
+    "Candlestick": 0.2,
+    "Wrench": 0.2,
+    "Library": 0.2,
+    "Prof. Plum": 0.2,
+    "Lounge": 0.1333,
+    "Mrs. White": 0.0667,
+    "Hall": 0.0667,
+    "Conservatory": 0.0667,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.0
+   },
+   "best": [
+    "Col. Mustard",
+    "Wrench",
+    "Study"
+   ],
+   "best_prob": 0.1333
+  }
+ },
+ {
+  "seq": 137,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Lead Pipe",
+    "Hall"
+   ],
+   "confidence": 0.1111,
+   "n_possible": 142,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 138,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Conservatory",
+   "batch": 24
+  },
+  "result": [
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Candlestick",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Revolver",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Wrench",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Col. Mustard",
+    "weapon": "Candlestick",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   }
+  ]
+ },
+ {
+  "seq": 139,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Prof. Plum\", \"weapon\": \"Revolver\", \"room\": \"Conservatory\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 140,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Revolver",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 141,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 9,
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Revolver",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 142,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 9,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 143,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P3",
+  "card": "Conservatory"
+ },
+ {
+  "seq": 144,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 9,
+  "player": "P3",
+  "suggester": "P2",
+  "disprover": "P3",
+  "card": "Conservatory"
+ },
+ {
+  "seq": 145,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 146,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 120,
+   "combos": {
+    "Miss Scarlet | Candlestick | Lounge": 0.1,
+    "Col. Mustard | Lead Pipe | Lounge": 0.1,
+    "Miss Scarlet | Candlestick | Library": 0.05,
+    "Miss Scarlet | Candlestick | Study": 0.05,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.05,
+    "Miss Scarlet | Lead Pipe | Study": 0.05,
+    "Miss Scarlet | Revolver | Hall": 0.05,
+    "Miss Scarlet | Revolver | Library": 0.05,
+    "Miss Scarlet | Wrench | Billiard Room": 0.05,
+    "Col. Mustard | Candlestick | Study": 0.05
+   },
+   "cards": {
+    "Candlestick": 0.55,
+    "Miss Scarlet": 0.45,
+    "Study": 0.35,
+    "Lead Pipe": 0.2,
+    "Lounge": 0.2,
+    "Billiard Room": 0.2,
+    "Col. Mustard": 0.2,
+    "Revolver": 0.15,
+    "Hall": 0.15,
+    "Mrs. White": 0.15,
+    "Wrench": 0.1,
+    "Library": 0.1,
+    "Prof. Plum": 0.1,
+    "Mrs. Peacock": 0.1,
+    "Mr. Green": 0.0
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Lounge"
+   ],
+   "best_prob": 0.1
+  }
+ },
+ {
+  "seq": 147,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Revolver",
+    "Hall"
+   ],
+   "confidence": 0.1,
+   "n_possible": 120,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 148,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 149,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 150,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 10,
+  "player": "P3"
+ },
+ {
+  "seq": 155,
+  "kind": "action",
+  "type": "roll",
+  "player": "P3"
+ },
+ {
+  "seq": 156,
+  "kind": "event",
+  "type": "roll",
+  "turn": 10,
+  "player": "P3",
+  "dice": [
+   1,
+   3
+  ],
+  "total": 4
+ },
+ {
+  "seq": 161,
+  "kind": "action",
+  "type": "move",
+  "player": "P3",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 162,
+  "kind": "event",
+  "type": "move",
+  "turn": 10,
+  "player": "P3",
+  "from": "10,8",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 168,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 169,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 10,
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 170,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 10,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 171,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 10,
+  "player": "P1",
+  "suggester": "P3"
+ },
+ {
+  "seq": 172,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 10,
+  "player": "P2",
+  "suggester": "P3"
+ },
+ {
+  "seq": 173,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Ballroom"
+ },
+ {
+  "seq": 174,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 10,
+  "player": "P2",
+  "suggester": "P3",
+  "disprover": "P2",
+  "card": "Ballroom"
+ },
+ {
+  "seq": 179,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 180,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 11,
+  "player": "P4"
+ },
+ {
+  "seq": 181,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 182,
+  "kind": "event",
+  "type": "roll",
+  "turn": 11,
+  "player": "P4",
+  "dice": [
+   3,
+   5
+  ],
+  "total": 8
+ },
+ {
+  "seq": 183,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Billiard Room"
+ },
+ {
+  "seq": 184,
+  "kind": "event",
+  "type": "move",
+  "turn": 11,
+  "player": "P4",
+  "from": "Conservatory",
+  "to": "Billiard Room"
+ },
+ {
+  "seq": 185,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Rope",
+  "room": "Billiard Room"
+ },
+ {
+  "seq": 186,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 11,
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Rope",
+  "room": "Billiard Room"
+ },
+ {
+  "seq": 187,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 11,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 188,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 11,
+  "player": "P2",
+  "suggester": "P4"
+ },
+ {
+  "seq": 189,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 190,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 11,
+  "player": "P2",
+  "suggester": "P4",
+  "disprover": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 191,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 192,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 12,
+  "player": "P1"
+ },
+ {
+  "seq": 193,
+  "kind": "action",
+  "type": "passage",
+  "player": "P1"
+ },
+ {
+  "seq": 194,
+  "kind": "event",
+  "type": "passage",
+  "turn": 12,
+  "player": "P1",
+  "from": "Conservatory",
+  "to": "Lounge"
+ },
+ {
+  "seq": 195,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Miss Scarlet",
+  "weapon": "Candlestick",
+  "room": "Lounge"
+ },
+ {
+  "seq": 196,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 12,
+  "player": "P1",
+  "suspect": "Miss Scarlet",
+  "weapon": "Candlestick",
+  "room": "Lounge"
+ },
+ {
+  "seq": 197,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 12,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 198,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 12,
+  "player": "P3",
+  "suggester": "P1"
+ },
+ {
+  "seq": 199,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 12,
+  "player": "P4",
+  "suggester": "P1"
+ },
+ {
+  "seq": 200,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4"
+ },
+ {
+  "seq": 201,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 12,
+  "player": "P4",
+  "suggester": "P1",
+  "disprover": "P4"
+ },
+ {
+  "seq": 202,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 203,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 13,
+  "player": "P2"
+ },
+ {
+  "seq": 204,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 205,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 111,
+   "combos": {
+    "Col. Mustard | Candlestick | Billiard Room": 0.3333,
+    "Prof. Plum | Candlestick | Lounge": 0.3333,
+    "Prof. Plum | Candlestick | Billiard Room": 0.3333,
+    "Miss Scarlet | Candlestick | Hall": 0.0,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0,
+    "Miss Scarlet | Candlestick | Library": 0.0,
+    "Miss Scarlet | Candlestick | Study": 0.0,
+    "Miss Scarlet | Lead Pipe | Hall": 0.0,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0,
+    "Miss Scarlet | Lead Pipe | Library": 0.0
+   },
+   "cards": {
+    "Candlestick": 1.0,
+    "Billiard Room": 0.6666,
+    "Prof. Plum": 0.6666,
+    "Col. Mustard": 0.3333,
+    "Lounge": 0.3333,
+    "Lead Pipe": 0.0,
+    "Wrench": 0.0,
+    "Revolver": 0.0,
+    "Hall": 0.0,
+    "Library": 0.0,
+    "Study": 0.0,
+    "Mr. Green": 0.0,
+    "Mrs. Peacock": 0.0,
+    "Miss Scarlet": 0.0,
+    "Mrs. White": 0.0
+   },
+   "best": [
+    "Col. Mustard",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.3333
+  }
+ },
+ {
+  "seq": 206,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.009,
+   "n_possible": 111,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 207,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"passage\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 208,
+  "kind": "action",
+  "type": "passage",
+  "player": "P2"
+ },
+ {
+  "seq": 209,
+  "kind": "event",
+  "type": "passage",
+  "turn": 13,
+  "player": "P2",
+  "from": "Conservatory",
+  "to": "Lounge"
+ },
+ {
+  "seq": 210,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Lounge",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 211,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 111,
+   "combos": {
+    "Miss Scarlet | Candlestick | Hall": 0.009,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.009,
+    "Miss Scarlet | Candlestick | Library": 0.009,
+    "Miss Scarlet | Candlestick | Study": 0.009,
+    "Miss Scarlet | Lead Pipe | Hall": 0.009,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.009,
+    "Miss Scarlet | Lead Pipe | Library": 0.009,
+    "Miss Scarlet | Lead Pipe | Study": 0.009,
+    "Miss Scarlet | Revolver | Hall": 0.009,
+    "Miss Scarlet | Revolver | Billiard Room": 0.009
+   },
+   "cards": {
+    "Candlestick": 0.2613,
+    "Lead Pipe": 0.2613,
+    "Wrench": 0.2613,
+    "Revolver": 0.2162,
+    "Hall": 0.2072,
+    "Billiard Room": 0.2072,
+    "Library": 0.2072,
+    "Study": 0.2072,
+    "Col. Mustard": 0.1802,
+    "Mr. Green": 0.1802,
+    "Mrs. Peacock": 0.1802,
+    "Prof. Plum": 0.1802,
+    "Lounge": 0.1712,
+    "Miss Scarlet": 0.1441,
+    "Mrs. White": 0.1351
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.009
+  }
+ },
+ {
+  "seq": 212,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.009,
+   "n_possible": 111,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 213,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Lounge",
+   "batch": 24
+  },
+  "result": [
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Revolver",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Wrench",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Col. Mustard",
+    "weapon": "Candlestick",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Col. Mustard",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   }
+  ]
+ },
+ {
+  "seq": 214,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Mrs. Peacock\", \"weapon\": \"Revolver\", \"room\": \"Lounge\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 215,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Revolver",
+  "room": "Lounge"
+ },
+ {
+  "seq": 216,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 13,
+  "player": "P2",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Revolver",
+  "room": "Lounge"
+ },
+ {
+  "seq": 217,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 13,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 218,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 13,
+  "player": "P4",
+  "suggester": "P2"
+ },
+ {
+  "seq": 219,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4",
+  "card": "Lounge"
+ },
+ {
+  "seq": 220,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 13,
+  "player": "P4",
+  "suggester": "P2",
+  "disprover": "P4",
+  "card": "Lounge"
+ },
+ {
+  "seq": 221,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 222,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 92,
+   "combos": {
+    "Col. Mustard | Candlestick | Hall": 0.5,
+    "Mrs. White | Candlestick | Library": 0.5,
+    "Miss Scarlet | Candlestick | Hall": 0.0,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0,
+    "Miss Scarlet | Candlestick | Library": 0.0,
+    "Miss Scarlet | Candlestick | Study": 0.0,
+    "Miss Scarlet | Lead Pipe | Hall": 0.0,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0,
+    "Miss Scarlet | Lead Pipe | Library": 0.0,
+    "Miss Scarlet | Lead Pipe | Study": 0.0
+   },
+   "cards": {
+    "Candlestick": 1.0,
+    "Hall": 0.5,
+    "Library": 0.5,
+    "Col. Mustard": 0.5,
+    "Mrs. White": 0.5,
+    "Lead Pipe": 0.0,
+    "Wrench": 0.0,
+    "Billiard Room": 0.0,
+    "Study": 0.0,
+    "Revolver": 0.0,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.0,
+    "Mrs. Peacock": 0.0,
+    "Prof. Plum": 0.0
+   },
+   "best": [
+    "Col. Mustard",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.5
+  }
+ },
+ {
+  "seq": 223,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Col. Mustard",
+    "Candlestick",
+    "Study"
+   ],
+   "confidence": 0.2,
+   "n_possible": 92,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 224,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 225,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 226,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 14,
+  "player": "P3"
+ },
+ {
+  "seq": 231,
+  "kind": "action",
+  "type": "roll",
+  "player": "P3"
+ },
+ {
+  "seq": 232,
+  "kind": "event",
+  "type": "roll",
+  "turn": 14,
+  "player": "P3",
+  "dice": [
+   3,
+   1
+  ],
+  "total": 4
+ },
+ {
+  "seq": 237,
+  "kind": "action",
+  "type": "move",
+  "player": "P3",
+  "to": "10,8"
+ },
+ {
+  "seq": 238,
+  "kind": "event",
+  "type": "move",
+  "turn": 14,
+  "player": "P3",
+  "from": "Ballroom",
+  "to": "10,8"
+ },
+ {
+  "seq": 243,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 244,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 15,
+  "player": "P4"
+ },
+ {
+  "seq": 245,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 246,
+  "kind": "event",
+  "type": "roll",
+  "turn": 15,
+  "player": "P4",
+  "dice": [
+   6,
+   4
+  ],
+  "total": 10
+ },
+ {
+  "seq": 247,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Conservatory"
+ },
+ {
+  "seq": 248,
+  "kind": "event",
+  "type": "move",
+  "turn": 15,
+  "player": "P4",
+  "from": "Billiard Room",
+  "to": "Conservatory"
+ },
+ {
+  "seq": 249,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Dagger",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 250,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 15,
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Dagger",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 251,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 15,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 252,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 15,
+  "player": "P2",
+  "suggester": "P4"
+ },
+ {
+  "seq": 253,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Dagger"
+ },
+ {
+  "seq": 254,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 15,
+  "player": "P2",
+  "suggester": "P4",
+  "disprover": "P2",
+  "card": "Dagger"
+ },
+ {
+  "seq": 255,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 256,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 16,
+  "player": "P1"
+ },
+ {
+  "seq": 257,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 258,
+  "kind": "event",
+  "type": "roll",
+  "turn": 16,
+  "player": "P1",
+  "dice": [
+   5,
+   1
+  ],
+  "total": 6
+ },
+ {
+  "seq": 259,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Hall"
+ },
+ {
+  "seq": 260,
+  "kind": "event",
+  "type": "move",
+  "turn": 16,
+  "player": "P1",
+  "from": "Lounge",
+  "to": "Hall"
+ },
+ {
+  "seq": 261,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Miss Scarlet",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 262,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 16,
+  "player": "P1",
+  "suspect": "Miss Scarlet",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 263,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 16,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 264,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 16,
+  "player": "P3",
+  "suggester": "P1"
+ },
+ {
+  "seq": 265,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 16,
+  "player": "P4",
+  "suggester": "P1"
+ },
+ {
+  "seq": 266,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4"
+ },
+ {
+  "seq": 267,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 16,
+  "player": "P4",
+  "suggester": "P1",
+  "disprover": "P4"
+ },
+ {
+  "seq": 268,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 269,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 17,
+  "player": "P2"
+ },
+ {
+  "seq": 270,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 271,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 53,
+   "combos": {
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0189,
+    "Miss Scarlet | Candlestick | Library": 0.0189,
+    "Miss Scarlet | Candlestick | Study": 0.0189,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0189,
+    "Miss Scarlet | Lead Pipe | Library": 0.0189,
+    "Miss Scarlet | Lead Pipe | Study": 0.0189,
+    "Miss Scarlet | Wrench | Billiard Room": 0.0189,
+    "Miss Scarlet | Wrench | Library": 0.0189,
+    "Miss Scarlet | Wrench | Study": 0.0189,
+    "Col. Mustard | Candlestick | Hall": 0.0189
+   },
+   "cards": {
+    "Candlestick": 0.3585,
+    "Lead Pipe": 0.3585,
+    "Wrench": 0.283,
+    "Billiard Room": 0.2642,
+    "Library": 0.2642,
+    "Study": 0.2642,
+    "Mrs. White": 0.2264,
+    "Mrs. Peacock": 0.2264,
+    "Prof. Plum": 0.2264,
+    "Hall": 0.2075,
+    "Miss Scarlet": 0.1698,
+    "Col. Mustard": 0.1509
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.0189
+  }
+ },
+ {
+  "seq": 272,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 0.0189,
+   "n_possible": 53,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 273,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 274,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 275,
+  "kind": "event",
+  "type": "roll",
+  "turn": 17,
+  "player": "P2",
+  "dice": [
+   4,
+   1
+  ],
+  "total": 5
+ },
+ {
+  "seq": 276,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 277,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 53,
+   "combos": {
+    "Mrs. White | Candlestick | Billiard Room": 0.9999,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0,
+    "Miss Scarlet | Candlestick | Library": 0.0,
+    "Miss Scarlet | Candlestick | Study": 0.0,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0,
+    "Miss Scarlet | Lead Pipe | Library": 0.0,
+    "Miss Scarlet | Lead Pipe | Study": 0.0,
+    "Miss Scarlet | Wrench | Billiard Room": 0.0,
+    "Miss Scarlet | Wrench | Library": 0.0,
+    "Miss Scarlet | Wrench | Study": 0.0
+   },
+   "cards": {
+    "Candlestick": 1.0,
+    "Billiard Room": 1.0,
+    "Mrs. White": 1.0,
+    "Lead Pipe": 0.0,
+    "Wrench": 0.0,
+    "Library": 0.0,
+    "Study": 0.0,
+    "Mrs. Peacock": 0.0,
+    "Prof. Plum": 0.0,
+    "Hall": 0.0,
+    "Miss Scarlet": 0.0,
+    "Col. Mustard": 0.0
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.9999
+  }
+ },
+ {
+  "seq": 278,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 0.0189,
+   "n_possible": 53,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 279,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"Dining Room\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 280,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "Dining Room"
+ },
+ {
+  "seq": 281,
+  "kind": "event",
+  "type": "move",
+  "turn": 17,
+  "player": "P2",
+  "from": "Lounge",
+  "to": "Dining Room"
+ },
+ {
+  "seq": 282,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Col. Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 283,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 53,
+   "combos": {
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0189,
+    "Miss Scarlet | Candlestick | Library": 0.0189,
+    "Miss Scarlet | Candlestick | Study": 0.0189,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0189,
+    "Miss Scarlet | Lead Pipe | Library": 0.0189,
+    "Miss Scarlet | Lead Pipe | Study": 0.0189,
+    "Miss Scarlet | Wrench | Billiard Room": 0.0189,
+    "Miss Scarlet | Wrench | Library": 0.0189,
+    "Miss Scarlet | Wrench | Study": 0.0189,
+    "Col. Mustard | Candlestick | Hall": 0.0189
+   },
+   "cards": {
+    "Candlestick": 0.3585,
+    "Lead Pipe": 0.3585,
+    "Wrench": 0.283,
+    "Billiard Room": 0.2642,
+    "Library": 0.2642,
+    "Study": 0.2642,
+    "Mrs. White": 0.2264,
+    "Mrs. Peacock": 0.2264,
+    "Prof. Plum": 0.2264,
+    "Hall": 0.2075,
+    "Miss Scarlet": 0.1698,
+    "Col. Mustard": 0.1509
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.0189
+  }
+ },
+ {
+  "seq": 284,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 0.0189,
+   "n_possible": 53,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 285,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Dining Room",
+   "batch": 24
+  },
+  "result": [
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Lead Pipe",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 1,
+    "score": 0.767
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Wrench",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 1,
+    "score": 0.767
+   },
+   {
+    "suspect": "Col. Mustard",
+    "weapon": "Candlestick",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 1,
+    "score": 0.767
+   },
+   {
+    "suspect": "Col. Mustard",
+    "weapon": "Lead Pipe",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 1,
+    "score": 0.767
+   },
+   {
+    "suspect": "Col. Mustard",
+    "weapon": "Revolver",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 1,
+    "score": 0.767
+   }
+  ]
+ },
+ {
+  "seq": 286,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Col. Mustard\", \"weapon\": \"Revolver\", \"room\": \"Dining Room\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 287,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Col. Mustard",
+  "weapon": "Revolver",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 288,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 17,
+  "player": "P2",
+  "suspect": "Col. Mustard",
+  "weapon": "Revolver",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 289,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 17,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 290,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 17,
+  "player": "P4",
+  "suggester": "P2"
+ },
+ {
+  "seq": 291,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 17,
+  "player": "P1",
+  "suggester": "P2"
+ },
+ {
+  "seq": 292,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1",
+  "card": "Col. Mustard"
+ },
+ {
+  "seq": 293,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 17,
+  "player": "P1",
+  "suggester": "P2",
+  "disprover": "P1",
+  "card": "Col. Mustard"
+ },
+ {
+  "seq": 294,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 295,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 45,
+   "combos": {
+    "Mrs. White | Candlestick | Library": 0.3333,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.3333,
+    "Prof. Plum | Candlestick | Billiard Room": 0.3333,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0,
+    "Miss Scarlet | Candlestick | Library": 0.0,
+    "Miss Scarlet | Candlestick | Study": 0.0,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0,
+    "Miss Scarlet | Lead Pipe | Library": 0.0,
+    "Miss Scarlet | Lead Pipe | Study": 0.0,
+    "Miss Scarlet | Wrench | Billiard Room": 0.0
+   },
+   "cards": {
+    "Candlestick": 1.0,
+    "Billiard Room": 0.6667,
+    "Mrs. Peacock": 0.3333,
+    "Prof. Plum": 0.3333,
+    "Library": 0.3333,
+    "Mrs. White": 0.3333,
+    "Lead Pipe": 0.0,
+    "Wrench": 0.0,
+    "Study": 0.0,
+    "Miss Scarlet": 0.0,
+    "Hall": 0.0
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Library"
+   ],
+   "best_prob": 0.3333
+  }
+ },
+ {
+  "seq": 296,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": true,
+   "best": [
+    "Mrs. Peacock",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 1.0,
+   "n_possible": 45,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 297,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 298,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 299,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 18,
+  "player": "P3"
+ },
+ {
+  "seq": 305,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Miss Scarlet",
+  "weapon": "Dagger",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 306,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 18,
+  "player": "P3",
+  "suspect": "Miss Scarlet",
+  "weapon": "Dagger",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 307,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 18,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 308,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4"
+ },
+ {
+  "seq": 309,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 18,
+  "player": "P4",
+  "suggester": "P3",
+  "disprover": "P4"
+ },
+ {
+  "seq": 314,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 315,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 19,
+  "player": "P4"
+ },
+ {
+  "seq": 316,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 317,
+  "kind": "event",
+  "type": "roll",
+  "turn": 19,
+  "player": "P4",
+  "dice": [
+   5,
+   3
+  ],
+  "total": 8
+ },
+ {
+  "seq": 318,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 319,
+  "kind": "event",
+  "type": "move",
+  "turn": 19,
+  "player": "P4",
+  "from": "Conservatory",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 320,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Wrench",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 321,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 19,
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Wrench",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 322,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 19,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 323,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 324,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 19,
+  "player": "P1",
+  "suggester": "P4",
+  "disprover": "P1"
+ },
+ {
+  "seq": 325,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 326,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 20,
+  "player": "P1"
+ },
+ {
+  "seq": 327,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Candlestick",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 328,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 20,
+  "player": "P1",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Candlestick",
+  "room": "Conservatory"
+ },
+ {
+  "seq": 329,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 20,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 330,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 20,
+  "player": "P3",
+  "suggester": "P1"
+ },
+ {
+  "seq": 331,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P3"
+ },
+ {
+  "seq": 332,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 20,
+  "player": "P3",
+  "suggester": "P1",
+  "disprover": "P3"
+ },
+ {
+  "seq": 333,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 334,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 21,
+  "player": "P2"
+ },
+ {
+  "seq": 335,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 336,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 30,
+   "combos": {
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0333,
+    "Miss Scarlet | Candlestick | Library": 0.0333,
+    "Miss Scarlet | Candlestick | Study": 0.0333,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0333,
+    "Miss Scarlet | Lead Pipe | Library": 0.0333,
+    "Miss Scarlet | Lead Pipe | Study": 0.0333,
+    "Mrs. White | Candlestick | Hall": 0.0333,
+    "Mrs. White | Candlestick | Billiard Room": 0.0333,
+    "Mrs. White | Candlestick | Library": 0.0333,
+    "Mrs. White | Candlestick | Study": 0.0333
+   },
+   "cards": {
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Billiard Room": 0.2667,
+    "Library": 0.2667,
+    "Study": 0.2667,
+    "Mrs. White": 0.2667,
+    "Mrs. Peacock": 0.2667,
+    "Prof. Plum": 0.2667,
+    "Miss Scarlet": 0.2,
+    "Hall": 0.2
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.0333
+  }
+ },
+ {
+  "seq": 337,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 0.0333,
+   "n_possible": 30,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 338,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 339,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 340,
+  "kind": "event",
+  "type": "roll",
+  "turn": 21,
+  "player": "P2",
+  "dice": [
+   6,
+   5
+  ],
+  "total": 11
+ },
+ {
+  "seq": 341,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 342,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 30,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 1.0,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0,
+    "Miss Scarlet | Candlestick | Library": 0.0,
+    "Miss Scarlet | Candlestick | Study": 0.0,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0,
+    "Miss Scarlet | Lead Pipe | Library": 0.0,
+    "Miss Scarlet | Lead Pipe | Study": 0.0,
+    "Mrs. White | Candlestick | Hall": 0.0,
+    "Mrs. White | Candlestick | Billiard Room": 0.0,
+    "Mrs. White | Candlestick | Library": 0.0
+   },
+   "cards": {
+    "Candlestick": 1.0,
+    "Prof. Plum": 1.0,
+    "Hall": 1.0,
+    "Lead Pipe": 0.0,
+    "Billiard Room": 0.0,
+    "Library": 0.0,
+    "Study": 0.0,
+    "Mrs. White": 0.0,
+    "Mrs. Peacock": 0.0,
+    "Miss Scarlet": 0.0
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 1.0
+  }
+ },
+ {
+  "seq": 343,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 0.0333,
+   "n_possible": 30,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 344,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"Hall\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 345,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "Hall"
+ },
+ {
+  "seq": 346,
+  "kind": "event",
+  "type": "move",
+  "turn": 21,
+  "player": "P2",
+  "from": "Dining Room",
+  "to": "Hall"
+ },
+ {
+  "seq": 347,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 348,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 30,
+   "combos": {
+    "Miss Scarlet | Candlestick | Billiard Room": 0.0333,
+    "Miss Scarlet | Candlestick | Library": 0.0333,
+    "Miss Scarlet | Candlestick | Study": 0.0333,
+    "Miss Scarlet | Lead Pipe | Billiard Room": 0.0333,
+    "Miss Scarlet | Lead Pipe | Library": 0.0333,
+    "Miss Scarlet | Lead Pipe | Study": 0.0333,
+    "Mrs. White | Candlestick | Hall": 0.0333,
+    "Mrs. White | Candlestick | Billiard Room": 0.0333,
+    "Mrs. White | Candlestick | Library": 0.0333,
+    "Mrs. White | Candlestick | Study": 0.0333
+   },
+   "cards": {
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Billiard Room": 0.2667,
+    "Library": 0.2667,
+    "Study": 0.2667,
+    "Mrs. White": 0.2667,
+    "Mrs. Peacock": 0.2667,
+    "Prof. Plum": 0.2667,
+    "Miss Scarlet": 0.2,
+    "Hall": 0.2
+   },
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "best_prob": 0.0333
+  }
+ },
+ {
+  "seq": 349,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Billiard Room"
+   ],
+   "confidence": 0.0333,
+   "n_possible": 30,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 350,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Hall",
+   "batch": 20
+  },
+  "result": [
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Wrench",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Candlestick",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Revolver",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   }
+  ]
+ },
+ {
+  "seq": 351,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Prof. Plum\", \"weapon\": \"Candlestick\", \"room\": \"Hall\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 352,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 353,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 21,
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 354,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 21,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 355,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 21,
+  "player": "P4",
+  "suggester": "P2"
+ },
+ {
+  "seq": 356,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 21,
+  "player": "P1",
+  "suggester": "P2"
+ },
+ {
+  "seq": 357,
+  "kind": "event",
+  "type": "no_one_disproved",
+  "turn": 21,
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 358,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 359,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 24,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0417,
+    "Mrs. White | Candlestick | Billiard Room": 0.0417,
+    "Mrs. White | Candlestick | Library": 0.0417,
+    "Mrs. White | Candlestick | Study": 0.0417,
+    "Mrs. White | Lead Pipe | Hall": 0.0417,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0417,
+    "Mrs. White | Lead Pipe | Library": 0.0417,
+    "Mrs. White | Lead Pipe | Study": 0.0417,
+    "Mrs. Peacock | Candlestick | Hall": 0.0417,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.0417
+   },
+   "cards": {
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Mrs. White": 0.3333,
+    "Mrs. Peacock": 0.3333,
+    "Prof. Plum": 0.3333,
+    "Hall": 0.25,
+    "Billiard Room": 0.25,
+    "Library": 0.25,
+    "Study": 0.25
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0417
+  }
+ },
+ {
+  "seq": 360,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 24,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 361,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 362,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 363,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 22,
+  "player": "P3"
+ },
+ {
+  "seq": 368,
+  "kind": "action",
+  "type": "passage",
+  "player": "P3"
+ },
+ {
+  "seq": 369,
+  "kind": "event",
+  "type": "passage",
+  "turn": 22,
+  "player": "P3",
+  "from": "Conservatory",
+  "to": "Lounge"
+ },
+ {
+  "seq": 375,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Revolver",
+  "room": "Lounge"
+ },
+ {
+  "seq": 376,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 22,
+  "player": "P3",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Revolver",
+  "room": "Lounge"
+ },
+ {
+  "seq": 377,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 22,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 378,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4"
+ },
+ {
+  "seq": 379,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 22,
+  "player": "P4",
+  "suggester": "P3",
+  "disprover": "P4"
+ },
+ {
+  "seq": 384,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 385,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 23,
+  "player": "P4"
+ },
+ {
+  "seq": 386,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 387,
+  "kind": "event",
+  "type": "roll",
+  "turn": 23,
+  "player": "P4",
+  "dice": [
+   3,
+   5
+  ],
+  "total": 8
+ },
+ {
+  "seq": 388,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Kitchen"
+ },
+ {
+  "seq": 389,
+  "kind": "event",
+  "type": "move",
+  "turn": 23,
+  "player": "P4",
+  "from": "Ballroom",
+  "to": "Kitchen"
+ },
+ {
+  "seq": 390,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Lead Pipe",
+  "room": "Kitchen"
+ },
+ {
+  "seq": 391,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 23,
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Lead Pipe",
+  "room": "Kitchen"
+ },
+ {
+  "seq": 392,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 23,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 393,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 394,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 23,
+  "player": "P1",
+  "suggester": "P4",
+  "disprover": "P1"
+ },
+ {
+  "seq": 395,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 396,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 24,
+  "player": "P1"
+ },
+ {
+  "seq": 397,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 398,
+  "kind": "event",
+  "type": "roll",
+  "turn": 24,
+  "player": "P1",
+  "dice": [
+   2,
+   6
+  ],
+  "total": 8
+ },
+ {
+  "seq": 399,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 400,
+  "kind": "event",
+  "type": "move",
+  "turn": 24,
+  "player": "P1",
+  "from": "Conservatory",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 401,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 402,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 24,
+  "player": "P1",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 403,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 24,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 404,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Ballroom"
+ },
+ {
+  "seq": 405,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 24,
+  "player": "P2",
+  "suggester": "P1",
+  "disprover": "P2",
+  "card": "Ballroom"
+ },
+ {
+  "seq": 406,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 407,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 25,
+  "player": "P2"
+ },
+ {
+  "seq": 408,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 409,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 24,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0417,
+    "Mrs. White | Candlestick | Billiard Room": 0.0417,
+    "Mrs. White | Candlestick | Library": 0.0417,
+    "Mrs. White | Candlestick | Study": 0.0417,
+    "Mrs. White | Lead Pipe | Hall": 0.0417,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0417,
+    "Mrs. White | Lead Pipe | Library": 0.0417,
+    "Mrs. White | Lead Pipe | Study": 0.0417,
+    "Mrs. Peacock | Candlestick | Hall": 0.0417,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.0417
+   },
+   "cards": {
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Mrs. White": 0.3333,
+    "Mrs. Peacock": 0.3333,
+    "Prof. Plum": 0.3333,
+    "Hall": 0.25,
+    "Billiard Room": 0.25,
+    "Library": 0.25,
+    "Study": 0.25
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0417
+  }
+ },
+ {
+  "seq": 410,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 24,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 411,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 412,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 413,
+  "kind": "event",
+  "type": "roll",
+  "turn": 25,
+  "player": "P2",
+  "dice": [
+   1,
+   1
+  ],
+  "total": 2
+ },
+ {
+  "seq": 414,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 415,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 24,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0417,
+    "Mrs. White | Candlestick | Billiard Room": 0.0417,
+    "Mrs. White | Candlestick | Library": 0.0417,
+    "Mrs. White | Candlestick | Study": 0.0417,
+    "Mrs. White | Lead Pipe | Hall": 0.0417,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0417,
+    "Mrs. White | Lead Pipe | Library": 0.0417,
+    "Mrs. White | Lead Pipe | Study": 0.0417,
+    "Mrs. Peacock | Candlestick | Hall": 0.0417,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.0417
+   },
+   "cards": {
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Mrs. White": 0.3333,
+    "Mrs. Peacock": 0.3333,
+    "Prof. Plum": 0.3333,
+    "Hall": 0.25,
+    "Billiard Room": 0.25,
+    "Library": 0.25,
+    "Study": 0.25
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0417
+  }
+ },
+ {
+  "seq": 416,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 24,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 417,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"17,10\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 418,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "17,10"
+ },
+ {
+  "seq": 419,
+  "kind": "event",
+  "type": "move",
+  "turn": 25,
+  "player": "P2",
+  "from": "Hall",
+  "to": "17,10"
+ },
+ {
+  "seq": 420,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 421,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 24,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0417,
+    "Mrs. White | Candlestick | Billiard Room": 0.0417,
+    "Mrs. White | Candlestick | Library": 0.0417,
+    "Mrs. White | Candlestick | Study": 0.0417,
+    "Mrs. White | Lead Pipe | Hall": 0.0417,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0417,
+    "Mrs. White | Lead Pipe | Library": 0.0417,
+    "Mrs. White | Lead Pipe | Study": 0.0417,
+    "Mrs. Peacock | Candlestick | Hall": 0.0417,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.0417
+   },
+   "cards": {
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Mrs. White": 0.3333,
+    "Mrs. Peacock": 0.3333,
+    "Prof. Plum": 0.3333,
+    "Hall": 0.25,
+    "Billiard Room": 0.25,
+    "Library": 0.25,
+    "Study": 0.25
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0417
+  }
+ },
+ {
+  "seq": 422,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0417,
+   "n_possible": 24,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 423,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 424,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 425,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 26,
+  "player": "P3"
+ },
+ {
+  "seq": 431,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Revolver",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 432,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 26,
+  "player": "P3",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Revolver",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 433,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 26,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 434,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4"
+ },
+ {
+  "seq": 435,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 26,
+  "player": "P4",
+  "suggester": "P3",
+  "disprover": "P4"
+ },
+ {
+  "seq": 440,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 441,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 27,
+  "player": "P4"
+ },
+ {
+  "seq": 442,
+  "kind": "action",
+  "type": "passage",
+  "player": "P4"
+ },
+ {
+  "seq": 443,
+  "kind": "event",
+  "type": "passage",
+  "turn": 27,
+  "player": "P4",
+  "from": "Kitchen",
+  "to": "Study"
+ },
+ {
+  "seq": 444,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Study"
+ },
+ {
+  "seq": 445,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 27,
+  "player": "P4",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Study"
+ },
+ {
+  "seq": 446,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 27,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 447,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 27,
+  "player": "P2",
+  "suggester": "P4"
+ },
+ {
+  "seq": 448,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 27,
+  "player": "P3",
+  "suggester": "P4"
+ },
+ {
+  "seq": 449,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P3"
+ },
+ {
+  "seq": 450,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 27,
+  "player": "P3",
+  "suggester": "P4",
+  "disprover": "P3"
+ },
+ {
+  "seq": 451,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 452,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 28,
+  "player": "P1"
+ },
+ {
+  "seq": 453,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 454,
+  "kind": "event",
+  "type": "roll",
+  "turn": 28,
+  "player": "P1",
+  "dice": [
+   6,
+   2
+  ],
+  "total": 8
+ },
+ {
+  "seq": 455,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Dining Room"
+ },
+ {
+  "seq": 456,
+  "kind": "event",
+  "type": "move",
+  "turn": 28,
+  "player": "P1",
+  "from": "Ballroom",
+  "to": "Dining Room"
+ },
+ {
+  "seq": 457,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 458,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 28,
+  "player": "P1",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 459,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 28,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 460,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Dining Room"
+ },
+ {
+  "seq": 461,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 28,
+  "player": "P2",
+  "suggester": "P1",
+  "disprover": "P2",
+  "card": "Dining Room"
+ },
+ {
+  "seq": 462,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 463,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 29,
+  "player": "P2"
+ },
+ {
+  "seq": 464,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 465,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 12,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0833,
+    "Mrs. White | Candlestick | Billiard Room": 0.0833,
+    "Mrs. White | Candlestick | Library": 0.0833,
+    "Mrs. White | Lead Pipe | Hall": 0.0833,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0833,
+    "Mrs. White | Lead Pipe | Library": 0.0833,
+    "Prof. Plum | Candlestick | Hall": 0.0833,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0833,
+    "Prof. Plum | Candlestick | Library": 0.0833,
+    "Prof. Plum | Lead Pipe | Hall": 0.0833
+   },
+   "cards": {
+    "Mrs. White": 0.5,
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Prof. Plum": 0.5,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0833
+  }
+ },
+ {
+  "seq": 466,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0833,
+   "n_possible": 12,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 467,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 468,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 469,
+  "kind": "event",
+  "type": "roll",
+  "turn": 29,
+  "player": "P2",
+  "dice": [
+   3,
+   1
+  ],
+  "total": 4
+ },
+ {
+  "seq": 470,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 471,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 12,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0833,
+    "Mrs. White | Candlestick | Billiard Room": 0.0833,
+    "Mrs. White | Candlestick | Library": 0.0833,
+    "Mrs. White | Lead Pipe | Hall": 0.0833,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0833,
+    "Mrs. White | Lead Pipe | Library": 0.0833,
+    "Prof. Plum | Candlestick | Hall": 0.0833,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0833,
+    "Prof. Plum | Candlestick | Library": 0.0833,
+    "Prof. Plum | Lead Pipe | Hall": 0.0833
+   },
+   "cards": {
+    "Mrs. White": 0.5,
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Prof. Plum": 0.5,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0833
+  }
+ },
+ {
+  "seq": 472,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0833,
+   "n_possible": 12,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 473,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"Hall\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 474,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "Hall"
+ },
+ {
+  "seq": 475,
+  "kind": "event",
+  "type": "move",
+  "turn": 29,
+  "player": "P2",
+  "from": "17,10",
+  "to": "Hall"
+ },
+ {
+  "seq": 476,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Miss Scarlet",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 477,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 12,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 1.0,
+    "Mrs. White | Candlestick | Hall": 0.0,
+    "Mrs. White | Candlestick | Billiard Room": 0.0,
+    "Mrs. White | Candlestick | Library": 0.0,
+    "Mrs. White | Lead Pipe | Hall": 0.0,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0,
+    "Mrs. White | Lead Pipe | Library": 0.0,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0,
+    "Prof. Plum | Candlestick | Library": 0.0,
+    "Prof. Plum | Lead Pipe | Hall": 0.0
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 1.0,
+    "Mrs. White": 0.0,
+    "Lead Pipe": 0.0,
+    "Billiard Room": 0.0,
+    "Library": 0.0
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 1.0
+  }
+ },
+ {
+  "seq": 478,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0833,
+   "n_possible": 12,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 479,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Hall",
+   "batch": 20
+  },
+  "result": [
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Miss Scarlet",
+    "weapon": "Wrench",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Revolver",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Wrench",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   }
+  ]
+ },
+ {
+  "seq": 480,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Miss Scarlet\", \"weapon\": \"Wrench\", \"room\": \"Hall\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 481,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Miss Scarlet",
+  "weapon": "Wrench",
+  "room": "Hall"
+ },
+ {
+  "seq": 482,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 29,
+  "player": "P2",
+  "suspect": "Miss Scarlet",
+  "weapon": "Wrench",
+  "room": "Hall"
+ },
+ {
+  "seq": 483,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 29,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 484,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 29,
+  "player": "P4",
+  "suggester": "P2"
+ },
+ {
+  "seq": 485,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4",
+  "card": "Miss Scarlet"
+ },
+ {
+  "seq": 486,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 29,
+  "player": "P4",
+  "suggester": "P2",
+  "disprover": "P4",
+  "card": "Miss Scarlet"
+ },
+ {
+  "seq": 487,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 488,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 12,
+   "combos": {
+    "Mrs. White | Candlestick | Hall": 0.0833,
+    "Mrs. White | Candlestick | Billiard Room": 0.0833,
+    "Mrs. White | Candlestick | Library": 0.0833,
+    "Mrs. White | Lead Pipe | Hall": 0.0833,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.0833,
+    "Mrs. White | Lead Pipe | Library": 0.0833,
+    "Prof. Plum | Candlestick | Hall": 0.0833,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0833,
+    "Prof. Plum | Candlestick | Library": 0.0833,
+    "Prof. Plum | Lead Pipe | Hall": 0.0833
+   },
+   "cards": {
+    "Mrs. White": 0.5,
+    "Candlestick": 0.5,
+    "Lead Pipe": 0.5,
+    "Prof. Plum": 0.5,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.0833
+  }
+ },
+ {
+  "seq": 489,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Mrs. White",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.0833,
+   "n_possible": 12,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 490,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 491,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 492,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 30,
+  "player": "P3"
+ },
+ {
+  "seq": 498,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Wrench",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 499,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 30,
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Wrench",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 500,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 30,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 501,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 30,
+  "player": "P1",
+  "suggester": "P3"
+ },
+ {
+  "seq": 502,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 503,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 30,
+  "player": "P1",
+  "suggester": "P3",
+  "disprover": "P1"
+ },
+ {
+  "seq": 508,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 509,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 31,
+  "player": "P4"
+ },
+ {
+  "seq": 510,
+  "kind": "action",
+  "type": "passage",
+  "player": "P4"
+ },
+ {
+  "seq": 511,
+  "kind": "event",
+  "type": "passage",
+  "turn": 31,
+  "player": "P4",
+  "from": "Study",
+  "to": "Kitchen"
+ },
+ {
+  "seq": 512,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Kitchen"
+ },
+ {
+  "seq": 513,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 31,
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Kitchen"
+ },
+ {
+  "seq": 514,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 31,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 515,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 31,
+  "player": "P2",
+  "suggester": "P4"
+ },
+ {
+  "seq": 516,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Kitchen"
+ },
+ {
+  "seq": 517,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 31,
+  "player": "P2",
+  "suggester": "P4",
+  "disprover": "P2",
+  "card": "Kitchen"
+ },
+ {
+  "seq": 518,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 519,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 32,
+  "player": "P1"
+ },
+ {
+  "seq": 520,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 521,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 32,
+  "player": "P1",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 522,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 32,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 523,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 32,
+  "player": "P3",
+  "suggester": "P1"
+ },
+ {
+  "seq": 524,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P3"
+ },
+ {
+  "seq": 525,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 32,
+  "player": "P3",
+  "suggester": "P1",
+  "disprover": "P3"
+ },
+ {
+  "seq": 526,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 527,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 33,
+  "player": "P2"
+ },
+ {
+  "seq": 528,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 529,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 3,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 0.3333,
+    "Prof. Plum | Candlestick | Billiard Room": 0.3333,
+    "Prof. Plum | Candlestick | Library": 0.3333
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.3333
+  }
+ },
+ {
+  "seq": 530,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.3333,
+   "n_possible": 3,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 531,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 532,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 533,
+  "kind": "event",
+  "type": "roll",
+  "turn": 33,
+  "player": "P2",
+  "dice": [
+   2,
+   1
+  ],
+  "total": 3
+ },
+ {
+  "seq": 534,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 535,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 3,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 0.3333,
+    "Prof. Plum | Candlestick | Billiard Room": 0.3333,
+    "Prof. Plum | Candlestick | Library": 0.3333
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.3333
+  }
+ },
+ {
+  "seq": 536,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.3333,
+   "n_possible": 3,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 537,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"17,14\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 538,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "17,14"
+ },
+ {
+  "seq": 539,
+  "kind": "event",
+  "type": "move",
+  "turn": 33,
+  "player": "P2",
+  "from": "Hall",
+  "to": "17,14"
+ },
+ {
+  "seq": 540,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 541,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 3,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 1.0,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0,
+    "Prof. Plum | Candlestick | Library": 0.0
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 1.0,
+    "Billiard Room": 0.0,
+    "Library": 0.0
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 1.0
+  }
+ },
+ {
+  "seq": 542,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.3333,
+   "n_possible": 3,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 543,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 544,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 545,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 34,
+  "player": "P3"
+ },
+ {
+  "seq": 551,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Lead Pipe",
+  "room": "Hall"
+ },
+ {
+  "seq": 552,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 34,
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Lead Pipe",
+  "room": "Hall"
+ },
+ {
+  "seq": 553,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 34,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 554,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 34,
+  "player": "P1",
+  "suggester": "P3"
+ },
+ {
+  "seq": 555,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 556,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 34,
+  "player": "P1",
+  "suggester": "P3",
+  "disprover": "P1"
+ },
+ {
+  "seq": 561,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 562,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 35,
+  "player": "P4"
+ },
+ {
+  "seq": 563,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 564,
+  "kind": "event",
+  "type": "roll",
+  "turn": 35,
+  "player": "P4",
+  "dice": [
+   4,
+   3
+  ],
+  "total": 7
+ },
+ {
+  "seq": 565,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 566,
+  "kind": "event",
+  "type": "move",
+  "turn": 35,
+  "player": "P4",
+  "from": "Kitchen",
+  "to": "Ballroom"
+ },
+ {
+  "seq": 567,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Mr. Green",
+  "weapon": "Candlestick",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 568,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 35,
+  "player": "P4",
+  "suspect": "Mr. Green",
+  "weapon": "Candlestick",
+  "room": "Ballroom"
+ },
+ {
+  "seq": 569,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 35,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 570,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 571,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 35,
+  "player": "P1",
+  "suggester": "P4",
+  "disprover": "P1"
+ },
+ {
+  "seq": 572,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 573,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 36,
+  "player": "P1"
+ },
+ {
+  "seq": 574,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 575,
+  "kind": "event",
+  "type": "roll",
+  "turn": 36,
+  "player": "P1",
+  "dice": [
+   4,
+   6
+  ],
+  "total": 10
+ },
+ {
+  "seq": 576,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Lounge"
+ },
+ {
+  "seq": 577,
+  "kind": "event",
+  "type": "move",
+  "turn": 36,
+  "player": "P1",
+  "from": "Hall",
+  "to": "Lounge"
+ },
+ {
+  "seq": 578,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Prof. Plum",
+  "weapon": "Rope",
+  "room": "Lounge"
+ },
+ {
+  "seq": 579,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 36,
+  "player": "P1",
+  "suspect": "Prof. Plum",
+  "weapon": "Rope",
+  "room": "Lounge"
+ },
+ {
+  "seq": 580,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 36,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 581,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 582,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 36,
+  "player": "P2",
+  "suggester": "P1",
+  "disprover": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 583,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 584,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 37,
+  "player": "P2"
+ },
+ {
+  "seq": 585,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 586,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 3,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 0.3333,
+    "Prof. Plum | Candlestick | Billiard Room": 0.3333,
+    "Prof. Plum | Candlestick | Library": 0.3333
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.3333
+  }
+ },
+ {
+  "seq": 587,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.3333,
+   "n_possible": 3,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 588,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"roll\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 589,
+  "kind": "action",
+  "type": "roll",
+  "player": "P2"
+ },
+ {
+  "seq": 590,
+  "kind": "event",
+  "type": "roll",
+  "turn": 37,
+  "player": "P2",
+  "dice": [
+   3,
+   2
+  ],
+  "total": 5
+ },
+ {
+  "seq": 591,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 592,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 3,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 1.0,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0,
+    "Prof. Plum | Candlestick | Library": 0.0
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 1.0,
+    "Billiard Room": 0.0,
+    "Library": 0.0
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 1.0
+  }
+ },
+ {
+  "seq": 593,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.3333,
+   "n_possible": 3,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 594,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"move\", \"player\": \"P2\", \"to\": \"Library\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 595,
+  "kind": "action",
+  "type": "move",
+  "player": "P2",
+  "to": "Library"
+ },
+ {
+  "seq": 596,
+  "kind": "event",
+  "type": "move",
+  "turn": 37,
+  "player": "P2",
+  "from": "17,14",
+  "to": "Library"
+ },
+ {
+  "seq": 597,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Library",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 598,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 3,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 0.3333,
+    "Prof. Plum | Candlestick | Billiard Room": 0.3333,
+    "Prof. Plum | Candlestick | Library": 0.3333
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 0.3333,
+    "Billiard Room": 0.3333,
+    "Library": 0.3333
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.3333
+  }
+ },
+ {
+  "seq": 599,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.3333,
+   "n_possible": 3,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 600,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Library",
+   "batch": 16
+  },
+  "result": [
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Candlestick",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Lead Pipe",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Revolver",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Wrench",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   },
+   {
+    "suspect": "Mr. Green",
+    "weapon": "Candlestick",
+    "novelty": 1.0,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 1.0
+   }
+  ]
+ },
+ {
+  "seq": 601,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Prof. Plum\", \"weapon\": \"Wrench\", \"room\": \"Library\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 602,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Wrench",
+  "room": "Library"
+ },
+ {
+  "seq": 603,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 37,
+  "player": "P2",
+  "suspect": "Prof. Plum",
+  "weapon": "Wrench",
+  "room": "Library"
+ },
+ {
+  "seq": 604,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 37,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 605,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 37,
+  "player": "P4",
+  "suggester": "P2"
+ },
+ {
+  "seq": 606,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4",
+  "card": "Library"
+ },
+ {
+  "seq": 607,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 37,
+  "player": "P4",
+  "suggester": "P2",
+  "disprover": "P4",
+  "card": "Library"
+ },
+ {
+  "seq": 608,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 609,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 2,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 1.0,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 1.0,
+    "Billiard Room": 0.0
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 1.0
+  }
+ },
+ {
+  "seq": 610,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.5,
+   "n_possible": 2,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 611,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 612,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 613,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 38,
+  "player": "P3"
+ },
+ {
+  "seq": 618,
+  "kind": "action",
+  "type": "roll",
+  "player": "P3"
+ },
+ {
+  "seq": 619,
+  "kind": "event",
+  "type": "roll",
+  "turn": 38,
+  "player": "P3",
+  "dice": [
+   3,
+   3
+  ],
+  "total": 6
+ },
+ {
+  "seq": 624,
+  "kind": "action",
+  "type": "move",
+  "player": "P3",
+  "to": "Lounge"
+ },
+ {
+  "seq": 625,
+  "kind": "event",
+  "type": "move",
+  "turn": 38,
+  "player": "P3",
+  "from": "Hall",
+  "to": "Lounge"
+ },
+ {
+  "seq": 631,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Col. Mustard",
+  "weapon": "Revolver",
+  "room": "Lounge"
+ },
+ {
+  "seq": 632,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 38,
+  "player": "P3",
+  "suspect": "Col. Mustard",
+  "weapon": "Revolver",
+  "room": "Lounge"
+ },
+ {
+  "seq": 633,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 38,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 634,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4"
+ },
+ {
+  "seq": 635,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 38,
+  "player": "P4",
+  "suggester": "P3",
+  "disprover": "P4"
+ },
+ {
+  "seq": 640,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P3"
+ },
+ {
+  "seq": 641,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 39,
+  "player": "P4"
+ },
+ {
+  "seq": 642,
+  "kind": "action",
+  "type": "roll",
+  "player": "P4"
+ },
+ {
+  "seq": 643,
+  "kind": "event",
+  "type": "roll",
+  "turn": 39,
+  "player": "P4",
+  "dice": [
+   2,
+   6
+  ],
+  "total": 8
+ },
+ {
+  "seq": 644,
+  "kind": "action",
+  "type": "move",
+  "player": "P4",
+  "to": "Dining Room"
+ },
+ {
+  "seq": 645,
+  "kind": "event",
+  "type": "move",
+  "turn": 39,
+  "player": "P4",
+  "from": "Ballroom",
+  "to": "Dining Room"
+ },
+ {
+  "seq": 646,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 647,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 39,
+  "player": "P4",
+  "suspect": "Mrs. White",
+  "weapon": "Candlestick",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 648,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 39,
+  "player": "P1",
+  "suggester": "P4"
+ },
+ {
+  "seq": 649,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 39,
+  "player": "P2",
+  "suggester": "P4"
+ },
+ {
+  "seq": 650,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Dining Room"
+ },
+ {
+  "seq": 651,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 39,
+  "player": "P2",
+  "suggester": "P4",
+  "disprover": "P2",
+  "card": "Dining Room"
+ },
+ {
+  "seq": 652,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P4"
+ },
+ {
+  "seq": 653,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 40,
+  "player": "P1"
+ },
+ {
+  "seq": 654,
+  "kind": "action",
+  "type": "roll",
+  "player": "P1"
+ },
+ {
+  "seq": 655,
+  "kind": "event",
+  "type": "roll",
+  "turn": 40,
+  "player": "P1",
+  "dice": [
+   3,
+   6
+  ],
+  "total": 9
+ },
+ {
+  "seq": 656,
+  "kind": "action",
+  "type": "move",
+  "player": "P1",
+  "to": "Hall"
+ },
+ {
+  "seq": 657,
+  "kind": "event",
+  "type": "move",
+  "turn": 40,
+  "player": "P1",
+  "from": "Lounge",
+  "to": "Hall"
+ },
+ {
+  "seq": 658,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P1",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Rope",
+  "room": "Hall"
+ },
+ {
+  "seq": 659,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 40,
+  "player": "P1",
+  "suspect": "Mrs. Peacock",
+  "weapon": "Rope",
+  "room": "Hall"
+ },
+ {
+  "seq": 660,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 40,
+  "player": "P2",
+  "suggester": "P1"
+ },
+ {
+  "seq": 661,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 662,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 40,
+  "player": "P2",
+  "suggester": "P1",
+  "disprover": "P2",
+  "card": "Rope"
+ },
+ {
+  "seq": 663,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P1"
+ },
+ {
+  "seq": 664,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 41,
+  "player": "P2"
+ },
+ {
+  "seq": 665,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 666,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 2,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 0.5,
+    "Prof. Plum | Candlestick | Billiard Room": 0.5
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 0.5,
+    "Billiard Room": 0.5
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 0.5
+  }
+ },
+ {
+  "seq": 667,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.5,
+   "n_possible": 2,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 668,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "suggestion_ev",
+  "args": {
+   "room": "Lounge",
+   "batch": 16
+  },
+  "result": [
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Candlestick",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 0.833
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Lead Pipe",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 0.833
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Revolver",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 0.833
+   },
+   {
+    "suspect": "Mrs. White",
+    "weapon": "Wrench",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 0.833
+   },
+   {
+    "suspect": "Mr. Green",
+    "weapon": "Candlestick",
+    "novelty": 0.667,
+    "possible_disprovers": 3,
+    "first_unknown_disprover": "P3",
+    "own_cards_included": 0,
+    "score": 0.833
+   }
+  ]
+ },
+ {
+  "seq": 669,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"suggest\", \"player\": \"P2\", \"suspect\": \"Mr. Green\", \"weapon\": \"Lead Pipe\", \"room\": \"Lounge\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 670,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P2",
+  "suspect": "Mr. Green",
+  "weapon": "Lead Pipe",
+  "room": "Lounge"
+ },
+ {
+  "seq": 671,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 41,
+  "player": "P2",
+  "suspect": "Mr. Green",
+  "weapon": "Lead Pipe",
+  "room": "Lounge"
+ },
+ {
+  "seq": 672,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 41,
+  "player": "P3",
+  "suggester": "P2"
+ },
+ {
+  "seq": 673,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 41,
+  "player": "P4",
+  "suggester": "P2"
+ },
+ {
+  "seq": 674,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P4",
+  "card": "Lounge"
+ },
+ {
+  "seq": 675,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 41,
+  "player": "P4",
+  "suggester": "P2",
+  "disprover": "P4",
+  "card": "Lounge"
+ },
+ {
+  "seq": 676,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "get_unseen_cards",
+  "args": {},
+  "result": {
+   "suspects": [
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Prof. Plum"
+   ],
+   "weapons": [
+    "Candlestick",
+    "Lead Pipe",
+    "Revolver",
+    "Wrench"
+   ],
+   "rooms": [
+    "Hall",
+    "Billiard Room",
+    "Study"
+   ]
+  }
+ },
+ {
+  "seq": 677,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "solution_probabilities",
+  "args": {},
+  "result": {
+   "n_possible": 2,
+   "combos": {
+    "Prof. Plum | Candlestick | Hall": 1.0,
+    "Prof. Plum | Candlestick | Billiard Room": 0.0
+   },
+   "cards": {
+    "Prof. Plum": 1.0,
+    "Candlestick": 1.0,
+    "Hall": 1.0,
+    "Billiard Room": 0.0
+   },
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "best_prob": 1.0
+  }
+ },
+ {
+  "seq": 678,
+  "kind": "tool_call",
+  "player": "P2",
+  "tool": "can_accuse_confidently",
+  "args": {
+   "threshold": 0.9
+  },
+  "result": {
+   "accuse": false,
+   "best": [
+    "Prof. Plum",
+    "Candlestick",
+    "Hall"
+   ],
+   "confidence": 0.5,
+   "n_possible": 2,
+   "threshold": 0.9
+  }
+ },
+ {
+  "seq": 679,
+  "kind": "agent_note",
+  "player": "P2",
+  "summary": "llm_response",
+  "attempt": 0,
+  "text": "{\"reasoning\": \"mock: following symbolic recommendation\", \"action\": {\"type\": \"end_turn\", \"player\": \"P2\"}}",
+  "usage": {},
+  "model": "mock"
+ },
+ {
+  "seq": 680,
+  "kind": "action",
+  "type": "end_turn",
+  "player": "P2"
+ },
+ {
+  "seq": 681,
+  "kind": "event",
+  "type": "turn_start",
+  "turn": 42,
+  "player": "P3"
+ },
+ {
+  "seq": 687,
+  "kind": "action",
+  "type": "suggest",
+  "player": "P3",
+  "suspect": "Col. Mustard",
+  "weapon": "Rope",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 688,
+  "kind": "event",
+  "type": "suggest",
+  "turn": 42,
+  "player": "P3",
+  "suspect": "Col. Mustard",
+  "weapon": "Rope",
+  "room": "Dining Room"
+ },
+ {
+  "seq": 689,
+  "kind": "event",
+  "type": "cannot_disprove",
+  "turn": 42,
+  "player": "P4",
+  "suggester": "P3"
+ },
+ {
+  "seq": 690,
+  "kind": "event",
+  "type": "can_disprove",
+  "turn": 42,
+  "player": "P1",
+  "suggester": "P3"
+ },
+ {
+  "seq": 691,
+  "kind": "action",
+  "type": "show_card",
+  "player": "P1"
+ },
+ {
+  "seq": 692,
+  "kind": "event",
+  "type": "disproved",
+  "turn": 42,
+  "player": "P1",
+  "suggester": "P3",
+  "disprover": "P1"
+ },
+ {
+  "seq": 697,
+  "kind": "action",
+  "type": "accuse",
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Hall"
+ },
+ {
+  "seq": 698,
+  "kind": "event",
+  "type": "accuse",
+  "turn": 42,
+  "player": "P3",
+  "suspect": "Prof. Plum",
+  "weapon": "Candlestick",
+  "room": "Hall",
+  "correct": true
+ },
+ {
+  "seq": 699,
+  "kind": "event",
+  "type": "game_over",
+  "turn": 42,
+  "player": "P3",
+  "winner": "P3",
+  "solution": [
+   "Prof. Plum",
+   "Candlestick",
+   "Hall"
+  ]
+ }
+]

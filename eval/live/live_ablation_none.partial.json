@@ -1,0 +1,446 @@
+{
+ "games": [
+  {
+   "seed": 0,
+   "winner": "P2",
+   "winner_label": "baseline:expert",
+   "turns": 22,
+   "solution": [
+    "Mr. Green",
+    "Revolver",
+    "Hall"
+   ],
+   "seats": {
+    "P1": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact",
+    "P2": "baseline:expert",
+    "P3": "baseline:heuristic"
+   },
+   "curves": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": [
+     100,
+     60,
+     19,
+     19,
+     16,
+     11,
+     5
+    ],
+    "baseline:expert": [
+     120,
+     100,
+     70,
+     45,
+     20,
+     3,
+     3,
+     3
+    ],
+    "baseline:heuristic": [
+     94,
+     79,
+     58,
+     35,
+     29,
+     13,
+     4
+    ]
+   },
+   "fingerprints": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "suggestions": 8,
+     "turns_alive": 7,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 2,
+     "rooms_visited": 5,
+     "own_cards_in_suggestions": 2
+    },
+    "baseline:expert": {
+     "suggestions": 8,
+     "turns_alive": 8,
+     "turn_solved": 22,
+     "turn_accused": 22,
+     "n_at_accusation": 1,
+     "passages": 2,
+     "rooms_visited": 8,
+     "own_cards_in_suggestions": 12
+    },
+    "baseline:heuristic": {
+     "suggestions": 7,
+     "turns_alive": 7,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 1,
+     "rooms_visited": 6,
+     "own_cards_in_suggestions": 0
+    }
+   },
+   "llm": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "calls": 49,
+     "valid_first_try": 11,
+     "retries": 26,
+     "fallbacks": 8,
+     "ponder_rounds": 0,
+     "native_tool_calls": 0,
+     "prompt_tokens": 124248,
+     "completion_tokens": 56649,
+     "cost_usd": 0.0
+    }
+   }
+  },
+  {
+   "seed": 1,
+   "winner": "P3",
+   "winner_label": "baseline:heuristic",
+   "turns": 14,
+   "solution": [
+    "Col. Mustard",
+    "Rope",
+    "Lounge"
+   ],
+   "seats": {
+    "P1": "baseline:expert",
+    "P2": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact",
+    "P3": "baseline:heuristic"
+   },
+   "curves": {
+    "baseline:expert": [
+     100,
+     80,
+     55,
+     31
+    ],
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": [
+     104,
+     99,
+     65,
+     30,
+     4
+    ],
+    "baseline:heuristic": [
+     112,
+     90,
+     66,
+     33,
+     3
+    ]
+   },
+   "fingerprints": {
+    "baseline:expert": {
+     "suggestions": 5,
+     "turns_alive": 4,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 1,
+     "rooms_visited": 4,
+     "own_cards_in_suggestions": 7
+    },
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "suggestions": 4,
+     "turns_alive": 5,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 1,
+     "rooms_visited": 3,
+     "own_cards_in_suggestions": 2
+    },
+    "baseline:heuristic": {
+     "suggestions": 5,
+     "turns_alive": 5,
+     "turn_solved": 14,
+     "turn_accused": 14,
+     "n_at_accusation": 1,
+     "passages": 3,
+     "rooms_visited": 3,
+     "own_cards_in_suggestions": 0
+    }
+   },
+   "llm": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "calls": 24,
+     "valid_first_try": 6,
+     "retries": 12,
+     "fallbacks": 3,
+     "ponder_rounds": 0,
+     "native_tool_calls": 0,
+     "prompt_tokens": 61382,
+     "completion_tokens": 25560,
+     "cost_usd": 0.0
+    }
+   }
+  },
+  {
+   "seed": 2,
+   "winner": "P2",
+   "winner_label": "baseline:expert",
+   "turns": 19,
+   "solution": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Lounge"
+   ],
+   "seats": {
+    "P1": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact",
+    "P2": "baseline:expert",
+    "P3": "baseline:heuristic"
+   },
+   "curves": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": [
+     96,
+     72
+    ],
+    "baseline:expert": [
+     111,
+     111,
+     28,
+     24,
+     18,
+     11,
+     5,
+     5,
+     5
+    ],
+    "baseline:heuristic": [
+     120,
+     115,
+     115,
+     84,
+     51,
+     14,
+     11,
+     11
+    ]
+   },
+   "fingerprints": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "suggestions": 2,
+     "turns_alive": 2,
+     "turn_solved": null,
+     "turn_accused": 6,
+     "n_at_accusation": 72,
+     "passages": 2,
+     "rooms_visited": 2,
+     "own_cards_in_suggestions": 0
+    },
+    "baseline:expert": {
+     "suggestions": 8,
+     "turns_alive": 9,
+     "turn_solved": 19,
+     "turn_accused": 19,
+     "n_at_accusation": 1,
+     "passages": 0,
+     "rooms_visited": 4,
+     "own_cards_in_suggestions": 13
+    },
+    "baseline:heuristic": {
+     "suggestions": 6,
+     "turns_alive": 8,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 1,
+     "rooms_visited": 5,
+     "own_cards_in_suggestions": 1
+    }
+   },
+   "llm": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "calls": 14,
+     "valid_first_try": 4,
+     "retries": 5,
+     "fallbacks": 1,
+     "ponder_rounds": 0,
+     "native_tool_calls": 0,
+     "prompt_tokens": 29950,
+     "completion_tokens": 14358,
+     "cost_usd": 0.0
+    }
+   }
+  },
+  {
+   "seed": 3,
+   "winner": "P1",
+   "winner_label": "baseline:heuristic",
+   "turns": 16,
+   "solution": [
+    "Col. Mustard",
+    "Rope",
+    "Study"
+   ],
+   "seats": {
+    "P1": "baseline:heuristic",
+    "P2": "baseline:expert",
+    "P3": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact"
+   },
+   "curves": {
+    "baseline:heuristic": [
+     84,
+     72,
+     15,
+     5,
+     4,
+     4,
+     4
+    ],
+    "baseline:expert": [
+     120,
+     120,
+     29,
+     25,
+     20,
+     16,
+     12
+    ],
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": [
+     114,
+     113
+    ]
+   },
+   "fingerprints": {
+    "baseline:heuristic": {
+     "suggestions": 7,
+     "turns_alive": 7,
+     "turn_solved": 16,
+     "turn_accused": 16,
+     "n_at_accusation": 1,
+     "passages": 0,
+     "rooms_visited": 5,
+     "own_cards_in_suggestions": 0
+    },
+    "baseline:expert": {
+     "suggestions": 6,
+     "turns_alive": 7,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 2,
+     "rooms_visited": 4,
+     "own_cards_in_suggestions": 10
+    },
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "suggestions": 0,
+     "turns_alive": 2,
+     "turn_solved": null,
+     "turn_accused": 5,
+     "n_at_accusation": 113,
+     "passages": 0,
+     "rooms_visited": 0,
+     "own_cards_in_suggestions": 0
+    }
+   },
+   "llm": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "calls": 9,
+     "valid_first_try": 7,
+     "retries": 2,
+     "fallbacks": 1,
+     "ponder_rounds": 0,
+     "native_tool_calls": 0,
+     "prompt_tokens": 18910,
+     "completion_tokens": 8282,
+     "cost_usd": 0.0
+    }
+   }
+  },
+  {
+   "seed": 4,
+   "winner": "P1",
+   "winner_label": "baseline:expert",
+   "turns": 18,
+   "solution": [
+    "Col. Mustard",
+    "Lead Pipe",
+    "Lounge"
+   ],
+   "seats": {
+    "P1": "baseline:expert",
+    "P2": "baseline:heuristic",
+    "P3": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact"
+   },
+   "curves": {
+    "baseline:expert": [
+     96,
+     16,
+     12,
+     12,
+     12,
+     4,
+     4,
+     3
+    ],
+    "baseline:heuristic": [
+     111,
+     81,
+     72,
+     48,
+     40,
+     30,
+     24,
+     24
+    ],
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": [
+     124,
+     124
+    ]
+   },
+   "fingerprints": {
+    "baseline:expert": {
+     "suggestions": 7,
+     "turns_alive": 8,
+     "turn_solved": 18,
+     "turn_accused": 18,
+     "n_at_accusation": 1,
+     "passages": 1,
+     "rooms_visited": 6,
+     "own_cards_in_suggestions": 6
+    },
+    "baseline:heuristic": {
+     "suggestions": 8,
+     "turns_alive": 8,
+     "turn_solved": null,
+     "turn_accused": null,
+     "n_at_accusation": null,
+     "passages": 1,
+     "rooms_visited": 6,
+     "own_cards_in_suggestions": 0
+    },
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "suggestions": 0,
+     "turns_alive": 2,
+     "turn_solved": null,
+     "turn_accused": 5,
+     "n_at_accusation": 124,
+     "passages": 0,
+     "rooms_visited": 0,
+     "own_cards_in_suggestions": 0
+    }
+   },
+   "llm": {
+    "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+     "calls": 8,
+     "valid_first_try": 4,
+     "retries": 2,
+     "fallbacks": 0,
+     "ponder_rounds": 0,
+     "native_tool_calls": 0,
+     "prompt_tokens": 18193,
+     "completion_tokens": 4674,
+     "cost_usd": 0.0
+    }
+   }
+  }
+ ],
+ "cost": {
+  "calls": 399,
+  "cached_calls": 0,
+  "prompt_tokens": 1155872,
+  "completion_tokens": 225297,
+  "usd": 0.0,
+  "max_usd": 0.1
+ }
+}

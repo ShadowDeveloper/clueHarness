@@ -1,0 +1,20 @@
+# Example game config: 1 human + 3 AIs.
+edition: classic-clue-2002   # classic-clue-1996 -> 1 die; classic-clue-2002 -> 2 dice; modern -> Dr. Orchid
+seed: 42
+deal_remainder: uneven       # or: faceup
+players:
+  - id: P1
+    kind: human
+    name: You
+  - id: P2
+    kind: llm
+    model: mock              # e.g. openai/gpt-4o via OpenRouter, or llama3 via local
+    strategy: strategies/bayesian_probabilist.md
+    temperature: 0.2
+  - id: P3
+    kind: llm
+    model: mock
+    strategy: strategies/deceptive_misdirector.md
+  - id: P4
+    kind: baseline
+    bot: heuristic

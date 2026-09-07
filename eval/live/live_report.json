@@ -1,0 +1,822 @@
+{
+ "model": "nvidia/nemotron-3-super-120b-a12b:free",
+ "games": 5,
+ "seed": 0,
+ "brackets": {
+  "ablation": {
+   "precomputed": {
+    "label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:compact",
+    "table": [
+     {
+      "agent": "baseline:expert",
+      "games": 5,
+      "wins": 4,
+      "win_rate": 0.8,
+      "false_accusation_rate": 0.2,
+      "avg_turns_to_win": 20.8,
+      "avg_suggestions_per_game": 6.4,
+      "illegal_attempts": 0,
+      "elo": 1068,
+      "win_ci95": [
+       0.376,
+       0.964
+      ]
+     },
+     {
+      "agent": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:compact",
+      "games": 5,
+      "wins": 1,
+      "win_rate": 0.2,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 27,
+      "avg_suggestions_per_game": 7.0,
+      "illegal_attempts": 0,
+      "elo": 985,
+      "win_ci95": [
+       0.036,
+       0.624
+      ]
+     },
+     {
+      "agent": "baseline:heuristic",
+      "games": 5,
+      "wins": 0,
+      "win_rate": 0.0,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": null,
+      "avg_suggestions_per_game": 7.2,
+      "illegal_attempts": 0,
+      "elo": 948,
+      "win_ci95": [
+       0.0,
+       0.434
+      ]
+     }
+    ],
+    "curves": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:compact": [
+      106.4,
+      98,
+      62.2,
+      44,
+      29.4,
+      14.2,
+      7.3,
+      5.5,
+      2,
+      1
+     ],
+     "baseline:expert": [
+      109.6,
+      69.4,
+      29.8,
+      15.6,
+      12.2,
+      8.6,
+      4,
+      3.5,
+      4
+     ],
+     "baseline:heuristic": [
+      103,
+      84.4,
+      60.2,
+      39,
+      25.4,
+      12.8,
+      11.3,
+      3.5,
+      3
+     ]
+    },
+    "fingerprints": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:compact": {
+      "suggestions_mean": 7,
+      "turns_alive_mean": 7.4,
+      "turn_solved_mean": 27,
+      "turn_accused_mean": 27,
+      "passages_mean": 1.8,
+      "rooms_visited_mean": 4.6,
+      "own_cards_in_suggestions_mean": 0.4,
+      "solved_rate": 0.2,
+      "accusation_rate": 0.2,
+      "premature_accusation_rate": 0.0
+     },
+     "baseline:expert": {
+      "suggestions_mean": 6.4,
+      "turns_alive_mean": 7.4,
+      "turn_solved_mean": 20.75,
+      "turn_accused_mean": 21,
+      "passages_mean": 0.2,
+      "rooms_visited_mean": 4.4,
+      "own_cards_in_suggestions_mean": 7.6,
+      "solved_rate": 0.8,
+      "accusation_rate": 1.0,
+      "premature_accusation_rate": 0.2
+     },
+     "baseline:heuristic": {
+      "suggestions_mean": 7.2,
+      "turns_alive_mean": 7.2,
+      "passages_mean": 0.8,
+      "rooms_visited_mean": 6,
+      "own_cards_in_suggestions_mean": 1,
+      "solved_rate": 0.0,
+      "accusation_rate": 0.0,
+      "premature_accusation_rate": 0.0
+     }
+    },
+    "llm_stats": {
+     "games": 5,
+     "calls_per_game": 28.0,
+     "valid_json_first_try": 0.957,
+     "fallback_rate": 0.014,
+     "native_tool_calls_per_game": 0.0,
+     "ponder_rounds_per_game": 0.0,
+     "prompt_tokens_per_game": 74417,
+     "completion_tokens_per_game": 8628,
+     "usd_per_game": 0.0
+    },
+    "wins": 1,
+    "games": 5,
+    "results": [
+     {
+      "seed": 0,
+      "winner_label": "baseline:expert",
+      "turns": 19
+     },
+     {
+      "seed": 1,
+      "winner_label": "baseline:expert",
+      "turns": 27
+     },
+     {
+      "seed": 2,
+      "winner_label": "baseline:expert",
+      "turns": 16
+     },
+     {
+      "seed": 3,
+      "winner_label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:compact",
+      "turns": 27
+     },
+     {
+      "seed": 4,
+      "winner_label": "baseline:expert",
+      "turns": 21
+     }
+    ]
+   },
+   "native": {
+    "label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+    "table": [
+     {
+      "agent": "baseline:expert",
+      "games": 5,
+      "wins": 4,
+      "win_rate": 0.8,
+      "false_accusation_rate": 0.2,
+      "avg_turns_to_win": 21.5,
+      "avg_suggestions_per_game": 6.8,
+      "illegal_attempts": 0,
+      "elo": 1067,
+      "win_ci95": [
+       0.376,
+       0.964
+      ]
+     },
+     {
+      "agent": "baseline:heuristic",
+      "games": 5,
+      "wins": 1,
+      "win_rate": 0.2,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 25,
+      "avg_suggestions_per_game": 7.0,
+      "illegal_attempts": 0,
+      "elo": 985,
+      "win_ci95": [
+       0.036,
+       0.624
+      ]
+     },
+     {
+      "agent": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+      "games": 5,
+      "wins": 0,
+      "win_rate": 0.0,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": null,
+      "avg_suggestions_per_game": 7.0,
+      "illegal_attempts": 0,
+      "elo": 948,
+      "win_ci95": [
+       0.0,
+       0.434
+      ]
+     }
+    ],
+    "curves": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact": [
+      106.4,
+      98,
+      62.2,
+      44.6,
+      30.2,
+      16.8,
+      8.7,
+      5.7,
+      2.5
+     ],
+     "baseline:expert": [
+      109.6,
+      69.4,
+      29.8,
+      15.4,
+      12,
+      10.2,
+      4.8,
+      3.5,
+      4
+     ],
+     "baseline:heuristic": [
+      103,
+      84.4,
+      61.2,
+      40.2,
+      25.8,
+      13,
+      9.7,
+      3.3,
+      2.5
+     ]
+    },
+    "fingerprints": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact": {
+      "suggestions_mean": 7,
+      "turns_alive_mean": 7.4,
+      "passages_mean": 2.4,
+      "rooms_visited_mean": 4.6,
+      "own_cards_in_suggestions_mean": 0.4,
+      "solved_rate": 0.0,
+      "accusation_rate": 0.0,
+      "premature_accusation_rate": 0.0
+     },
+     "baseline:expert": {
+      "suggestions_mean": 6.8,
+      "turns_alive_mean": 7.4,
+      "turn_solved_mean": 21.5,
+      "turn_accused_mean": 21,
+      "passages_mean": 0.6,
+      "rooms_visited_mean": 4.6,
+      "own_cards_in_suggestions_mean": 7.8,
+      "solved_rate": 0.8,
+      "accusation_rate": 1.0,
+      "premature_accusation_rate": 0.2
+     },
+     "baseline:heuristic": {
+      "suggestions_mean": 7,
+      "turns_alive_mean": 7.4,
+      "turn_solved_mean": 25,
+      "turn_accused_mean": 25,
+      "passages_mean": 1,
+      "rooms_visited_mean": 6,
+      "own_cards_in_suggestions_mean": 0.6,
+      "solved_rate": 0.2,
+      "accusation_rate": 0.2,
+      "premature_accusation_rate": 0.0
+     }
+    },
+    "llm_stats": {
+     "games": 5,
+     "calls_per_game": 28.0,
+     "valid_json_first_try": 0.929,
+     "fallback_rate": 0.014,
+     "native_tool_calls_per_game": 3.0,
+     "ponder_rounds_per_game": 0.0,
+     "prompt_tokens_per_game": 106220,
+     "completion_tokens_per_game": 14526,
+     "usd_per_game": 0.0
+    },
+    "wins": 0,
+    "games": 5,
+    "results": [
+     {
+      "seed": 0,
+      "winner_label": "baseline:expert",
+      "turns": 19
+     },
+     {
+      "seed": 1,
+      "winner_label": "baseline:expert",
+      "turns": 27
+     },
+     {
+      "seed": 2,
+      "winner_label": "baseline:expert",
+      "turns": 16
+     },
+     {
+      "seed": 3,
+      "winner_label": "baseline:heuristic",
+      "turns": 25
+     },
+     {
+      "seed": 4,
+      "winner_label": "baseline:expert",
+      "turns": 24
+     }
+    ]
+   },
+   "none": {
+    "label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact",
+    "table": [
+     {
+      "agent": "baseline:expert",
+      "games": 5,
+      "wins": 3,
+      "win_rate": 0.6,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 19.7,
+      "avg_suggestions_per_game": 6.8,
+      "illegal_attempts": 0,
+      "elo": 1041,
+      "win_ci95": [
+       0.231,
+       0.882
+      ]
+     },
+     {
+      "agent": "baseline:heuristic",
+      "games": 5,
+      "wins": 2,
+      "win_rate": 0.4,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 15,
+      "avg_suggestions_per_game": 6.6,
+      "illegal_attempts": 0,
+      "elo": 1013,
+      "win_ci95": [
+       0.118,
+       0.769
+      ]
+     },
+     {
+      "agent": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact",
+      "games": 5,
+      "wins": 0,
+      "win_rate": 0.0,
+      "false_accusation_rate": 0.6,
+      "avg_turns_to_win": null,
+      "avg_suggestions_per_game": 2.8,
+      "illegal_attempts": 0,
+      "elo": 946,
+      "win_ci95": [
+       0.0,
+       0.434
+      ]
+     }
+    ],
+    "curves": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": [
+      107.6,
+      93.6,
+      42,
+      24.5,
+      10,
+      11,
+      5
+     ],
+     "baseline:expert": [
+      109.4,
+      85.4,
+      38.8,
+      27.4,
+      17.5,
+      8.5,
+      6,
+      3.7,
+      5
+     ],
+     "baseline:heuristic": [
+      104.2,
+      87.4,
+      65.2,
+      41,
+      25.4,
+      15.2,
+      10.8,
+      17.5
+     ]
+    },
+    "fingerprints": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:no-tools:compact": {
+      "suggestions_mean": 2.8,
+      "turns_alive_mean": 3.6,
+      "turn_accused_mean": 5.33,
+      "passages_mean": 1,
+      "rooms_visited_mean": 2,
+      "own_cards_in_suggestions_mean": 0.8,
+      "solved_rate": 0.0,
+      "accusation_rate": 0.6,
+      "premature_accusation_rate": 0.6
+     },
+     "baseline:expert": {
+      "suggestions_mean": 6.8,
+      "turns_alive_mean": 7.2,
+      "turn_solved_mean": 19.67,
+      "turn_accused_mean": 19.67,
+      "passages_mean": 1.2,
+      "rooms_visited_mean": 5.2,
+      "own_cards_in_suggestions_mean": 9.6,
+      "solved_rate": 0.6,
+      "accusation_rate": 0.6,
+      "premature_accusation_rate": 0.0
+     },
+     "baseline:heuristic": {
+      "suggestions_mean": 6.6,
+      "turns_alive_mean": 7,
+      "turn_solved_mean": 15,
+      "turn_accused_mean": 15,
+      "passages_mean": 1.2,
+      "rooms_visited_mean": 5,
+      "own_cards_in_suggestions_mean": 0.2,
+      "solved_rate": 0.4,
+      "accusation_rate": 0.4,
+      "premature_accusation_rate": 0.0
+     }
+    },
+    "llm_stats": {
+     "games": 5,
+     "calls_per_game": 20.8,
+     "valid_json_first_try": 0.308,
+     "fallback_rate": 0.125,
+     "native_tool_calls_per_game": 0.0,
+     "ponder_rounds_per_game": 0.0,
+     "prompt_tokens_per_game": 50537,
+     "completion_tokens_per_game": 21905,
+     "usd_per_game": 0.0
+    },
+    "wins": 0,
+    "games": 5,
+    "results": [
+     {
+      "seed": 0,
+      "winner_label": "baseline:expert",
+      "turns": 22
+     },
+     {
+      "seed": 1,
+      "winner_label": "baseline:heuristic",
+      "turns": 14
+     },
+     {
+      "seed": 2,
+      "winner_label": "baseline:expert",
+      "turns": 19
+     },
+     {
+      "seed": 3,
+      "winner_label": "baseline:heuristic",
+      "turns": 16
+     },
+     {
+      "seed": 4,
+      "winner_label": "baseline:expert",
+      "turns": 18
+     }
+    ]
+   }
+  },
+  "ponder": {
+   "native": {
+    "label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+    "table": [
+     {
+      "agent": "baseline:expert",
+      "games": 5,
+      "wins": 4,
+      "win_rate": 0.8,
+      "false_accusation_rate": 0.2,
+      "avg_turns_to_win": 21.5,
+      "avg_suggestions_per_game": 6.8,
+      "illegal_attempts": 0,
+      "elo": 1067,
+      "win_ci95": [
+       0.376,
+       0.964
+      ]
+     },
+     {
+      "agent": "baseline:heuristic",
+      "games": 5,
+      "wins": 1,
+      "win_rate": 0.2,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 25,
+      "avg_suggestions_per_game": 7.0,
+      "illegal_attempts": 0,
+      "elo": 985,
+      "win_ci95": [
+       0.036,
+       0.624
+      ]
+     },
+     {
+      "agent": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+      "games": 5,
+      "wins": 0,
+      "win_rate": 0.0,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": null,
+      "avg_suggestions_per_game": 7.0,
+      "illegal_attempts": 0,
+      "elo": 948,
+      "win_ci95": [
+       0.0,
+       0.434
+      ]
+     }
+    ],
+    "curves": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact": [
+      106.4,
+      98,
+      62.2,
+      44.6,
+      30.2,
+      16.8,
+      8.7,
+      5.7,
+      2.5
+     ],
+     "baseline:expert": [
+      109.6,
+      69.4,
+      29.8,
+      15.4,
+      12,
+      10.2,
+      4.8,
+      3.5,
+      4
+     ],
+     "baseline:heuristic": [
+      103,
+      84.4,
+      61.2,
+      40.2,
+      25.8,
+      13,
+      9.7,
+      3.3,
+      2.5
+     ]
+    },
+    "fingerprints": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact": {
+      "suggestions_mean": 7,
+      "turns_alive_mean": 7.4,
+      "passages_mean": 2.4,
+      "rooms_visited_mean": 4.6,
+      "own_cards_in_suggestions_mean": 0.4,
+      "solved_rate": 0.0,
+      "accusation_rate": 0.0,
+      "premature_accusation_rate": 0.0
+     },
+     "baseline:expert": {
+      "suggestions_mean": 6.8,
+      "turns_alive_mean": 7.4,
+      "turn_solved_mean": 21.5,
+      "turn_accused_mean": 21,
+      "passages_mean": 0.6,
+      "rooms_visited_mean": 4.6,
+      "own_cards_in_suggestions_mean": 7.8,
+      "solved_rate": 0.8,
+      "accusation_rate": 1.0,
+      "premature_accusation_rate": 0.2
+     },
+     "baseline:heuristic": {
+      "suggestions_mean": 7,
+      "turns_alive_mean": 7.4,
+      "turn_solved_mean": 25,
+      "turn_accused_mean": 25,
+      "passages_mean": 1,
+      "rooms_visited_mean": 6,
+      "own_cards_in_suggestions_mean": 0.6,
+      "solved_rate": 0.2,
+      "accusation_rate": 0.2,
+      "premature_accusation_rate": 0.0
+     }
+    },
+    "llm_stats": {
+     "games": 5,
+     "calls_per_game": 28.0,
+     "valid_json_first_try": 0.929,
+     "fallback_rate": 0.014,
+     "native_tool_calls_per_game": 3.0,
+     "ponder_rounds_per_game": 0.0,
+     "prompt_tokens_per_game": 106220,
+     "completion_tokens_per_game": 14526,
+     "usd_per_game": 0.0
+    },
+    "wins": 0,
+    "games": 5,
+    "results": [
+     {
+      "seed": 0,
+      "winner_label": "baseline:expert",
+      "turns": 19
+     },
+     {
+      "seed": 1,
+      "winner_label": "baseline:expert",
+      "turns": 27
+     },
+     {
+      "seed": 2,
+      "winner_label": "baseline:expert",
+      "turns": 16
+     },
+     {
+      "seed": 3,
+      "winner_label": "baseline:heuristic",
+      "turns": 25
+     },
+     {
+      "seed": 4,
+      "winner_label": "baseline:expert",
+      "turns": 24
+     }
+    ]
+   },
+   "native+ponder": {
+    "label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+    "table": [
+     {
+      "agent": "baseline:heuristic",
+      "games": 5,
+      "wins": 2,
+      "win_rate": 0.4,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 16.5,
+      "avg_suggestions_per_game": 6.2,
+      "illegal_attempts": 0,
+      "elo": 1015,
+      "win_ci95": [
+       0.118,
+       0.769
+      ]
+     },
+     {
+      "agent": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+      "games": 5,
+      "wins": 2,
+      "win_rate": 0.4,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 22.5,
+      "avg_suggestions_per_game": 6.2,
+      "illegal_attempts": 0,
+      "elo": 1010,
+      "win_ci95": [
+       0.118,
+       0.769
+      ]
+     },
+     {
+      "agent": "baseline:expert",
+      "games": 5,
+      "wins": 1,
+      "win_rate": 0.2,
+      "false_accusation_rate": 0.0,
+      "avg_turns_to_win": 19,
+      "avg_suggestions_per_game": 5.8,
+      "illegal_attempts": 0,
+      "elo": 974,
+      "win_ci95": [
+       0.036,
+       0.624
+      ]
+     }
+    ],
+    "curves": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact": [
+      106.4,
+      97.8,
+      71.6,
+      50.4,
+      24,
+      16.2,
+      4,
+      3.5
+     ],
+     "baseline:expert": [
+      109.6,
+      69.2,
+      40.8,
+      24.6,
+      20.8,
+      12.8,
+      4.3,
+      3
+     ],
+     "baseline:heuristic": [
+      103,
+      80.8,
+      61.4,
+      41.4,
+      24.4,
+      10.2,
+      3.7
+     ]
+    },
+    "fingerprints": {
+     "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact": {
+      "suggestions_mean": 6.2,
+      "turns_alive_mean": 6.4,
+      "turn_solved_mean": 22.5,
+      "turn_accused_mean": 22.5,
+      "passages_mean": 2,
+      "rooms_visited_mean": 4.4,
+      "own_cards_in_suggestions_mean": 0.6,
+      "solved_rate": 0.4,
+      "accusation_rate": 0.4,
+      "premature_accusation_rate": 0.0
+     },
+     "baseline:expert": {
+      "suggestions_mean": 5.8,
+      "turns_alive_mean": 6.6,
+      "turn_solved_mean": 19,
+      "turn_accused_mean": 19,
+      "passages_mean": 0.6,
+      "rooms_visited_mean": 4.2,
+      "own_cards_in_suggestions_mean": 7.8,
+      "solved_rate": 0.2,
+      "accusation_rate": 0.2,
+      "premature_accusation_rate": 0.0
+     },
+     "baseline:heuristic": {
+      "suggestions_mean": 6.2,
+      "turns_alive_mean": 6.4,
+      "turn_solved_mean": 16.5,
+      "turn_accused_mean": 16.5,
+      "passages_mean": 1.2,
+      "rooms_visited_mean": 5.2,
+      "own_cards_in_suggestions_mean": 0.8,
+      "solved_rate": 0.4,
+      "accusation_rate": 0.4,
+      "premature_accusation_rate": 0.0
+     }
+    },
+    "llm_stats": {
+     "games": 5,
+     "calls_per_game": 25.8,
+     "valid_json_first_try": 0.891,
+     "fallback_rate": 0.039,
+     "native_tool_calls_per_game": 1.2,
+     "ponder_rounds_per_game": 23.8,
+     "prompt_tokens_per_game": 146353,
+     "completion_tokens_per_game": 45224,
+     "usd_per_game": 0.0
+    },
+    "wins": 2,
+    "games": 5,
+    "results": [
+     {
+      "seed": 0,
+      "winner_label": "baseline:expert",
+      "turns": 19
+     },
+     {
+      "seed": 1,
+      "winner_label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+      "turns": 22
+     },
+     {
+      "seed": 2,
+      "winner_label": "baseline:heuristic",
+      "turns": 14
+     },
+     {
+      "seed": 3,
+      "winner_label": "llm:nvidia/nemotron-3-super-120b-a12b:free:bayesian_probabilist:native:compact",
+      "turns": 23
+     },
+     {
+      "seed": 4,
+      "winner_label": "baseline:heuristic",
+      "turns": 19
+     }
+    ]
+   }
+  }
+ },
+ "cost": {
+  "calls": 805,
+  "cached_calls": 169,
+  "prompt_tokens": 1857694,
+  "completion_tokens": 455075,
+  "usd": 0.0,
+  "max_usd": 0.1
+ },
+ "stopped": null
+}

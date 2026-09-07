@@ -1,0 +1,1207 @@
+{
+ "main": {
+  "games": 50,
+  "seed": 0,
+  "table": [
+   {
+    "agent": "baseline:heuristic",
+    "games": 50,
+    "wins": 28,
+    "win_rate": 0.56,
+    "false_accusation_rate": 0.0,
+    "avg_turns_to_win": 68.0,
+    "avg_suggestions_per_game": 34.62,
+    "illegal_attempts": 0,
+    "elo": 1261
+   },
+   {
+    "agent": "llm:mock:bayesian_probabilist",
+    "games": 50,
+    "wins": 15,
+    "win_rate": 0.3,
+    "false_accusation_rate": 0.0,
+    "avg_turns_to_win": 59.5,
+    "avg_suggestions_per_game": 35.36,
+    "illegal_attempts": 0,
+    "elo": 1093
+   },
+   {
+    "agent": "llm:mock:bayesian_probabilist:no-tools",
+    "games": 50,
+    "wins": 2,
+    "win_rate": 0.04,
+    "false_accusation_rate": 0.86,
+    "avg_turns_to_win": 74,
+    "avg_suggestions_per_game": 5.52,
+    "illegal_attempts": 0,
+    "elo": 869
+   },
+   {
+    "agent": "baseline:random",
+    "games": 50,
+    "wins": 0,
+    "win_rate": 0.0,
+    "false_accusation_rate": 0.6,
+    "avg_turns_to_win": null,
+    "avg_suggestions_per_game": 5.66,
+    "illegal_attempts": 0,
+    "elo": 777
+   }
+  ],
+  "results": [
+   {
+    "seed": 0,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 45,
+    "solution": [
+     "Mr. Green",
+     "Revolver",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 1,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 44,
+    "solution": [
+     "Col. Mustard",
+     "Rope",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 2,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 109,
+    "solution": [
+     "Miss Scarlet",
+     "Candlestick",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 3,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 153,
+    "solution": [
+     "Col. Mustard",
+     "Rope",
+     "Study"
+    ]
+   },
+   {
+    "seed": 4,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 65,
+    "solution": [
+     "Col. Mustard",
+     "Lead Pipe",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 5,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 48,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 6,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 43,
+    "solution": [
+     "Mrs. Peacock",
+     "Candlestick",
+     "Library"
+    ]
+   },
+   {
+    "seed": 7,
+    "winner": null,
+    "winner_label": null,
+    "turns": 400,
+    "solution": [
+     "Mrs. White",
+     "Dagger",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 8,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 55,
+    "solution": [
+     "Col. Mustard",
+     "Lead Pipe",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 9,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 64,
+    "solution": [
+     "Mr. Green",
+     "Rope",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 10,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 33,
+    "solution": [
+     "Mrs. Peacock",
+     "Candlestick",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 11,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 69,
+    "solution": [
+     "Mr. Green",
+     "Rope",
+     "Library"
+    ]
+   },
+   {
+    "seed": 12,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 46,
+    "solution": [
+     "Mr. Green",
+     "Lead Pipe",
+     "Study"
+    ]
+   },
+   {
+    "seed": 13,
+    "winner": "P4",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 38,
+    "solution": [
+     "Mrs. White",
+     "Lead Pipe",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 14,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 77,
+    "solution": [
+     "Miss Scarlet",
+     "Rope",
+     "Study"
+    ]
+   },
+   {
+    "seed": 15,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 67,
+    "solution": [
+     "Col. Mustard",
+     "Candlestick",
+     "Study"
+    ]
+   },
+   {
+    "seed": 16,
+    "winner": null,
+    "winner_label": null,
+    "turns": 400,
+    "solution": [
+     "Mrs. White",
+     "Revolver",
+     "Library"
+    ]
+   },
+   {
+    "seed": 17,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 82,
+    "solution": [
+     "Mrs. Peacock",
+     "Revolver",
+     "Ballroom"
+    ]
+   },
+   {
+    "seed": 18,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 57,
+    "solution": [
+     "Col. Mustard",
+     "Candlestick",
+     "Library"
+    ]
+   },
+   {
+    "seed": 19,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 45,
+    "solution": [
+     "Prof. Plum",
+     "Candlestick",
+     "Study"
+    ]
+   },
+   {
+    "seed": 20,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 53,
+    "solution": [
+     "Prof. Plum",
+     "Wrench",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 21,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 109,
+    "solution": [
+     "Col. Mustard",
+     "Revolver",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 22,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 42,
+    "solution": [
+     "Col. Mustard",
+     "Dagger",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 23,
+    "winner": "P1",
+    "winner_label": "baseline:heuristic",
+    "turns": 58,
+    "solution": [
+     "Mrs. White",
+     "Candlestick",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 24,
+    "winner": null,
+    "winner_label": null,
+    "turns": 400,
+    "solution": [
+     "Prof. Plum",
+     "Revolver",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 25,
+    "winner": "P1",
+    "winner_label": "baseline:heuristic",
+    "turns": 113,
+    "solution": [
+     "Mr. Green",
+     "Candlestick",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 26,
+    "winner": "P3",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 87,
+    "solution": [
+     "Prof. Plum",
+     "Dagger",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 27,
+    "winner": null,
+    "winner_label": null,
+    "turns": 400,
+    "solution": [
+     "Prof. Plum",
+     "Revolver",
+     "Ballroom"
+    ]
+   },
+   {
+    "seed": 28,
+    "winner": "P1",
+    "winner_label": "llm:mock:bayesian_probabilist:no-tools",
+    "turns": 37,
+    "solution": [
+     "Miss Scarlet",
+     "Wrench",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 29,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 62,
+    "solution": [
+     "Mrs. Peacock",
+     "Candlestick",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 30,
+    "winner": "P1",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 40,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 31,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 76,
+    "solution": [
+     "Miss Scarlet",
+     "Revolver",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 32,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 70,
+    "solution": [
+     "Miss Scarlet",
+     "Dagger",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 33,
+    "winner": null,
+    "winner_label": null,
+    "turns": 400,
+    "solution": [
+     "Mrs. Peacock",
+     "Dagger",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 34,
+    "winner": "P3",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 62,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 35,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 48,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 36,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 45,
+    "solution": [
+     "Mrs. White",
+     "Candlestick",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 37,
+    "winner": "P4",
+    "winner_label": "llm:mock:bayesian_probabilist:no-tools",
+    "turns": 111,
+    "solution": [
+     "Prof. Plum",
+     "Rope",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 38,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 45,
+    "solution": [
+     "Prof. Plum",
+     "Revolver",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 39,
+    "winner": "P4",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 51,
+    "solution": [
+     "Col. Mustard",
+     "Lead Pipe",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 40,
+    "winner": "P4",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 59,
+    "solution": [
+     "Mr. Green",
+     "Rope",
+     "Study"
+    ]
+   },
+   {
+    "seed": 41,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 211,
+    "solution": [
+     "Mr. Green",
+     "Lead Pipe",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 42,
+    "winner": "P1",
+    "winner_label": "baseline:heuristic",
+    "turns": 50,
+    "solution": [
+     "Prof. Plum",
+     "Candlestick",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 43,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 66,
+    "solution": [
+     "Miss Scarlet",
+     "Lead Pipe",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 44,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 55,
+    "solution": [
+     "Mr. Green",
+     "Rope",
+     "Study"
+    ]
+   },
+   {
+    "seed": 45,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 37,
+    "solution": [
+     "Mrs. White",
+     "Revolver",
+     "Library"
+    ]
+   },
+   {
+    "seed": 46,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 36,
+    "solution": [
+     "Miss Scarlet",
+     "Revolver",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 47,
+    "winner": "P3",
+    "winner_label": "baseline:heuristic",
+    "turns": 53,
+    "solution": [
+     "Mrs. White",
+     "Candlestick",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 48,
+    "winner": "P4",
+    "winner_label": "baseline:heuristic",
+    "turns": 71,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 49,
+    "winner": "P2",
+    "winner_label": "baseline:heuristic",
+    "turns": 58,
+    "solution": [
+     "Miss Scarlet",
+     "Lead Pipe",
+     "Billiard Room"
+    ]
+   }
+  ]
+ },
+ "strategies": {
+  "games": 50,
+  "seed": 10000,
+  "table": [
+   {
+    "agent": "llm:mock:aggressive_accuser",
+    "games": 50,
+    "wins": 16,
+    "win_rate": 0.32,
+    "false_accusation_rate": 0.0,
+    "avg_turns_to_win": 44.6,
+    "avg_suggestions_per_game": 11.16,
+    "illegal_attempts": 0,
+    "elo": 1085
+   },
+   {
+    "agent": "llm:mock:conservative_notebook",
+    "games": 50,
+    "wins": 16,
+    "win_rate": 0.32,
+    "false_accusation_rate": 0.0,
+    "avg_turns_to_win": 53.4,
+    "avg_suggestions_per_game": 11.22,
+    "illegal_attempts": 0,
+    "elo": 1050
+   },
+   {
+    "agent": "llm:mock:room_rusher",
+    "games": 50,
+    "wins": 11,
+    "win_rate": 0.22,
+    "false_accusation_rate": 0.0,
+    "avg_turns_to_win": 48,
+    "avg_suggestions_per_game": 11.08,
+    "illegal_attempts": 0,
+    "elo": 960
+   },
+   {
+    "agent": "llm:mock:bayesian_probabilist",
+    "games": 50,
+    "wins": 7,
+    "win_rate": 0.14,
+    "false_accusation_rate": 0.0,
+    "avg_turns_to_win": 53.9,
+    "avg_suggestions_per_game": 10.98,
+    "illegal_attempts": 0,
+    "elo": 905
+   }
+  ],
+  "results": [
+   {
+    "seed": 10000,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 36,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 10001,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 108,
+    "solution": [
+     "Mrs. White",
+     "Candlestick",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10002,
+    "winner": "P3",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 118,
+    "solution": [
+     "Mr. Green",
+     "Dagger",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10003,
+    "winner": "P4",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 47,
+    "solution": [
+     "Col. Mustard",
+     "Candlestick",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10004,
+    "winner": "P2",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 101,
+    "solution": [
+     "Mrs. Peacock",
+     "Revolver",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10005,
+    "winner": "P1",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 44,
+    "solution": [
+     "Mrs. Peacock",
+     "Wrench",
+     "Library"
+    ]
+   },
+   {
+    "seed": 10006,
+    "winner": "P4",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 51,
+    "solution": [
+     "Col. Mustard",
+     "Candlestick",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 10007,
+    "winner": "P3",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 42,
+    "solution": [
+     "Mrs. White",
+     "Lead Pipe",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 10008,
+    "winner": "P2",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 85,
+    "solution": [
+     "Col. Mustard",
+     "Revolver",
+     "Library"
+    ]
+   },
+   {
+    "seed": 10009,
+    "winner": "P3",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 38,
+    "solution": [
+     "Mrs. White",
+     "Dagger",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 10010,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 28,
+    "solution": [
+     "Mrs. Peacock",
+     "Wrench",
+     "Ballroom"
+    ]
+   },
+   {
+    "seed": 10011,
+    "winner": "P1",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 48,
+    "solution": [
+     "Col. Mustard",
+     "Rope",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10012,
+    "winner": "P4",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 43,
+    "solution": [
+     "Mr. Green",
+     "Revolver",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 10013,
+    "winner": "P4",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 51,
+    "solution": [
+     "Mrs. White",
+     "Revolver",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10014,
+    "winner": "P2",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 37,
+    "solution": [
+     "Mr. Green",
+     "Dagger",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10015,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 40,
+    "solution": [
+     "Col. Mustard",
+     "Dagger",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10016,
+    "winner": "P3",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 58,
+    "solution": [
+     "Mr. Green",
+     "Lead Pipe",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 10017,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 44,
+    "solution": [
+     "Mrs. Peacock",
+     "Rope",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10018,
+    "winner": "P1",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 40,
+    "solution": [
+     "Mrs. Peacock",
+     "Dagger",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 10019,
+    "winner": "P2",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 45,
+    "solution": [
+     "Mr. Green",
+     "Revolver",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10020,
+    "winner": "P3",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 86,
+    "solution": [
+     "Prof. Plum",
+     "Candlestick",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10021,
+    "winner": "P3",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 34,
+    "solution": [
+     "Mrs. Peacock",
+     "Revolver",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 10022,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 36,
+    "solution": [
+     "Prof. Plum",
+     "Revolver",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 10023,
+    "winner": "P1",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 32,
+    "solution": [
+     "Prof. Plum",
+     "Dagger",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10024,
+    "winner": "P1",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 36,
+    "solution": [
+     "Col. Mustard",
+     "Wrench",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 10025,
+    "winner": "P4",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 47,
+    "solution": [
+     "Mr. Green",
+     "Candlestick",
+     "Dining Room"
+    ]
+   },
+   {
+    "seed": 10026,
+    "winner": "P1",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 56,
+    "solution": [
+     "Mrs. Peacock",
+     "Dagger",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 10027,
+    "winner": "P3",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 42,
+    "solution": [
+     "Col. Mustard",
+     "Wrench",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10028,
+    "winner": "P3",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 58,
+    "solution": [
+     "Mrs. White",
+     "Dagger",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 10029,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 48,
+    "solution": [
+     "Col. Mustard",
+     "Revolver",
+     "Lounge"
+    ]
+   },
+   {
+    "seed": 10030,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 48,
+    "solution": [
+     "Mrs. Peacock",
+     "Lead Pipe",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10031,
+    "winner": "P4",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 43,
+    "solution": [
+     "Mrs. White",
+     "Candlestick",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10032,
+    "winner": "P2",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 33,
+    "solution": [
+     "Miss Scarlet",
+     "Wrench",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10033,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 64,
+    "solution": [
+     "Mrs. Peacock",
+     "Dagger",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 10034,
+    "winner": "P1",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 36,
+    "solution": [
+     "Mrs. Peacock",
+     "Revolver",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10035,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 44,
+    "solution": [
+     "Mrs. Peacock",
+     "Rope",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 10036,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 40,
+    "solution": [
+     "Mrs. White",
+     "Lead Pipe",
+     "Study"
+    ]
+   },
+   {
+    "seed": 10037,
+    "winner": "P3",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 50,
+    "solution": [
+     "Col. Mustard",
+     "Dagger",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10038,
+    "winner": "P2",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 45,
+    "solution": [
+     "Miss Scarlet",
+     "Lead Pipe",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 10039,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 56,
+    "solution": [
+     "Col. Mustard",
+     "Dagger",
+     "Library"
+    ]
+   },
+   {
+    "seed": 10040,
+    "winner": "P4",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 55,
+    "solution": [
+     "Prof. Plum",
+     "Candlestick",
+     "Conservatory"
+    ]
+   },
+   {
+    "seed": 10041,
+    "winner": "P2",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 53,
+    "solution": [
+     "Mr. Green",
+     "Lead Pipe",
+     "Library"
+    ]
+   },
+   {
+    "seed": 10042,
+    "winner": "P1",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 40,
+    "solution": [
+     "Mrs. White",
+     "Wrench",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10043,
+    "winner": "P3",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 42,
+    "solution": [
+     "Miss Scarlet",
+     "Lead Pipe",
+     "Kitchen"
+    ]
+   },
+   {
+    "seed": 10044,
+    "winner": "P4",
+    "winner_label": "llm:mock:room_rusher",
+    "turns": 39,
+    "solution": [
+     "Col. Mustard",
+     "Lead Pipe",
+     "Library"
+    ]
+   },
+   {
+    "seed": 10045,
+    "winner": "P2",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 57,
+    "solution": [
+     "Mrs. White",
+     "Rope",
+     "Hall"
+    ]
+   },
+   {
+    "seed": 10046,
+    "winner": "P1",
+    "winner_label": "llm:mock:bayesian_probabilist",
+    "turns": 36,
+    "solution": [
+     "Mrs. White",
+     "Revolver",
+     "Billiard Room"
+    ]
+   },
+   {
+    "seed": 10047,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 36,
+    "solution": [
+     "Mr. Green",
+     "Revolver",
+     "Ballroom"
+    ]
+   },
+   {
+    "seed": 10048,
+    "winner": "P2",
+    "winner_label": "llm:mock:conservative_notebook",
+    "turns": 33,
+    "solution": [
+     "Prof. Plum",
+     "Candlestick",
+     "Library"
+    ]
+   },
+   {
+    "seed": 10049,
+    "winner": "P1",
+    "winner_label": "llm:mock:aggressive_accuser",
+    "turns": 44,
+    "solution": [
+     "Miss Scarlet",
+     "Revolver",
+     "Library"
+    ]
+   }
+  ]
+ },
+ "live": false
+}

@@ -1,0 +1,17 @@
+.env
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+elo.json
+eval/live/cache/
+clue_harness.egg-info/
+saves/
+web/node_modules/
+web/dist/
+.npm/
+.cache/
+.local/
+saves/
+uploads/

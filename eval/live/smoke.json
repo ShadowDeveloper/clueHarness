@@ -1,0 +1,74 @@
+{
+ "games": 3,
+ "seed": 0,
+ "table": [
+  {
+   "agent": "baseline:expert",
+   "games": 3,
+   "wins": 3,
+   "win_rate": 1.0,
+   "false_accusation_rate": 0.0,
+   "avg_turns_to_win": 20.7,
+   "avg_suggestions_per_game": 6.67,
+   "illegal_attempts": 0,
+   "elo": 1064
+  },
+  {
+   "agent": "baseline:heuristic",
+   "games": 3,
+   "wins": 0,
+   "win_rate": 0.0,
+   "false_accusation_rate": 0.0,
+   "avg_turns_to_win": null,
+   "avg_suggestions_per_game": 6.33,
+   "illegal_attempts": 0,
+   "elo": 969
+  },
+  {
+   "agent": "llm:openai/gpt-4o-mini:bayesian_probabilist:native:compact",
+   "games": 3,
+   "wins": 0,
+   "win_rate": 0.0,
+   "false_accusation_rate": 0.0,
+   "avg_turns_to_win": null,
+   "avg_suggestions_per_game": 7.0,
+   "illegal_attempts": 0,
+   "elo": 968
+  }
+ ],
+ "results": [
+  {
+   "seed": 0,
+   "winner": "P2",
+   "winner_label": "baseline:expert",
+   "turns": 19,
+   "solution": [
+    "Mr. Green",
+    "Revolver",
+    "Hall"
+   ]
+  },
+  {
+   "seed": 1,
+   "winner": "P1",
+   "winner_label": "baseline:expert",
+   "turns": 27,
+   "solution": [
+    "Col. Mustard",
+    "Rope",
+    "Lounge"
+   ]
+  },
+  {
+   "seed": 2,
+   "winner": "P2",
+   "winner_label": "baseline:expert",
+   "turns": 16,
+   "solution": [
+    "Miss Scarlet",
+    "Candlestick",
+    "Lounge"
+   ]
+  }
+ ]
+}

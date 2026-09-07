@@ -1,0 +1,4 @@
+agent,games,wins,win_rate,false_accusation_rate,avg_turns_to_win,avg_suggestions_per_game,illegal_attempts,elo
+baseline:expert,3,3,1.0,0.0,20.7,6.67,0,1064
+baseline:heuristic,3,0,0.0,0.0,,6.33,0,969
+llm:openai/gpt-4o-mini:bayesian_probabilist:native:compact,3,0,0.0,0.0,,7.0,0,968

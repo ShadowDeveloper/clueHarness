@@ -1,0 +1,4 @@
+agent,games,wins,win_rate,false_accusation_rate,avg_turns_to_win,avg_suggestions_per_game,illegal_attempts,elo
+llm:mock:bayesian_probabilist,30,10,0.333,0.0,48,9.9,0,1036
+llm:mock:info_value_hunter,30,9,0.3,0.0,43,10.03,0,952
+baseline:heuristic,60,11,0.183,0.0,42.7,10.03,0,1012
