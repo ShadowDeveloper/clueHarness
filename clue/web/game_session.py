@@ -17,7 +17,7 @@ from clue.agents.human import describe_event
 from clue.manager.game_manager import GameManager, PlayerSpec
 from clue.manager.runner import run_game
 from clue.rules import Action, IllegalAction, is_legal
-from clue.rules.cards import ROOMS, WEAPONS, suspects
+from clue.rules.cards import rooms, suspects, weapons
 from clue.tools.coach import coach_hints
 from clue.web.human_agent import PendingRequest, WebHumanAgent
 
@@ -300,7 +300,7 @@ class GameSession:
                 "acting": gm.acting_player() if not gm.finished else None,
             },
             "board": {"token_positions": dict(st.token_positions), "weapon_positions": dict(st.weapon_positions), "players": players},
-            "cards": {"suspects": list(sus), "weapons": list(WEAPONS), "rooms": list(ROOMS), "faceup": list(st.faceup)},
+            "cards": {"suspects": list(sus), "weapons": list(weapons(st.config.edition)), "rooms": list(rooms(st.config.edition)), "faceup": list(st.faceup)},
             "config": st.config.model_dump(),
             "finished": gm.finished,
             "winner": gm.winner,
@@ -352,7 +352,8 @@ class GameSession:
         for c in st.solution:
             holder[c] = "ENVELOPE"
         rows = []
-        for cat in (list(suspects(st.config.edition)), list(WEAPONS), list(ROOMS)):
+        ed = st.config.edition
+        for cat in (list(suspects(ed)), list(weapons(ed)), list(rooms(ed))):
             for c in cat:
                 knows = {}
                 for p in players:

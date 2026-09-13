@@ -21,6 +21,14 @@ RULES_SPEC.md rules edition + every edge-case decision
 game.yaml     example config     demo_game.md  example transcript     eval/report.md  example eval
 ```
 
+## Large edition (up to 12 players)
+
+`--edition large` (or `edition: large` in YAML / the web lobby) plays *Hill House*: the six classic suspects plus Wadsworth, Yvette, Miss Peach, Sgt. Gray, Mr. Boddy and Madame Rose; twelve weapons (adds Poison, Horseshoe, Axe, Trophy, Poker, Garden Shears); twelve rooms (Hall, Lounge, Dining Room, Kitchen, Ballroom, Conservatory, Attic, Cellar, Garage, Gazebo, Courtyard, Carriage House) on a 36×36 board with three secret passages. 36 cards, 3–12 players, same rules. On this table the exact solver is replaced by sound constraint propagation plus deterministic sampling (`Solution.exact == False`); coach-mode hard deductions stay provable facts only.
+
+```bash
+clue play --players baseline:expert,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline --edition large --seed 3
+```
+
 ## Documentation
 | | |
 |---|---|

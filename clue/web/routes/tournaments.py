@@ -11,6 +11,7 @@ from fastapi.responses import PlainTextResponse, Response
 from clue.agents.factory import parse_players_arg
 from clue.agents.llm_client import configure_budget
 from clue.eval.tournament import markdown_table
+from clue.rules.cards import max_players
 from clue.web.deps import registry
 from clue.web.schemas import CreateTournament, TournamentStatus
 from clue.web.sessions import Registry
@@ -34,8 +35,9 @@ def create(body: CreateTournament, request: Request, reg: Registry = Depends(reg
         raise HTTPException(422, "players or players_arg required")
     if any(s.kind == "human" for s in specs):
         raise HTTPException(422, "tournaments are AI-only")
-    if not 3 <= len(specs) <= 6:
-        raise HTTPException(422, "3-6 players")
+    edition = body.config.edition if body.config else "classic"
+    if not 3 <= len(specs) <= max_players(edition):
+        raise HTTPException(422, f"{edition} edition: 3-{max_players(edition)} players")
     if body.max_usd is not None:
         configure_budget(body.max_usd)
     try:

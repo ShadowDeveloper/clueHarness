@@ -24,8 +24,7 @@ from clue.manager import GameManager
 from clue.manager.runner import GameInterrupted
 from clue.rules import Action
 from clue.rules import board as B
-from clue.rules.cards import ROOMS, WEAPONS
-from clue.tui.board_render import render_board, token_glyph
+from clue.tui.board_render import render_board, token_glyph, token_labels
 
 
 # --------------------------------------------------------------------------- agent <-> UI bridge
@@ -113,9 +112,10 @@ class OmniscientView(DataTable[str]):
             holder[c] = "face-up"
         for c in st.solution:
             holder[c] = "ENVELOPE"
-        from clue.rules.cards import ROOMS, WEAPONS, suspects
+        from clue.rules.cards import rooms, suspects, weapons
 
-        for cat in (list(suspects(st.config.edition)), list(WEAPONS), list(ROOMS)):
+        ed = st.config.edition
+        for cat in (list(suspects(ed)), list(weapons(ed)), list(rooms(ed))):
             for c in cat:
                 truth = holder.get(c, "?")
                 tcell = "[bold red]ENVELOPE[/]" if truth == "ENVELOPE" else ("[dim]face-up[/]" if truth == "face-up" else f"[green]{truth}[/]")
@@ -325,7 +325,8 @@ class ClueApp(App[None]):
         omni = self.human is None and self.viewer is None
         obs = self.gm.get_observation(vid)
         hl = set(obs["board"]["your_legal_moves"]) if self.mode == "move" or obs["turn"]["roll"] else set()
-        self.query_one("#board", Static).update(render_board(obs["board"]["token_positions"], obs["cards"]["suspects"], hl, obs["board"]["weapon_positions"], obs["you"]["suspect_token"], self.emoji))
+        board_txt = render_board(obs["board"]["token_positions"], obs["cards"]["suspects"], hl, obs["board"]["weapon_positions"], obs["you"]["suspect_token"], self.emoji, obs["config"]["edition"])
+        self.query_one("#board", Static).update(board_txt)
         nbv, ov = self.query_one("#notebook", NotebookView), self.query_one("#omni", OmniscientView)
         nbv.display, ov.display = not omni, omni
         if omni:
@@ -352,7 +353,7 @@ class ClueApp(App[None]):
             coach.update(self._coach_text(obs))
         you = obs["you"]
         pos = you["position"] if B.is_room(you["position"]) else f"corridor {you['position']}"
-        glyph = token_glyph("SMWGKP"[obs["cards"]["suspects"].index(you["suspect_token"])], self.emoji).strip()
+        glyph = token_glyph(token_labels(obs["cards"]["suspects"])[you["suspect_token"]], self.emoji).strip()
         st = f"You are {glyph} {you['suspect_token']} ({you['id']}) in the {pos}   ·   your cards: {', '.join(you['hand'])}   ·   turn {obs['turn']['number']}"
         if self.human is None:
             sol = " · ".join(self.gm.state.solution)
@@ -401,7 +402,7 @@ class ClueApp(App[None]):
             lines.append("Roll the dice and move")
         if "passage" in types:
             enabled.add("b_passage")
-            lines.append(f"Take the secret passage to the {B.SECRET_PASSAGES[obs['you']['position']]}")
+            lines.append(f"Take the secret passage to the {B.passages_for(obs['config']['edition'])[obs['you']['position']]}")
         if "move" in types:
             self._move_menu()
             return
@@ -455,7 +456,7 @@ class ClueApp(App[None]):
             self._reply(act)
             return
         fname = remaining[0]
-        pool = {"suspect": obs["cards"]["suspects"], "weapon": list(WEAPONS), "room": list(ROOMS)}[fname]
+        pool = {"suspect": obs["cards"]["suspects"], "weapon": list(obs["cards"]["weapons"]), "room": list(obs["cards"]["rooms"])}[fname]
         hand = set(obs["you"]["hand"])
         known = set(obs["notebook"]["known_holder"]) - hand
         opts = []

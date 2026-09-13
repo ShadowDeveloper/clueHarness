@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from clue.agents.factory import parse_players_arg
 from clue.manager.game_manager import GameManager
 from clue.rules import GameConfig, IllegalAction
+from clue.rules.cards import max_players
 from clue.web.auth import seat_role, token
 from clue.web.deps import Access, access, registry, settings
 from clue.web.game_session import GameSession, build_agents
@@ -49,8 +50,6 @@ def create_game(body: CreateGame, request: Request, reg: Registry = Depends(regi
                 raise HTTPException(422, str(e)) from e
         else:
             raise HTTPException(422, "players or players_arg required")
-        if not 3 <= len(specs) <= 6:
-            raise HTTPException(422, "3-6 players")
         humans = [s for s in specs if s.kind == "human"]
         remote = body.remote or (len(humans) > 1 and not st.hotseat)
         if remote and not st.remote:
@@ -58,6 +57,8 @@ def create_game(body: CreateGame, request: Request, reg: Registry = Depends(regi
         cfg = body.config or GameConfig(num_players=len(specs))
         if cfg.num_players != len(specs):
             cfg = cfg.model_copy(update={"num_players": len(specs)})
+        if not 3 <= len(specs) <= max_players(cfg.edition):
+            raise HTTPException(422, f"{cfg.edition} edition: 3-{max_players(cfg.edition)} players (use the large edition for up to 12)")
         seed = body.seed if body.seed is not None else int.from_bytes(__import__("os").urandom(3), "big")
         try:
             gm = GameManager.create(specs, seed=seed, config=cfg)

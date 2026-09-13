@@ -18,7 +18,7 @@ async function req<T>(method: string, path: string, body?: unknown, params?: Rec
 
 export const api = {
   health: () => req<{ ok: boolean; version: string; games: number; cost: Record<string, number> }>("GET", "/health"),
-  board: () => req<Board>("GET", "/board"),
+  board: (edition = "classic") => req<Board>("GET", `/board?edition=${encodeURIComponent(edition)}`),
   catalog: () => req<Catalog>("GET", "/catalog"),
   createGame: (body: { players?: PlayerSpec[]; players_arg?: string; seed?: number | null; config?: Record<string, unknown>; ponder?: boolean; delay?: number; provider?: string | null; autosave?: boolean; resume?: string; remote?: boolean }) => req<GameCreated>("POST", "/games", body),
   invites: (id: string, k: string) => req<{ remote: boolean; seats: Record<string, string>; presence?: Record<string, number>; waiting_for?: string[] }>("GET", `/games/${id}/invites`, undefined, { k }),
@@ -33,7 +33,7 @@ export const api = {
   listReplays: () => req<{ name: string; size: number; mtime: number; redacted: boolean }[]>("GET", "/replays"),
   openReplay: (name: string) => req<ReplayInfo>("POST", "/replays/open", { name }),
   replayFrames: (id: string, viewer?: string) => req<ReplayFrames>("GET", `/replays/${id}/frames`, undefined, { viewer }),
-  createTournament: (body: { players_arg?: string; players?: PlayerSpec[]; games: number; seed: number; workers: number; ponder?: boolean; provider?: string | null; max_usd?: number | null }) => req<TournamentStatus>("POST", "/tournaments", body),
+  createTournament: (body: { players_arg?: string; players?: PlayerSpec[]; games: number; seed: number; workers: number; ponder?: boolean; provider?: string | null; max_usd?: number | null; config?: Record<string, unknown> }) => req<TournamentStatus>("POST", "/tournaments", body),
   listTournaments: () => req<Omit<TournamentStatus, "report">[]>("GET", "/tournaments"),
   tournament: (id: string) => req<TournamentStatus>("GET", `/tournaments/${id}`),
   cancelTournament: (id: string) => req<{ ok: boolean }>("DELETE", `/tournaments/${id}`),

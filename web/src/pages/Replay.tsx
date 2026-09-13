@@ -15,7 +15,9 @@ export default function Replay() {
   const [err, setErr] = useState<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { api.listReplays().then(setFiles).catch((e) => setErr(String(e))); api.board().then(setGeo); }, []);
+  useEffect(() => { api.listReplays().then(setFiles).catch((e) => setErr(String(e))); }, []);
+  const edition = info?.edition ?? "classic";
+  useEffect(() => { api.board(edition).then(setGeo); }, [edition]);
   const open = async (name: string) => {
     setErr(null);
     try { const i = await api.openReplay(name); setInfo(i); const v = i.viewers[0] ?? ""; setViewer(v); setData(await api.replayFrames(i.id, v || undefined)); setIdx(0); } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); }

@@ -33,7 +33,9 @@ export default function Game() {
   const [showInvites, setShowInvites] = useState(false);
   const [boardPick, setBoardPick] = useState<{ fn: ((t: string) => void) | null; hl: string[] }>({ fn: null, hl: [] });
 
-  useEffect(() => { api.board().then(setGeo); }, []);
+  // board geometry depends on the edition, which we only know once the first snapshot arrives
+  const edition = s?.config?.edition ?? null;
+  useEffect(() => { if (edition) api.board(edition).then(setGeo); }, [edition]);
   useEffect(() => { if (toast) { const t = setTimeout(() => setToast(null), 5000); return () => clearTimeout(t); } }, [toast]);
 
   const me = s?.you?.id ?? null;

@@ -110,3 +110,8 @@ npm run build                        # -> clue/web/static (commit it; CI fails o
 ```
 Layering: `clue/web` imports the manager, agents and tools; nothing below it imports `clue/web`. Web tests are
 skipped automatically when `fastapi` is not installed, so the offline core stays dependency-light.
+
+
+## Editions
+
+The lobby has an **edition** selector: `classic` (6·6·9, 3–6 players), `modern` (Dr. Orchid) and `large` — *Hill House* (12 suspects, 12 weapons, 12 rooms, 3–12 players, 36×36 board with Attic, Cellar, Garage, Gazebo, Courtyard and Carriage House). `GET /api/board?edition=large` returns the matching geometry; `GET /api/catalog` lists editions with their card sets and player caps. Tournaments accept `config.edition` too.

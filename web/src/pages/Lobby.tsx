@@ -24,6 +24,7 @@ export default function Lobby() {
   const [seats, setSeats] = useState<PlayerSpec[]>(DEFAULT);
   const [seed, setSeed] = useState<string>("");
   const [dice, setDice] = useState(2);
+  const [edition, setEdition] = useState("classic");
   const [uneven, setUneven] = useState<string>("");
   const [ponder, setPonder] = useState(false);
   const [delay, setDelay] = useState(0.6);
@@ -46,7 +47,7 @@ export default function Lobby() {
   const start = async (resume?: string) => {
     setBusy(true); setErr(null);
     try {
-      const cfg: Record<string, unknown> = { num_players: seats.length, dice };
+      const cfg: Record<string, unknown> = { num_players: seats.length, dice, edition };
       if (uneven) cfg.uneven_deal = uneven;
       const wantRemote = remote || (humans > 1 && !cat?.hotseat);
       const g = await api.createGame(resume ? { resume, delay } : { players: seats.map((s, i) => ({ ...s, id: `P${i + 1}` })), seed: seed === "" ? null : Number(seed), config: cfg, ponder, delay, provider: provider || null, remote: wantRemote });
@@ -55,6 +56,7 @@ export default function Lobby() {
     } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); } finally { setBusy(false); }
   };
 
+  const maxPlayers = cat?.editions?.find((x) => x.id === edition)?.max_players ?? 6;
   return (
     <div className="page grid lobby-grid">
       <div className="panel">
@@ -74,7 +76,8 @@ export default function Lobby() {
         ))}
         <datalist id="models">{cat?.known_models.map((m) => <option key={m} value={m} />)}</datalist>
         <div className="row" style={{ marginTop: 6 }}>
-          <button disabled={seats.length >= 6} onClick={() => setSeats([...seats, { id: `P${seats.length + 1}`, kind: "baseline", bot: "heuristic" }])}>+ seat</button>
+          <button disabled={seats.length >= maxPlayers} onClick={() => setSeats([...seats, { id: `P${seats.length + 1}`, kind: "baseline", bot: "heuristic" }])}>+ seat</button>
+          <span className="dim">{seats.length}/{maxPlayers} seats</span>
           {humans > 1 && cat && (cat.remote || cat.hotseat) && (
             <label className="row" title="each human gets their own invite link and plays from their own browser">
               <select value={remote || !cat.hotseat ? "remote" : "hotseat"} onChange={(e) => setRemote(e.target.value === "remote")}>
@@ -89,6 +92,7 @@ export default function Lobby() {
         <hr style={{ borderColor: "var(--border)", margin: "12px 0" }} />
         <div className="row">
           <label>seed <input value={seed} onChange={(e) => setSeed(e.target.value.replace(/[^0-9]/g, ""))} placeholder="random" style={{ width: 90 }} /></label>
+          <label>edition <select value={edition} onChange={(e) => { const ed = e.target.value; setEdition(ed); const cap = cat?.editions?.find((x) => x.id === ed)?.max_players ?? 6; if (seats.length > cap) setSeats(seats.slice(0, cap)); }}>{(cat?.editions ?? [{ id: "classic", label: "Classic" }]).map((ed) => <option key={ed.id} value={ed.id}>{ed.label}</option>)}</select></label>
           <label>dice <select value={dice} onChange={(e) => setDice(Number(e.target.value))}><option value={1}>1d6</option><option value={2}>2d6</option></select></label>
           <label>uneven deal <select value={uneven} onChange={(e) => setUneven(e.target.value)}><option value="">default</option><option value="deal_all">deal all</option><option value="faceup">face-up remainder</option></select></label>
           <label>AI pace <input type="number" min={0} max={5} step={0.1} value={delay} onChange={(e) => setDelay(Number(e.target.value))} style={{ width: 70 }} /> s</label>

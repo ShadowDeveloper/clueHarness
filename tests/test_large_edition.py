@@ -14,7 +14,7 @@ from clue.manager.game_manager import GameManager
 from clue.manager.runner import run_game
 from clue.rules import GameConfig, new_game
 from clue.rules import board as B
-from clue.rules.cards import all_cards, category, edition_def, max_players, rooms, suspects, weapons
+from clue.rules.cards import all_cards, category, edition_def, max_players, rooms, suspects
 from clue.tools.solver import solve
 
 

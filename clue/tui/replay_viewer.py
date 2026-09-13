@@ -94,7 +94,7 @@ class ReplayApp(App[None]):
         hl: set[str] = set()
         if rs.last_suggestion and rs.idx and rs.events[rs.idx - 1] is rs.last_suggestion:
             hl = {str(rs.last_suggestion["room"])}
-        self.query_one("#board", Static).update(render_board(rs.tokens, rs.suspects, hl, rs.weapons, me, self.emoji))
+        self.query_one("#board", Static).update(render_board(rs.tokens, rs.suspects, hl, rs.weapons, me, self.emoji, rs.edition))
         log = self.query_one("#log", RichLog)
         log.clear()
         for ev in rs.events[max(0, rs.idx - 40) : rs.idx]:

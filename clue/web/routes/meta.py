@@ -5,12 +5,12 @@ import time
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from clue.agents.llm_client import GLOBAL_COST, CostTracker
 from clue.rules import GameConfig
 from clue.rules.board import geometry
-from clue.rules.cards import ROOMS, WEAPONS, suspects
+from clue.rules.cards import EDITIONS, edition_def, rooms, suspects, weapons
 from clue.web.deps import registry, settings
 from clue.web.sessions import Registry
 from clue.web.settings import WebSettings
@@ -31,8 +31,12 @@ def health(reg: Registry = Depends(registry)) -> dict[str, Any]:
 
 
 @router.get("/board")
-def board() -> dict[str, Any]:
-    return geometry()
+def board(edition: str = "classic") -> dict[str, Any]:
+    """Static board geometry for an edition (classic/modern share the Hasbro board; large = Hill House)."""
+    try:
+        return geometry(edition)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
 
 
 @router.get("/catalog")
@@ -51,7 +55,16 @@ def catalog(st: WebSettings = Depends(settings)) -> dict[str, Any]:
         "known_models": sorted(CostTracker.PRICES),
         "config_defaults": GameConfig(num_players=3).model_dump(),
         "config_schema": GameConfig.model_json_schema(),
-        "cards": {"suspects": list(suspects("classic")), "weapons": list(WEAPONS), "rooms": list(ROOMS)},
+        "cards": {"suspects": list(suspects("classic")), "weapons": list(weapons("classic")), "rooms": list(rooms("classic"))},
+        "editions": [
+            {
+                "id": ed,
+                "label": edition_def(ed).label,
+                "max_players": edition_def(ed).max_players,
+                "cards": {"suspects": list(suspects(ed)), "weapons": list(weapons(ed)), "rooms": list(rooms(ed))},
+            }
+            for ed in EDITIONS
+        ],
         "hotseat": st.hotseat,
         "remote": st.remote,
         "saves_dir": str(st.saves_dir),

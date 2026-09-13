@@ -13,6 +13,7 @@ export default function Tournaments() {
   const [seed, setSeed] = useState(0);
   const [workers, setWorkers] = useState(0);
   const [ponder, setPonder] = useState(false);
+  const [edition, setEdition] = useState("classic");
   const [maxUsd, setMaxUsd] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const refresh = () => api.listTournaments().then(setList).catch(() => undefined);
@@ -20,7 +21,7 @@ export default function Tournaments() {
 
   const start = async () => {
     setErr(null);
-    try { const t = await api.createTournament({ players_arg: players, games, seed, workers, ponder, max_usd: maxUsd ? Number(maxUsd) : null }); nav(`/tournaments/${t.id}`); refresh(); } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); }
+    try { const t = await api.createTournament({ players_arg: players, games, seed, workers, ponder, max_usd: maxUsd ? Number(maxUsd) : null, config: { edition, num_players: players.split(",").filter(Boolean).length } }); nav(`/tournaments/${t.id}`); refresh(); } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); }
   };
   return (
     <div className="page grid tourn-grid">
@@ -29,6 +30,7 @@ export default function Tournaments() {
           <h3>New tournament</h3>
           <label>players (CLI shorthand)<input value={players} onChange={(e) => setPlayers(e.target.value)} style={{ width: "100%" }} /></label>
           <div className="row" style={{ marginTop: 6 }}>
+            <label>edition <select value={edition} onChange={(e) => setEdition(e.target.value)}><option value="classic">classic</option><option value="modern">modern</option><option value="large">large (up to 12)</option></select></label>
             <label>games <input type="number" min={1} max={10000} value={games} onChange={(e) => setGames(Number(e.target.value))} style={{ width: 80 }} /></label>
             <label>seed <input type="number" value={seed} onChange={(e) => setSeed(Number(e.target.value))} style={{ width: 80 }} /></label>
             <label title="0 = all CPU cores">workers <input type="number" min={0} max={64} value={workers} onChange={(e) => setWorkers(Number(e.target.value))} style={{ width: 60 }} /></label>

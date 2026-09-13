@@ -4,11 +4,25 @@ import type { Board as Geometry, SeatInfo } from "../api/types";
 /** Graphical board (SVG). Same information as the TUI's board_render.py — corridor, doors, secret passages, cellar,
  *  room names, weapons, tokens, reachable squares — drawn as a Tudor Mansion floor plan. */
 
-const TOKEN_LETTER: Record<string, string> = { "Miss Scarlet": "S", "Col. Mustard": "M", "Mrs. White": "W", "Dr. Orchid": "W", "Mr. Green": "G", "Mrs. Peacock": "K", "Prof. Plum": "P" };
-const TOKEN_COLOR: Record<string, string> = { S: "#c8102e", M: "#d9a41b", W: "#e9e4d8", G: "#2e7d4f", K: "#1f4fa0", P: "#6a2a7b" };
-const SHORT: Record<string, string> = { "Dining Room": "Dining", "Billiard Room": "Billiards", Conservatory: "Conservatory" };
+// Same letters as the TUI (board_render.TOKEN_LABELS): classic six + the large edition's film cast
+const TOKEN_LETTER: Record<string, string> = {
+  "Miss Scarlet": "S", "Col. Mustard": "M", "Mrs. White": "W", "Dr. Orchid": "W", "Mr. Green": "G", "Mrs. Peacock": "K", "Prof. Plum": "P",
+  Wadsworth: "B", Yvette: "Y", "Miss Peach": "H", "Sgt. Gray": "A", "Mr. Boddy": "T", "Madame Rose": "R",
+};
+const TOKEN_COLOR: Record<string, string> = {
+  S: "#c8102e", M: "#d9a41b", W: "#e9e4d8", G: "#2e7d4f", K: "#1f4fa0", P: "#6a2a7b",
+  B: "#8d8d8d", Y: "#3fb8c9", H: "#f0a050", A: "#4a4f57", T: "#5a1010", R: "#b03060",
+};
+const SHORT: Record<string, string> = { "Dining Room": "Dining", "Billiard Room": "Billiards", Conservatory: "Conservatory", "Carriage House": "Carriage" };
 // weapons as small brass tags with a two/three-letter abbreviation (emoji are not reliable across platforms)
-const WEAPON_TAG: Record<string, string> = { Candlestick: "CDL", Dagger: "DGR", Knife: "KNF", "Lead Pipe": "PIPE", Revolver: "REV", Rope: "ROPE", Wrench: "WR" };
+const WEAPON_TAG: Record<string, string> = {
+  Candlestick: "CDL", Dagger: "DGR", Knife: "KNF", "Lead Pipe": "PIPE", Revolver: "REV", Rope: "ROPE", Wrench: "WR",
+  Poison: "PSN", Horseshoe: "SHOE", Axe: "AXE", Trophy: "TRPH", Poker: "PKR", "Garden Shears": "SHRS",
+};
+const FLOOR: Record<string, string> = {
+  Hall: "tiles", Kitchen: "tiles", Garage: "tiles", Cellar: "cellarp", Courtyard: "grass", Gazebo: "grass",
+  Lounge: "carpet", Study: "carpet", Library: "carpet", Attic: "carpet",
+};
 
 export function tokenLetter(suspect: string): string { return TOKEN_LETTER[suspect] ?? suspect[0]; }
 export function tokenColor(suspect: string): string { return TOKEN_COLOR[tokenLetter(suspect)] ?? "#ccc"; }
@@ -48,7 +62,7 @@ export default function Board({ geo, tokens, weapons, players, highlights = [], 
   const roomOf = useMemo(() => { const m: Record<string, string> = {}; for (const [room, b] of Object.entries(rooms)) for (const c of b.cells) m[c.join(",")] = room; return m; }, [rooms]);
   const doorSet = useMemo(() => new Set(geo.doors.map((d) => d.cell.join(","))), [geo]);
   const seatBySuspect = useMemo(() => Object.fromEntries((players ?? []).map((p) => [p.suspect_token, p])), [players]);
-  const [cr0, cr1, cc0, cc1] = geo.cellar;
+  const [cr0, cr1, cc0, cc1] = geo.cellar ?? [0, -1, 0, -1];
 
   // walls: edges of room cells that face a non-room cell (drawn as thick lines); door cells get an opening
   const walls = useMemo(() => {
@@ -84,6 +98,9 @@ export default function Board({ geo, tokens, weapons, players, highlights = [], 
           <pattern id="tiles" width="2" height="2" patternUnits="userSpaceOnUse">
             <rect width="2" height="2" fill="#d9cfb8" /><rect width="1" height="1" fill="#2b2b2b" /><rect x="1" y="1" width="1" height="1" fill="#2b2b2b" />
           </pattern>
+          <pattern id="grass" width="1" height="1" patternUnits="userSpaceOnUse">
+            <rect width="1" height="1" fill="#4f6b3a" /><path d="M0.2 0.8 L0.35 0.4 M0.5 0.9 L0.6 0.5 M0.8 0.75 L0.9 0.35" stroke="#6d8f4e" strokeWidth="0.06" />
+          </pattern>
           <pattern id="cellarp" width="1" height="1" patternUnits="userSpaceOnUse">
             <rect width="1" height="1" fill="#1a1512" /><line x1="0" y1="0.5" x2="1" y2="0.5" stroke="#26201b" strokeWidth="0.1" />
           </pattern>
@@ -99,13 +116,15 @@ export default function Board({ geo, tokens, weapons, players, highlights = [], 
           return <rect key={key} x={c + 0.03} y={r + 0.03} width={0.94} height={0.94} rx={0.08} className={`cell${doorSet.has(key) ? " door" : ""}${isHl ? " hl" : ""}`} onClick={isHl && onPick ? () => onPick(key) : undefined}><title>{isHl ? `move to ${key}` : key}</title></rect>;
         })}
         {/* cellar (envelope) */}
+        {geo.cellar && <>
         <rect x={cc0} y={cr0} width={cc1 - cc0 + 1} height={cr1 - cr0 + 1} fill="url(#cellarp)" stroke="#3a2f27" strokeWidth={0.1} />
         <text x={(cc0 + cc1 + 1) / 2} y={(cr0 + cr1 + 1) / 2 - 0.3} className="cellar-label">CLUE</text>
         <text x={(cc0 + cc1 + 1) / 2} y={(cr0 + cr1 + 1) / 2 + 1.1} className="cellar-sub">✉ confidential</text>
+        </>}
         {/* rooms */}
         {Object.entries(rooms).map(([room, b]) => {
           const isHl = hl.has(room);
-          const floor = room === "Hall" || room === "Kitchen" ? "url(#tiles)" : room === "Lounge" || room === "Study" || room === "Library" ? "url(#carpet)" : "url(#parquet)";
+          const floor = `url(#${FLOOR[room] ?? "parquet"})`;
           const weaponsHere = weaponsIn[room] ?? [];
           const toks = inRoom[room] ?? [];
           return (
@@ -120,7 +139,11 @@ export default function Board({ geo, tokens, weapons, players, highlights = [], 
                   <text x={0.8} y={0.33}>{WEAPON_TAG[w] ?? w.slice(0, 3).toUpperCase()}</text>
                 </g>
               ))}
-              {toks.map((s, i) => <Pawn key={s} suspect={s} x={b.cx + (i - (toks.length - 1) / 2) * 1.35} y={b.cy + 0.55} seat={seatBySuspect[s]} />)}
+              {toks.map((s, i) => {
+                const perRow = Math.max(1, Math.floor((b.c1 - b.c0 + 0.6) / 1.35));
+                const row = Math.floor(i / perRow), col = i % perRow, n = Math.min(perRow, toks.length - row * perRow);
+                return <Pawn key={s} suspect={s} x={b.cx + (col - (n - 1) / 2) * 1.35} y={b.cy + 0.55 + row * 1.25} seat={seatBySuspect[s]} />;
+              })}
               {geo.passages[room] && <text x={b.c1 + 0.5} y={b.r0 + 0.75} className="passage"><title>secret passage to the {geo.passages[room]}</title>⇄</text>}
               {isHl && <title>enter the {room}</title>}
             </g>

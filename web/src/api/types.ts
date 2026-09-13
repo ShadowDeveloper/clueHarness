@@ -111,12 +111,13 @@ export type Frame =
 export interface GameCreated { id: string; owner_token: string; spectator_token: string; seat_tokens: Record<string, string>; remote: boolean; seats: { id: string; label: string; kind: string; name: string | null }[]; humans: string[]; resumed: boolean; restored: string[]; }
 export interface GameListItem { id: string; seed: number; players: string[]; labels: Record<string, string>; humans: string[]; finished: boolean; turn: number; created: number; winner: string | null; remote: boolean; presence: Record<string, number>; waiting_for: string[]; }
 
-export interface Board { rows: number; cols: number; rooms: Record<string, [number, number][]>; corridor: [number, number][]; doors: { cell: [number, number]; rooms: string[] }[]; passages: Record<string, string>; cellar: number[]; starts: Record<string, [number, number]>; }
+export interface Board { edition?: string; rows: number; cols: number; rooms: Record<string, [number, number][]>; corridor: [number, number][]; doors: { cell: [number, number]; rooms: string[] }[]; passages: Record<string, string>; cellar: number[] | null; starts: Record<string, [number, number]>; }
 
 export interface Catalog {
   kinds: string[]; bots: string[]; strategies: string[]; tool_modes: string[]; prompt_profiles: string[]; providers: string[];
   default_provider: string; default_model: string; known_models: string[]; config_defaults: Record<string, unknown>; hotseat: boolean; remote: boolean;
   cards: { suspects: Card[]; weapons: Card[]; rooms: Card[] };
+  editions: { id: string; label: string; max_players: number; cards: { suspects: Card[]; weapons: Card[]; rooms: Card[] } }[];
 }
 
 export interface CoachHints { candidates: number; most_likely: null | { suspect: string; weapon: string; room: string; p: number }; deductions: string[]; expert_action: null | { key: string; action: Action }; error: string | null; }
