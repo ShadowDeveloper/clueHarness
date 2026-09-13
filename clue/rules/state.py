@@ -15,13 +15,13 @@ class GameConfig(BaseModel):
     edition: Edition = "classic"
     dice: Literal[1, 2] = 2
     deal_remainder: Literal["uneven", "faceup"] = "uneven"
-    num_players: int = Field(4, ge=3, le=6)
+    num_players: int = Field(4, ge=3, le=12)  # edition caps this further (6 classic, 12 large)
     max_turns: int = 400
 
 
 class PlayerState(BaseModel):
     id: str
-    seat: int  # 0..5 canonical suspect index
+    seat: int  # canonical suspect index (0..5 classic, 0..11 large)
     hand: list[str] = Field(default_factory=list)
     position: str
     eliminated: bool = False
@@ -43,7 +43,7 @@ class GameState(BaseModel):
     players: list[PlayerState]
     solution: tuple[str, str, str]  # (suspect, weapon, room)
     faceup: list[str] = Field(default_factory=list)
-    token_positions: dict[str, str]  # suspect name -> position (all 6)
+    token_positions: dict[str, str]  # suspect name -> position (all suspects of the edition)
     weapon_positions: dict[str, str]  # weapon -> room
     current: int = 0  # index into players
     phase: Phase = "move"

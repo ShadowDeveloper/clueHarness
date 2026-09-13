@@ -25,7 +25,7 @@ from clue.agents.base import PlayerAgent, PonderContext
 from clue.manager.notebook import Notebook
 from clue.rules import Action
 from clue.rules import board as B
-from clue.rules.cards import ROOMS, WEAPONS
+from clue.rules.cards import rooms, weapons
 from clue.tools.opponent import opponent_threat
 from clue.tools.solver import ENVELOPE, Solution, solve
 
@@ -163,11 +163,15 @@ class BaselineExpertBot(PlayerAgent):
     def _best_suggestion(self, obs: dict[str, Any], sol: Solution, room: str, exact: bool = False) -> tuple[str, str, float]:
         best: list[tuple[float, str, str]] = []
         for s in obs["cards"]["suspects"]:
-            for w in WEAPONS:
+            for w in obs["cards"]["weapons"]:
                 best.append((self._expected_gain(obs, sol, s, w, room), s, w))
         best.sort(reverse=True)
-        if exact and self.exact_top > 0:
-            cand = best[: self.exact_top]
+        # exact re-scoring re-solves once per disproof outcome; on big tables (sampled solver, many opponents)
+        # that is far too slow, so trim the candidate list proportionally (0 = skip when the posterior is sampled)
+        n_opp = max(1, len(obs["board"]["players"]) - 1)
+        n_top = self.exact_top if sol.exact else max(0, min(self.exact_top, 24 // n_opp))
+        if exact and n_top > 0:
+            cand = best[:n_top]
             best = [(self._exact_gain(obs, sol, s, w, room), s, w) for _, s, w in cand]
             best.sort(reverse=True)
         top = [b for b in best if b[0] >= best[0][0] - 1e-9]
@@ -180,7 +184,7 @@ class BaselineExpertBot(PlayerAgent):
             rv: dict[str, float] = self._cache["room_values"]
             return rv
         rv = {}
-        for room in ROOMS:
+        for room in obs["cards"]["rooms"]:
             _, _, g = self._best_suggestion(obs, sol, room)
             rv[room] = g
         self._cache["room_values"] = rv
@@ -189,17 +193,18 @@ class BaselineExpertBot(PlayerAgent):
 
     # ------------------------------------------------------------------ movement
     @staticmethod
-    def _turns_to_rooms(pos: str, occupied: frozenset[str], dice: int) -> dict[str, float]:
+    def _turns_to_rooms(pos: str, occupied: frozenset[str], dice: int, edition: str = "classic") -> dict[str, float]:
         """Expected turns to reach each room from `pos` (BFS steps / mean roll, passages count as 1 turn)."""
         mean_roll = 3.5 * dice
         dist: dict[str, float] = {}
         # corridor BFS from pos (or from each door if in a room)
         starts: list[tuple[tuple[int, int], int]] = []
+        board = B.board_for(edition)
         if B.is_room(pos):
-            for d in B.DOORS[pos]:
+            for d in board.doors[pos]:
                 starts.append((d, 1))
-            if pos in B.SECRET_PASSAGES:
-                dist[B.SECRET_PASSAGES[pos]] = 1.0
+            if pos in board.passages:
+                dist[board.passages[pos]] = 1.0
         else:
             starts.append((B.parse_sq(pos), 0))
         blocked = {B.parse_sq(p) for p in occupied if not B.is_room(p) and p != pos}
@@ -212,11 +217,11 @@ class BaselineExpertBot(PlayerAgent):
             q.append((c, d0))
         while q:
             cell, dd = q.popleft()
-            for room in B.BOARD.door_room.get(cell, []):
+            for room in board.door_room.get(cell, []):
                 if room != pos:
                     t = math.ceil((dd + 1) / mean_roll)
                     dist[room] = min(dist.get(room, 99), float(max(1, t)))
-            for n in B.BOARD.neighbors(cell):
+            for n in board.neighbors(cell):
                 if n in blocked or n in seen:
                     continue
                 seen[n] = dd + 1
@@ -226,7 +231,7 @@ class BaselineExpertBot(PlayerAgent):
     def _target_room(self, obs: dict[str, Any], sol: Solution, frm: str) -> tuple[str | None, float]:
         rv = self._room_values(obs, sol)
         occ = frozenset(obs["board"]["token_positions"].values())
-        turns = self._turns_to_rooms(frm, occ, obs["config"]["dice"])
+        turns = self._turns_to_rooms(frm, occ, obs["config"]["dice"], obs["config"]["edition"])
         best, best_score = None, -1.0
         for room, t in turns.items():
             score = rv.get(room, 0.0) / (t + 0.5)
@@ -241,6 +246,9 @@ class BaselineExpertBot(PlayerAgent):
             return None
         best, p = sol.best
         if best is None or p < 0.34:
+            return None
+        if not sol.exact and p < 0.9:
+            # sampled posterior (large tables): probabilities are estimates, so only gamble on near-certainties
             return None
         nb, players, sizes, edition = self._ctx(obs)
         for con in nb.unrefuted_suggestions[-3:]:
@@ -275,7 +283,7 @@ class BaselineExpertBot(PlayerAgent):
             return Action(type="suggest", player=self.id, suspect=s, weapon=w, room=pos)
         if "passage" in types or "roll" in types:
             if "passage" in types:
-                dest = B.SECRET_PASSAGES[pos]
+                dest = B.passages_for(obs["config"]["edition"])[pos]
                 rv = self._room_values(obs, sol)
                 target, score = self._target_room(obs, sol, pos)
                 # passage is a guaranteed room this turn: take it if its value is competitive
@@ -300,7 +308,7 @@ class BaselineExpertBot(PlayerAgent):
                 dest = a.to or ""
                 if B.is_room(dest):
                     return rv.get(dest, 0.0) * 2  # already counted above; strongly prefer rooms anyway
-                t = self._turns_to_rooms(dest, occ, dice)
+                t = self._turns_to_rooms(dest, occ, dice, obs["config"]["edition"])
                 return max((rv.get(r, 0.0) / (tt + 0.5) for r, tt in t.items()), default=0.0)
 
             return max(moves, key=move_score)
@@ -353,8 +361,8 @@ def _combo_entropy(sol: Solution) -> float:
 
 
 def _cat(card: str) -> str:
-    if card in WEAPONS:
+    if card in weapons("large"):
         return "weapon"
-    if card in ROOMS:
+    if card in rooms("large"):
         return "room"
     return "suspect"

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from clue.rules import board as B
-from clue.rules.cards import WEAPONS, suspects
+from clue.rules.cards import rooms, suspects, weapons
 
 
 def load_replay(path: str | Path) -> list[dict[str, Any]]:
@@ -27,16 +27,16 @@ class ReplayState:
         start = next((r for r in records if r.get("type") == "game_start"), {})
         self.edition = str((start.get("config") or {}).get("edition", "classic"))
         self.players: list[dict[str, Any]] = list(start.get("players", []))
-        self.suspects = list(suspects(self.edition))  # type: ignore[arg-type]
+        self.suspects = list(suspects(self.edition))
         self.hands: dict[str, list[str]] = dict(start.get("hands", {}))
         self.solution: list[str] = list(start.get("solution", []))
-        self.weapon_start: dict[str, str] = dict(start.get("weapon_positions", {})) or dict(zip(WEAPONS, ["Hall", "Lounge", "Dining Room", "Kitchen", "Ballroom", "Conservatory"], strict=True))
+        self.weapon_start: dict[str, str] = dict(start.get("weapon_positions", {})) or {w: rooms(self.edition)[i % len(rooms(self.edition))] for i, w in enumerate(weapons(self.edition))}
         self.events = [r for r in records if r.get("kind") == "event" and r.get("type") != "game_start"]
         self.reset()
 
     def reset(self) -> None:
         n = len(self.players)
-        self.tokens = {s: B.sq(*B.START_SQUARES[i]) for i, s in enumerate(self.suspects)}
+        self.tokens = {s: B.sq(*B.board_for(self.edition).starts[i]) for i, s in enumerate(self.suspects)}
         self.weapons = dict(self.weapon_start)
         self.seat = {p["id"]: self.suspects[i] for i, p in enumerate(self.players[:n])}
         self.idx = 0

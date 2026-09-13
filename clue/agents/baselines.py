@@ -105,7 +105,7 @@ class BaselineHeuristicBot(PlayerAgent):
             return Action(type="suggest", player=self.id, suspect=s, weapon=w, room=room)
         unknown_rooms = [r for r in obs["cards"]["rooms"] if r not in nb.known_not_in_solution()]
         if "passage" in types:
-            dest = B.SECRET_PASSAGES[obs["you"]["position"]]
+            dest = B.passages_for(edition)[obs["you"]["position"]]
             if dest in unknown_rooms or not unknown_rooms:
                 return Action(type="passage", player=self.id)
         if "roll" in types:
@@ -120,20 +120,21 @@ class BaselineHeuristicBot(PlayerAgent):
                 return self.rng.choice(rooms)
             # head toward the nearest unknown room
             targets = unknown_rooms or list(obs["cards"]["rooms"])
-            best = min(moves, key=lambda a: self._dist_to_rooms(a.to or "", targets))
+            best = min(moves, key=lambda a: self._dist_to_rooms(a.to or "", targets, edition))
             return best
         if "end_turn" in types:
             return Action(type="end_turn", player=self.id)
         return legal_actions[0]
 
     @staticmethod
-    def _dist_to_rooms(pos: str, rooms: list[str]) -> int:
+    def _dist_to_rooms(pos: str, rooms: list[str], edition: str = "classic") -> int:
         if B.is_room(pos):
             return 0
         cell = B.parse_sq(pos)
         best = 999
+        doors = B.board_for(edition).doors
         for room in rooms:
-            for door in B.DOORS[room]:
+            for door in doors[room]:
                 best = min(best, abs(cell[0] - door[0]) + abs(cell[1] - door[1]))
         return best
 

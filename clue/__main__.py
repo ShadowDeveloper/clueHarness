@@ -32,6 +32,7 @@ def _specs(
     no_tools: bool,
     tool_mode: Optional[str] = None,
     prompt_profile: Optional[str] = None,
+    edition: Optional[str] = None,
 ) -> tuple[GameConfig, list[PlayerSpec], int]:
     if config:
         cfg, specs, cseed, raw = load_yaml_config(config)
@@ -43,6 +44,16 @@ def _specs(
         seed = seed or 0
     else:
         raise typer.BadParameter("provide --config or --players")
+    if edition:
+        from clue.config import EDITION_ALIASES
+
+        if edition not in EDITION_ALIASES:
+            raise typer.BadParameter(f"unknown edition {edition!r}; choose classic | modern | large")
+        cfg = cfg.model_copy(update={"edition": EDITION_ALIASES[edition]})
+    from clue.rules.cards import max_players
+
+    if not 3 <= cfg.num_players <= max_players(cfg.edition):
+        raise typer.BadParameter(f"{cfg.edition} edition needs 3..{max_players(cfg.edition)} players (got {cfg.num_players}); use --edition large for up to 12")
     if dice:
         cfg = cfg.model_copy(update={"dice": dice})
     if strategy:
@@ -88,6 +99,7 @@ def play(
     players: Optional[str] = typer.Option(None, help="e.g. human,llm:bayesian,llm:aggressive,baseline"),
     seed: Optional[int] = typer.Option(None),
     dice: Optional[int] = typer.Option(None, help="1 or 2"),
+    edition: Optional[str] = typer.Option(None, "--edition", help="classic | modern | large (12 suspects/weapons/rooms, up to 12 players)"),
     strategy: Optional[str] = typer.Option(None, help="default strategy .md for LLM seats without one"),
     no_tools: bool = typer.Option(False, "--no-tools", help="ablation: LLM agents get no symbolic analysis"),
     provider: Optional[str] = typer.Option(None, help="mock|openrouter|openai|local|anthropic (default env CLUE_LLM_PROVIDER)"),
@@ -114,7 +126,7 @@ def play(
         if gm.finished:
             raise typer.BadParameter(f"{resume} is a finished game")
     else:
-        cfg, specs, seed = _specs(config, players, seed, dice, strategy, no_tools, tool_mode, prompt_profile)
+        cfg, specs, seed = _specs(config, players, seed, dice, strategy, no_tools, tool_mode, prompt_profile, edition)
     ponder = ponder or bool(_YAML_EXTRA.get("ponder"))
     has_human = any(s.kind == "human" for s in specs)
     if ui == "auto":
@@ -167,6 +179,7 @@ def tournament(
     config: Optional[str] = typer.Option(None),
     seed: int = typer.Option(0),
     dice: Optional[int] = typer.Option(None),
+    edition: Optional[str] = typer.Option(None, "--edition", help="classic | modern | large"),
     no_tools: bool = typer.Option(False, "--no-tools"),
     provider: Optional[str] = typer.Option(None),
     report: str = typer.Option("elo.csv"),
@@ -178,7 +191,7 @@ def tournament(
     workers: Optional[int] = typer.Option(None, "--workers", "-w", help="games played concurrently: N, 0 = all CPU cores (default 1; YAML `workers:`)"),
 ) -> None:
     """Run N AI-vs-AI games (optionally in parallel) and write win-rate / ELO stats."""
-    cfg, specs, seed = _specs(config, players, seed, dice, None, no_tools, tool_mode, prompt_profile)
+    cfg, specs, seed = _specs(config, players, seed, dice, None, no_tools, tool_mode, prompt_profile, edition)
     _budget(max_usd)
     if workers is None:
         workers = int(_YAML_EXTRA.get("workers", 1))

@@ -11,7 +11,16 @@ from clue.agents.factory import STRATEGY_ALIASES
 from clue.manager import PlayerSpec
 from clue.rules import GameConfig
 
-EDITION_ALIASES = {"classic": "classic", "classic-clue-1996": "classic", "classic-clue-2002": "classic", "modern": "modern", "modern-2016": "modern"}
+EDITION_ALIASES = {
+    "classic": "classic",
+    "classic-clue-1996": "classic",
+    "classic-clue-2002": "classic",
+    "modern": "modern",
+    "modern-2016": "modern",
+    "large": "large",
+    "hill-house": "large",
+    "12": "large",
+}
 
 
 def load_yaml_config(path: str | Path) -> tuple[GameConfig, list[PlayerSpec], int, dict[str, Any]]:

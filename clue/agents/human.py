@@ -12,7 +12,6 @@ from rich.table import Table
 from clue.agents.base import PlayerAgent
 from clue.rules import Action
 from clue.rules import board as B
-from clue.rules.cards import ROOMS, WEAPONS
 
 console = Console()
 
@@ -67,8 +66,9 @@ class HumanCLIAgent(PlayerAgent):
 
     def _show(self, obs: dict[str, Any]) -> None:
         sus = obs["cards"]["suspects"]
-        labels = dict(zip(sus, "SMWGKP", strict=True))  # Scarlet Mustard White Green peacocK Plum
-        console.print(Panel(B.ascii_board(obs["board"]["token_positions"], labels), title="Board (+ = door, X = cellar, S/M/W/G/K/P = tokens)", expand=False))
+        labels = dict(zip(sus, "SMWGKPBYHATR"[: len(sus)], strict=True))  # Scarlet Mustard White Green peacocK Plum Butler Yvette peacH grAy boddy(T) Rose
+        key = ", ".join(f"{lab}={s}" for s, lab in labels.items())
+        console.print(Panel(B.ascii_board(obs["board"]["token_positions"], labels, obs["config"]["edition"]), title=f"Board (+ = door, X = cellar, tokens: {key})", expand=False))
         you = obs["you"]
         console.print(f"[bold]You are {you['id']} ({you['suspect_token']})[/bold] at {you['position']}  hand: [green]{', '.join(you['hand'])}[/green]")
         nb = obs["notebook"]
@@ -121,8 +121,9 @@ class HumanCLIAgent(PlayerAgent):
     def _build(self, obs: dict[str, Any], kind: str) -> Action:
         sus = obs["cards"]["suspects"]
         s = sus[self._pick("Suspect #: ", sus)]
-        w = WEAPONS[self._pick("Weapon #: ", list(WEAPONS))]
-        room = obs["you"]["position"] if kind == "suggest" else ROOMS[self._pick("Room #: ", list(ROOMS))]
+        wps, rms = obs["cards"]["weapons"], obs["cards"]["rooms"]
+        w = wps[self._pick("Weapon #: ", list(wps))]
+        room = obs["you"]["position"] if kind == "suggest" else rms[self._pick("Room #: ", list(rms))]
         return Action(type=kind, player=self.id, suspect=s, weapon=w, room=room)  # type: ignore[arg-type]
 
     def choose_card_to_show(self, observation: dict[str, Any], cards_that_can_disprove: list[str]) -> str:

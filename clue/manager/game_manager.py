@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field
 from clue.manager.notebook import Notebook
 from clue.rules import Action, Event, GameConfig, GameState, apply_action, legal_actions, new_game
 from clue.rules import board as B
-from clue.rules.cards import ROOMS, WEAPONS, suspects
+from clue.rules.cards import rooms, suspects, weapons
 
 
 class PlayerSpec(BaseModel):
@@ -197,7 +197,7 @@ class GameManager:
                 "token_positions": dict(st.token_positions),
                 "weapon_positions": dict(st.weapon_positions),
                 "players": [{"id": q.id, "suspect_token": sus[q.seat], "position": q.position, "eliminated": q.eliminated, "hand_size": len(q.hand)} for q in st.players],
-                "secret_passages": dict(B.SECRET_PASSAGES),
+                "secret_passages": dict(B.passages_for(st.config.edition)),
                 "your_legal_moves": [a.to for a in acts if a.type == "move"],
             },
             "turn": {
@@ -212,7 +212,7 @@ class GameManager:
             "notebook": self.notebooks[player_id].model_dump(),
             "legal_actions": [a.model_dump(exclude_none=True) for a in acts],
             "can_accuse": any(a.type != "show_card" for a in acts) and st.phase != "disprove",
-            "cards": {"suspects": list(sus), "weapons": list(WEAPONS), "rooms": list(ROOMS), "faceup": list(st.faceup)},
+            "cards": {"suspects": list(sus), "weapons": list(weapons(st.config.edition)), "rooms": list(rooms(st.config.edition)), "faceup": list(st.faceup)},
             "config": st.config.model_dump(),
         }
 

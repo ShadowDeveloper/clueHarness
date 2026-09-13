@@ -11,7 +11,7 @@ import random
 from typing import Any
 
 from clue.manager.notebook import Notebook
-from clue.rules.cards import ROOMS, WEAPONS, suspects
+from clue.rules.cards import rooms, suspects, weapons
 from clue.tools.solver import hard_deductions as solver_hard_deductions
 from clue.tools.solver import solve
 
@@ -22,9 +22,9 @@ def get_unseen_cards(nb: Notebook, edition: str = "classic") -> dict[str, list[s
     """Cards not in your hand, not face-up, and not shown to you — per category."""
     known = nb.known_not_in_solution()
     return {
-        "suspects": [c for c in suspects(edition) if c not in known],  # type: ignore[arg-type]
-        "weapons": [c for c in WEAPONS if c not in known],
-        "rooms": [c for c in ROOMS if c not in known],
+        "suspects": [c for c in suspects(edition) if c not in known],
+        "weapons": [c for c in weapons(edition) if c not in known],
+        "rooms": [c for c in rooms(edition) if c not in known],
     }
 
 
@@ -130,8 +130,8 @@ def best_suggestion(nb: Notebook, players: list[str], me: str, room: str, editio
     """Pick the (suspect, weapon) that maximises suggestion_ev in `room`."""
     rng = rng or random.Random(0)
     best: list[tuple[float, str, str]] = []
-    for s in suspects(edition):  # type: ignore[arg-type]
-        for w in WEAPONS:
+    for s in suspects(edition):
+        for w in weapons(edition):
             sc = suggestion_ev(nb, players, me, s, w, room, edition)["score"]
             best.append((sc, s, w))
     best.sort(reverse=True)
