@@ -56,7 +56,7 @@ export default function Lobby() {
   };
 
   return (
-    <div className="page grid" style={{ gridTemplateColumns: "minmax(520px, 2fr) 1fr" }}>
+    <div className="page grid lobby-grid">
       <div className="panel">
         <h3>New game</h3>
         {cat && seats.map((s, i) => (

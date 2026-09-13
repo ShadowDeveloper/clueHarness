@@ -147,7 +147,7 @@ function RemoteLobbyInline({ state, invites }: { state: import("../api/types").G
       {state.humans.map((pid) => (
         <div key={pid} className="row" style={{ justifyContent: "space-between" }}>
           <span><span className={(state.presence[pid] ?? 0) > 0 ? "ok" : "dim"}>●</span> <b>{pid}</b></span>
-          {invites?.[pid] ? <input readOnly className="mono" style={{ width: 360, fontSize: 11 }} value={`${location.origin}/game/${state.id}?k=${invites[pid]}`} onFocus={(e) => e.currentTarget.select()} /> : <span className="dim">—</span>}
+          {invites?.[pid] ? <input readOnly className="mono" style={{ width: "min(360px, 100%)", fontSize: 11 }} value={`${location.origin}/game/${state.id}?k=${invites[pid]}`} onFocus={(e) => e.currentTarget.select()} /> : <span className="dim">—</span>}
         </div>
       ))}
     </div>

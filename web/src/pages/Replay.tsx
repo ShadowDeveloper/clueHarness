@@ -48,7 +48,7 @@ export default function Replay() {
   const f = data?.frames[idx];
   const players = data?.info.players ?? [];
   return (
-    <div className="page grid" style={{ gridTemplateColumns: "minmax(420px, 560px) 1fr" }}>
+    <div className="page grid replay-grid">
       <div className="grid">
         <div className="panel">
           <h3>Replay files</h3>

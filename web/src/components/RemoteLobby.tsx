@@ -27,7 +27,7 @@ export default function RemoteLobby({ state, role, me, invites, onStart }: Props
         <span><span className={here ? "ok" : "dim"}>●</span> <b>{pid}</b> <span className="dim">{p?.suspect_token}{p?.name ? ` · ${p.name}` : ""}</span>{pid === me && <span className="pill hot" style={{ marginLeft: 6 }}>you</span>}</span>
         {invites?.[pid] ? (
           <span className="row">
-            <input readOnly className="mono" style={{ width: 340, fontSize: 11 }} value={inviteUrl(state.id, invites[pid])} onFocus={(e) => e.currentTarget.select()} />
+            <input readOnly className="mono" style={{ width: "min(340px, 60vw)", fontSize: 11 }} value={inviteUrl(state.id, invites[pid])} onFocus={(e) => e.currentTarget.select()} />
             <button onClick={() => copy(pid, inviteUrl(state.id, invites[pid]))}>{copied === pid ? "copied ✓" : "copy link"}</button>
           </span>
         ) : <span className="dim">{here ? "joined" : "waiting…"}</span>}
@@ -38,7 +38,7 @@ export default function RemoteLobby({ state, role, me, invites, onStart }: Props
     <div className="curtain remote-lobby" role="dialog" aria-modal="true">
       <h1>Waiting for players</h1>
       <p className="dim">{state.waiting_for.length ? `${state.waiting_for.length} seat${state.waiting_for.length > 1 ? "s" : ""} still to join: ${state.waiting_for.join(", ")}` : "everyone is here"}</p>
-      <div className="panel" style={{ minWidth: 520, display: "grid", gap: 8 }}>
+      <div className="panel" style={{ display: "grid", gap: 8 }}>
         {state.humans.map(seatRow)}
       </div>
       {role === "owner" && invites && <p className="dim" style={{ fontSize: 12, maxWidth: 560 }}>Send each link to exactly one player — it shows that seat's hand. The game starts when every seat has opened its link. Keep this tab open to watch as the host{me ? "" : " (omniscient links are only offered in bot-only games)"}.</p>}

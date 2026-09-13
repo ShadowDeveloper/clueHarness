@@ -23,7 +23,7 @@ export default function Tournaments() {
     try { const t = await api.createTournament({ players_arg: players, games, seed, workers, ponder, max_usd: maxUsd ? Number(maxUsd) : null }); nav(`/tournaments/${t.id}`); refresh(); } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); }
   };
   return (
-    <div className="page grid" style={{ gridTemplateColumns: "360px 1fr" }}>
+    <div className="page grid tourn-grid">
       <div className="grid" style={{ alignContent: "start" }}>
         <div className="panel">
           <h3>New tournament</h3>
