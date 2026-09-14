@@ -33,7 +33,11 @@ def describe_event(e: dict[str, Any]) -> str:
         return f"  {p} can disprove..."
     if t == "disproved":
         card = e.get("card")
-        return f"  {p} showed {'the ' + card if card else 'a card'} to {e['suggester']}"
+        return f"  {e.get('disprover') or p or 'someone'} showed {'the ' + card if card else 'a card'} to {e['suggester']}"
+    if t == "penalised":
+        return f"{p} was wrong and sits out the next {e.get('skip_turns')} turn(s)"
+    if t == "turn_skipped":
+        return f"--- Turn {e['turn']}: {p} sits out ({e.get('remaining')} more) ---"
     if t == "no_one_disproved":
         return "  NOBODY could disprove!"
     if t == "accuse":

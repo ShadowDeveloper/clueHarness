@@ -12,6 +12,7 @@ export default function Tournaments() {
   const [games, setGames] = useState(20);
   const [seed, setSeed] = useState(0);
   const [workers, setWorkers] = useState(0);
+  const [duplicate, setDuplicate] = useState(false);
   const [ponder, setPonder] = useState(false);
   const [edition, setEdition] = useState("classic");
   const [maxUsd, setMaxUsd] = useState("");
@@ -21,7 +22,7 @@ export default function Tournaments() {
 
   const start = async () => {
     setErr(null);
-    try { const t = await api.createTournament({ players_arg: players, games, seed, workers, ponder, max_usd: maxUsd ? Number(maxUsd) : null, config: { edition, num_players: players.split(",").filter(Boolean).length } }); nav(`/tournaments/${t.id}`); refresh(); } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); }
+    try { const t = await api.createTournament({ players_arg: players, games, seed, workers, ponder, duplicate, max_usd: maxUsd ? Number(maxUsd) : null, config: { edition, num_players: players.split(",").filter(Boolean).length } }); nav(`/tournaments/${t.id}`); refresh(); } catch (e) { setErr(e instanceof ApiError ? e.message : String(e)); }
   };
   return (
     <div className="page grid tourn-grid">
@@ -34,6 +35,7 @@ export default function Tournaments() {
             <label>games <input type="number" min={1} max={10000} value={games} onChange={(e) => setGames(Number(e.target.value))} style={{ width: 80 }} /></label>
             <label>seed <input type="number" value={seed} onChange={(e) => setSeed(Number(e.target.value))} style={{ width: 80 }} /></label>
             <label title="0 = all CPU cores">workers <input type="number" min={0} max={64} value={workers} onChange={(e) => setWorkers(Number(e.target.value))} style={{ width: 60 }} /></label>
+            <label title="same deal replayed with the agents rotated through every seat; paired stats cancel deal luck"><input type="checkbox" checked={duplicate} onChange={(e) => setDuplicate(e.target.checked)} /> duplicate deals</label>
           </div>
           <div className="row" style={{ marginTop: 6 }}>
             <label><input type="checkbox" checked={ponder} onChange={(e) => setPonder(e.target.checked)} /> ponder</label>
@@ -94,6 +96,15 @@ function Detail({ id }: { id: string }) {
           <table className="tbl">
             <thead><tr><th>agent</th><th>games</th><th>wins</th><th>win rate</th><th>95% CI</th><th>false acc.</th><th>avg turns to win</th><th>illegal</th><th>ELO</th></tr></thead>
             <tbody>{rep.table.map((r) => <tr key={r.agent}><td>{r.agent}</td><td>{r.games}</td><td>{r.wins}</td><td><b>{(r.win_rate * 100).toFixed(0)}%</b></td><td className="dim">{r.win_ci95 ? `${(r.win_ci95[0] * 100).toFixed(0)}–${(r.win_ci95[1] * 100).toFixed(0)}%` : "—"}</td><td>{r.false_accusation_rate ?? "—"}</td><td>{r.avg_turns_to_win ?? "—"}</td><td className={r.illegal_attempts ? "bad" : ""}>{r.illegal_attempts ?? 0}</td><td>{r.elo ?? "—"}</td></tr>)}</tbody>
+          </table>
+        </div>
+      )}
+      {rep?.duplicate && (
+        <div className="panel">
+          <h3>Duplicate deals <span className="dim" style={{ fontWeight: "normal", fontSize: 12 }}>· {rep.duplicate.deals} deals, every agent played each deal from every seat</span></h3>
+          <table className="tbl">
+            <thead><tr><th>agent</th><th>win share per deal</th><th>paired diff vs best other</th></tr></thead>
+            <tbody>{Object.entries(rep.duplicate.per_label).map(([lab, d]) => <tr key={lab}><td>{lab}</td><td><b>{(d.win_share * 100).toFixed(0)}%</b></td><td className="dim">{d.vs ? `${d.paired_diff! >= 0 ? "+" : ""}${(d.paired_diff! * 100).toFixed(0)}% ± ${(d.se! * 100).toFixed(0)}% vs ${d.vs}` : "—"}</td></tr>)}</tbody>
           </table>
         </div>
       )}

@@ -9,6 +9,12 @@ deal_remainder: uneven          # uneven (official) | faceup (house rule)
 max_turns: 400                  # safety cap -> draw
 ponder: false                   # parallel thinking for AI seats (docs/pondering.md)
 workers: 1                      # tournament: games played concurrently (0 = all CPU cores)
+# optional house rules, all default off (docs/variants.md)
+# teams: [[P1, P3], [P2, P4]]   # B: shared hands, win together, teammates never disprove each other
+# private_disproofs: true       # C: only the parties involved learn who passed / who showed
+# wrong_accusation: skip_turns  # D: eliminate (classic) | skip_turns
+# accusation_penalty_turns: 2   # D: turns sat out after a wrong accusation
+# shuffle_seats: true           # E: seeded random seating order
 players:                        # 3–6 entries, seated in order (Scarlet first)
   - id: P1                      # optional; defaults to P<n>
     kind: human                 # human | llm | baseline
@@ -56,10 +62,11 @@ Strategy aliases: `conservative`, `aggressive`, `bayesian`, `info_value_hunter` 
 python -m clue play        [--config F | --players LIST] [--seed N] [--dice 1|2] [--strategy F]
                            [--no-tools] [--provider P] [--ui auto|tui|cli] [--spectate] [--delay S]
                            [--no-emoji] [--ponder] [--ponder-grace S] [--replay-dir D] [--quiet]
-                           [--save F] [--no-autosave] [--max-usd X]
+                           [--save F] [--no-autosave] [--max-usd X] [--edition E] [--variants LIST]
 python -m clue play        --resume F [--ui ...] [--delay S] [--ponder] [--provider P] [--replay-dir D]
 python -m clue tournament  --games N [--config F | --players LIST] [--seed N] [--dice 1|2] [--no-tools]
                            [--provider P] [--report elo.csv] [--replay-dir D] [--ponder] [--workers N|0]
+                           [--edition E] [--variants LIST] [--duplicate]
 python -m clue eval        [--games N] [--seed N] [--out DIR] [--live]
 python -m clue replay      PATH [--viewer Pn] [--tui]
 python -m clue web         [--host H] [--port N] [--hotseat] [--no-remote] [--open] [--saves-dir D] [--replay-dir D] [--max-usd X] [--dev-origin URL]
@@ -67,6 +74,7 @@ python -m clue web         [--host H] [--port N] [--hotseat] [--no-remote] [--op
 * `--strategy F` applies `F` to every LLM seat that has no strategy of its own.
 * `--no-tools` flips `tools: false` for all LLM seats (ablation).
 * `--provider` overrides `CLUE_LLM_PROVIDER` for this run.
+* `--variants LIST` switches on house rules: comma list of `private | skip[=N] | shuffle | teams[=K]` (see `variants.md`); `--duplicate` plays tournament blocks on identical deals with the agents rotated through the seats.
 * `--ponder` lets idle AI seats think in parallel between turns (see `pondering.md`); `--ponder-grace` bounds the wait when their turn begins.
 * `--save F` checkpoints the game after every action; `--resume F` continues it (players/seed/rules come from the file, so
   `--players`/`--config`/`--seed` are ignored). The TUI autosaves to `saves/game_<seed>.json` unless `--no-autosave`. See `playing.md`.

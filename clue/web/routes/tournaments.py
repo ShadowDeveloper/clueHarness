@@ -41,7 +41,7 @@ def create(body: CreateTournament, request: Request, reg: Registry = Depends(reg
     if body.max_usd is not None:
         configure_budget(body.max_usd)
     try:
-        t = reg.add_tournament(lambda tid: TournamentSession(tid, specs, body.games, body.seed, body.workers, body.ponder, body.provider, body.config, body.probe))
+        t = reg.add_tournament(lambda tid: TournamentSession(tid, specs, body.games, body.seed, body.workers, body.ponder, body.provider, body.config, body.probe, body.duplicate))
     except RuntimeError as e:
         raise HTTPException(429, str(e)) from e
     return t.snapshot()

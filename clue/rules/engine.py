@@ -28,7 +28,14 @@ def new_game(config: GameConfig, player_ids: list[str], rng: random.Random) -> G
         raise ValueError("player ids must be unique")
     if not 3 <= config.num_players <= max_players(config.edition):
         raise ValueError(f"{config.edition} edition supports 3..{max_players(config.edition)} players")
+    if config.teams:
+        flat = [p for t in config.teams for p in t]
+        if sorted(flat) != sorted(player_ids) or any(len(t) < 1 for t in config.teams) or len(config.teams) < 2:
+            raise ValueError("teams must partition the player ids into at least two teams")
     board = B.board_for(config.edition)
+    if config.shuffle_seats:  # E: seat order (suspect token + turn order) drawn from the seed
+        player_ids = list(player_ids)
+        rng.shuffle(player_ids)
     sus = list(suspects(config.edition))
     wps, rms = weapons(config.edition), rooms(config.edition)
     solution = (rng.choice(sus), rng.choice(wps), rng.choice(rms))
@@ -215,16 +222,30 @@ def apply_action(state: GameState, action: Action, rng: random.Random) -> tuple[
     elif action.type == "show_card":
         assert st.pending_suggestion is not None and action.card is not None
         sug = st.pending_suggestion
-        events.append(
-            Event(
-                type="disproved",
-                turn=t,
-                player=p.id,
-                public={"suggester": sug.suggester, "disprover": p.id},
-                private={"card": action.card},
-                private_to=[sug.suggester, p.id],
+        involved = sorted(set(st.config.team_of(sug.suggester)) | set(st.config.team_of(p.id)))
+        if st.config.private_disproofs:
+            # C: the table only learns that *someone* disproved; who did it stays between the two parties
+            events.append(
+                Event(
+                    type="disproved",
+                    turn=t,
+                    player=None,
+                    public={"suggester": sug.suggester},
+                    private={"card": action.card, "disprover": p.id},
+                    private_to=involved,
+                )
             )
-        )
+        else:
+            events.append(
+                Event(
+                    type="disproved",
+                    turn=t,
+                    player=p.id,
+                    public={"suggester": sug.suggester, "disprover": p.id},
+                    private={"card": action.card},
+                    private_to=involved,
+                )
+            )
         st.pending_suggestion = None
         st.disprover_index = None
         st.phase = "accuse"
@@ -244,7 +265,12 @@ def apply_action(state: GameState, action: Action, rng: random.Random) -> tuple[
             st.winner = p.id
             st.finished = True
             st.phase = "end"
-            events.append(Event(type="game_over", turn=t, player=p.id, public={"winner": p.id, "solution": list(st.solution)}))
+            events.append(Event(type="game_over", turn=t, player=p.id, public={"winner": p.id, "team": st.config.team_of(p.id), "solution": list(st.solution)}))
+        elif st.config.wrong_accusation == "skip_turns":
+            # D: sit out the next N own turns instead of leaving the game (still must disprove)
+            p.skip_turns = st.config.accusation_penalty_turns
+            events.append(Event(type="penalised", turn=t, player=p.id, public={"skip_turns": p.skip_turns}))
+            _end_turn(st, events)
         else:
             p.eliminated = True
             events.append(Event(type="eliminated", turn=t, player=p.id))
@@ -272,15 +298,22 @@ def _advance_disprover(st: GameState, events: list[Event], start_after: int) -> 
     sug = st.pending_suggestion
     cards = {sug.suspect, sug.weapon, sug.room}
     n = len(st.players)
+    team = set(st.config.team_of(sug.suggester))
     for k in range(1, n):
         idx = (start_after + k) % n
         q = st.players[idx]
+        if q.id in team:
+            continue  # teammates already share their hands
+        # C. private disproofs: bystanders must not learn *who* passed or who showed, so the existence of these
+        # events is restricted to the suggester's team and the player concerned (the manager filters on private_to).
+        hidden = st.config.private_disproofs
+        viewers = sorted(team | {q.id}) if hidden else []
         if cards & set(q.hand):
             st.disprover_index = idx
             st.phase = "disprove"
-            events.append(Event(type="can_disprove", turn=st.turn_number, player=q.id, public={"suggester": sug.suggester}))
+            events.append(Event(type="can_disprove", turn=st.turn_number, player=q.id, public={"suggester": sug.suggester}, private_to=viewers, hidden=hidden))
             return
-        events.append(Event(type="cannot_disprove", turn=st.turn_number, player=q.id, public={"suggester": sug.suggester}))
+        events.append(Event(type="cannot_disprove", turn=st.turn_number, player=q.id, public={"suggester": sug.suggester}, private_to=viewers, hidden=hidden))
     events.append(
         Event(
             type="no_one_disproved",
@@ -309,12 +342,26 @@ def _end_turn(st: GameState, events: list[Event]) -> None:
         events.append(Event(type="game_over", turn=st.turn_number, player=None, public={"winner": None, "reason": "max_turns", "solution": list(st.solution)}))
         return
     n = len(st.players)
-    for k in range(1, n + 1):
+    alive = [q for q in st.players if not q.eliminated]
+    max_skip = max((q.skip_turns for q in alive), default=0)
+    for k in range(1, n * (max_skip + 1) + 1):  # D: enough laps that every penalty runs out
         idx = (st.current + k) % n
-        if not st.players[idx].eliminated:
-            st.current = idx
-            st.phase = "move"
-            events.append(Event(type="turn_start", turn=st.turn_number, player=st.players[idx].id))
-            return
+        q = st.players[idx]
+        if q.eliminated:
+            continue
+        if q.skip_turns > 0:  # D: penalised player sits this one out
+            q.skip_turns -= 1
+            events.append(Event(type="turn_skipped", turn=st.turn_number, player=q.id, public={"remaining": q.skip_turns}))
+            st.turn_number += 1
+            if st.turn_number >= st.config.max_turns:
+                break
+            continue
+        st.current = idx
+        st.phase = "move"
+        events.append(Event(type="turn_start", turn=st.turn_number, player=q.id))
+        return
     st.finished = True
     st.phase = "end"
+    if not any(e.type == "game_over" for e in events):
+        reason = "no_active_players" if st.turn_number < st.config.max_turns else "max_turns"
+        events.append(Event(type="game_over", turn=st.turn_number, player=None, public={"winner": None, "reason": reason, "solution": list(st.solution)}))

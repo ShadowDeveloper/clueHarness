@@ -23,6 +23,28 @@ console = Console()
 _YAML_EXTRA: dict[str, Any] = {}
 
 
+def parse_variants(arg: str, ids: list[str]) -> dict[str, Any]:
+    """`--variants` grammar: comma list of  private | skip[=N] | shuffle | teams[=K]  (teams=K forms K teams round-robin
+    over the seats; default 2). See docs/variants.md."""
+    out: dict[str, Any] = {}
+    for tok in filter(None, (t.strip() for t in arg.split(","))):
+        key, _, val = tok.partition("=")
+        if key == "private":
+            out["private_disproofs"] = True
+        elif key == "skip":
+            out["wrong_accusation"] = "skip_turns"
+            if val:
+                out["accusation_penalty_turns"] = int(val)
+        elif key == "shuffle":
+            out["shuffle_seats"] = True
+        elif key == "teams":
+            k = int(val or 2)
+            out["teams"] = [ids[i::k] for i in range(k)]
+        else:
+            raise typer.BadParameter(f"unknown variant {key!r}; use private | skip[=N] | shuffle | teams[=K]")
+    return out
+
+
 def _specs(
     config: Optional[str],
     players: Optional[str],
@@ -33,6 +55,7 @@ def _specs(
     tool_mode: Optional[str] = None,
     prompt_profile: Optional[str] = None,
     edition: Optional[str] = None,
+    variants: Optional[str] = None,
 ) -> tuple[GameConfig, list[PlayerSpec], int]:
     if config:
         cfg, specs, cseed, raw = load_yaml_config(config)
@@ -56,6 +79,8 @@ def _specs(
         raise typer.BadParameter(f"{cfg.edition} edition needs 3..{max_players(cfg.edition)} players (got {cfg.num_players}); use --edition large for up to 12")
     if dice:
         cfg = cfg.model_copy(update={"dice": dice})
+    if variants:
+        cfg = cfg.model_copy(update=parse_variants(variants, [s.id for s in specs]))
     if strategy:
         specs = [s.model_copy(update={"strategy": strategy}) if s.kind == "llm" and not s.strategy else s for s in specs]
     if no_tools:
@@ -100,6 +125,7 @@ def play(
     seed: Optional[int] = typer.Option(None),
     dice: Optional[int] = typer.Option(None, help="1 or 2"),
     edition: Optional[str] = typer.Option(None, "--edition", help="classic | modern | large (12 suspects/weapons/rooms, up to 12 players)"),
+    variants: Optional[str] = typer.Option(None, "--variants", help="comma list: private | skip[=N] | shuffle | teams[=K] (docs/variants.md)"),
     strategy: Optional[str] = typer.Option(None, help="default strategy .md for LLM seats without one"),
     no_tools: bool = typer.Option(False, "--no-tools", help="ablation: LLM agents get no symbolic analysis"),
     provider: Optional[str] = typer.Option(None, help="mock|openrouter|openai|local|anthropic (default env CLUE_LLM_PROVIDER)"),
@@ -126,7 +152,7 @@ def play(
         if gm.finished:
             raise typer.BadParameter(f"{resume} is a finished game")
     else:
-        cfg, specs, seed = _specs(config, players, seed, dice, strategy, no_tools, tool_mode, prompt_profile, edition)
+        cfg, specs, seed = _specs(config, players, seed, dice, strategy, no_tools, tool_mode, prompt_profile, edition, variants)
     ponder = ponder or bool(_YAML_EXTRA.get("ponder"))
     has_human = any(s.kind == "human" for s in specs)
     if ui == "auto":
@@ -180,6 +206,7 @@ def tournament(
     seed: int = typer.Option(0),
     dice: Optional[int] = typer.Option(None),
     edition: Optional[str] = typer.Option(None, "--edition", help="classic | modern | large"),
+    variants: Optional[str] = typer.Option(None, "--variants", help="comma list: private | skip[=N] | shuffle | teams[=K] (docs/variants.md)"),
     no_tools: bool = typer.Option(False, "--no-tools"),
     provider: Optional[str] = typer.Option(None),
     report: str = typer.Option("elo.csv"),
@@ -189,9 +216,10 @@ def tournament(
     prompt_profile: Optional[str] = typer.Option(None, "--prompt-profile", help="LLM agents: full | compact"),
     max_usd: Optional[float] = typer.Option(None, "--max-usd", help="hard cap on live LLM spend for this run"),
     workers: Optional[int] = typer.Option(None, "--workers", "-w", help="games played concurrently: N, 0 = all CPU cores (default 1; YAML `workers:`)"),
+    duplicate: bool = typer.Option(False, "--duplicate", help="duplicate-deal blocks: same deal, agents rotated through every seat; paired stats"),
 ) -> None:
     """Run N AI-vs-AI games (optionally in parallel) and write win-rate / ELO stats."""
-    cfg, specs, seed = _specs(config, players, seed, dice, None, no_tools, tool_mode, prompt_profile, edition)
+    cfg, specs, seed = _specs(config, players, seed, dice, None, no_tools, tool_mode, prompt_profile, edition, variants)
     _budget(max_usd)
     if workers is None:
         workers = int(_YAML_EXTRA.get("workers", 1))
@@ -199,10 +227,14 @@ def tournament(
 
     console.print(f"[dim]{games} games, {min(resolve_workers(workers), games)} in parallel[/dim]")
     try:
-        rep = run_tournament(specs, games, seed=seed, config=cfg, provider=provider, replay_dir=replay_dir, verbose=True, ponder=ponder, workers=workers)
+        rep = run_tournament(specs, games, seed=seed, config=cfg, provider=provider, replay_dir=replay_dir, verbose=True, ponder=ponder, workers=workers, duplicate=duplicate)
     finally:
         _print_cost()
     console.print(markdown_table(rep))
+    if "duplicate" in rep:
+        console.print(f"[bold]duplicate deals[/bold] ({rep['duplicate']['deals']} deals × {len(specs)} rotations)")
+        for lab, d in rep["duplicate"]["per_label"].items():
+            console.print(f"  {lab}: win share {d['win_share']:.3f}" + (f"  vs {d['vs']}: {d['paired_diff']:+.3f} ± {d['se']:.3f}" if "vs" in d else ""))
     write_csv(rep, report)
     Path(report).with_suffix(".json").write_text(json.dumps(rep, indent=1))
     console.print(f"wrote {report}")

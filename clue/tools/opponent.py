@@ -41,7 +41,8 @@ def _shadow_notebook(nb: Notebook, sol: Solution, me: str, opp: str, players: li
                 sh.mark_not_held(who, pending[turn])
         elif t == "disproved":
             cards = pending.get(turn, [])
-            if not cards:
+            who = str(ev.get("disprover") or ev.get("player"))
+            if not cards or who == "None":  # private_disproofs: bystanders don't learn who showed
                 continue
             suggester = str(ev.get("suggester"))
             if who == opp:

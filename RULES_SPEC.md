@@ -80,3 +80,10 @@ suggestion since their last turn). Staying still yields no suggestion.
 - `X disproved (S,W,R)` → X holds at least one of S,W,R.
 - Shown card → suggester knows X holds that card.
 - A suggestion nobody disproved: all three cards are in the envelope or the suggester's own hand.
+
+## 9. Optional house rules (all default off)
+
+Documented in `docs/variants.md`; none of them alters sections 1–8 unless switched on in `GameConfig`:
+`teams` (shared hands, teammates skipped in the disproof round, team win), `private_disproofs` (only the parties
+involved learn who passed / who showed; bystanders see "someone showed a card"), `wrong_accusation: skip_turns`
+(sit out `accusation_penalty_turns` turns instead of elimination), `shuffle_seats` (seeded random seating).

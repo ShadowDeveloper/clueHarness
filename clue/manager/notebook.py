@@ -19,7 +19,8 @@ class Constraint(BaseModel):
 
 class Notebook(BaseModel):
     viewer: str
-    my_hand: list[str] = Field(default_factory=list)
+    team: list[str] = Field(default_factory=list)  # teammates incl. viewer (team mode); [] = solo
+    my_hand: list[str] = Field(default_factory=list)  # own hand + (team mode) teammates' hands
     faceup: list[str] = Field(default_factory=list)
     # cards known to be held by a specific player (viewer's hand, shown cards, deductions)
     known_holder: dict[str, str] = Field(default_factory=dict)
@@ -49,19 +50,22 @@ class Notebook(BaseModel):
             if who == self.viewer:
                 self.my_suggestions.append({"turn": turn, "cards": cards, "shown": None, "by": None})
         elif t == "cannot_disprove":
+            # under private_disproofs the manager only delivers this event to those allowed to see it
             cards = self._cards_of_pending(turn)
             if cards:
                 self.mark_not_held(str(who), cards)
         elif t == "disproved":
             cards = self._cards_of_pending(turn)
-            self.disproof_counts[str(who)] = self.disproof_counts.get(str(who), 0) + 1
+            disprover = ev.get("disprover", who)  # None for bystanders under private_disproofs
+            if disprover is not None:
+                self.disproof_counts[str(disprover)] = self.disproof_counts.get(str(disprover), 0) + 1
             if "card" in ev:  # we were involved
-                self.known_holder[str(ev["card"])] = str(who)
+                self.known_holder[str(ev["card"])] = str(disprover)
                 if ev.get("suggester") == self.viewer and self.my_suggestions:
                     self.my_suggestions[-1]["shown"] = ev["card"]
-                    self.my_suggestions[-1]["by"] = who
-            elif cards:
-                self.has_one_of.append(Constraint(player=str(who), cards=cards, turn=turn, suggester=str(ev.get("suggester"))))
+                    self.my_suggestions[-1]["by"] = disprover
+            elif cards and disprover is not None:
+                self.has_one_of.append(Constraint(player=str(disprover), cards=cards, turn=turn, suggester=str(ev.get("suggester"))))
         elif t == "no_one_disproved":
             cards = [str(ev["suspect"]), str(ev["weapon"]), str(ev["room"])]
             self.unrefuted_suggestions.append(Constraint(player=str(who), cards=cards, turn=turn, suggester=str(who)))

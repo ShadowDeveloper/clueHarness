@@ -94,7 +94,8 @@ def run_game(
         evs = [e.redacted_for(None) for e in events]
         for ag_id, ag in agents.items():
             for ev in events:
-                ag.on_event(ev.redacted_for(ag_id))
+                if ev.visible_to(ag_id):
+                    ag.on_event(ev.redacted_for(ag_id))
         if pm and not gm.finished:
             pm.on_events(evs, gm.acting_player())
         if on_events:

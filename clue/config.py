@@ -40,5 +40,11 @@ def load_yaml_config(path: str | Path) -> tuple[GameConfig, list[PlayerSpec], in
         deal_remainder=data.get("deal_remainder", "uneven"),
         num_players=len(players),
         max_turns=data.get("max_turns", 400),
+        # optional variant toggles (docs/variants.md); all default to classic behaviour
+        teams=data.get("teams"),
+        private_disproofs=bool(data.get("private_disproofs", False)),
+        wrong_accusation=data.get("wrong_accusation", "eliminate"),
+        accusation_penalty_turns=int(data.get("accusation_penalty_turns", 2)),
+        shuffle_seats=bool(data.get("shuffle_seats", False)),
     )
     return cfg, players, int(data.get("seed", 0)), data  # data["ponder"] read by the CLI

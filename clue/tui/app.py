@@ -247,7 +247,11 @@ class ClueApp(App[None]):
         from clue.manager.runner import run_game
 
         def on_events(_gm: GameManager, _evs: list[dict[str, Any]]) -> None:
-            evs = [e.redacted_for(self.viewer) if self.viewer is not None else {"type": e.type, "turn": e.turn, "player": e.player, **e.public, **e.private} for e in _gm.events[-len(_evs) :]]
+            evs = [
+                e.redacted_for(self.viewer) if self.viewer is not None else {"type": e.type, "turn": e.turn, "player": e.player, **e.public, **e.private}
+                for e in _gm.events[-len(_evs) :]
+                if e.visible_to(self.viewer)
+            ]
             self.call_from_thread(self._on_events, evs)
             if self.human is None or _gm.acting_player() != self.viewer:
                 while self.paused:

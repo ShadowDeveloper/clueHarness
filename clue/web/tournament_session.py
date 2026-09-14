@@ -13,7 +13,9 @@ from clue.rules import GameConfig
 
 
 class TournamentSession:
-    def __init__(self, tid: str, specs: list[PlayerSpec], games: int, seed: int, workers: int, ponder: bool, provider: str | None, config: GameConfig | None, probe: bool = True) -> None:
+    def __init__(
+        self, tid: str, specs: list[PlayerSpec], games: int, seed: int, workers: int, ponder: bool, provider: str | None, config: GameConfig | None, probe: bool = True, duplicate: bool = False
+    ) -> None:  # noqa: E501
         self.id = tid
         self.specs = specs
         self.games = games
@@ -23,6 +25,7 @@ class TournamentSession:
         self.provider = provider
         self.config = config
         self.probe = probe
+        self.duplicate = duplicate
         self.status = "running"
         self.started = time.time()
         self.finished_at: float | None = None
@@ -49,7 +52,16 @@ class TournamentSession:
     def _run(self) -> None:
         try:
             self.report = run_tournament(
-                self.specs, self.games, seed=self.seed, config=self.config, provider=self.provider, ponder=self.ponder, probe=self.probe, on_game=self._on_game, workers=self.workers
+                self.specs,
+                self.games,
+                seed=self.seed,
+                config=self.config,
+                provider=self.provider,
+                ponder=self.ponder,
+                probe=self.probe,
+                on_game=self._on_game,
+                workers=self.workers,
+                duplicate=self.duplicate,
             )
             self.status = "finished"
         except BudgetExceeded as e:

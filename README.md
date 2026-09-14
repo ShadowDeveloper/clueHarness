@@ -29,9 +29,14 @@ game.yaml     example config     demo_game.md  example transcript     eval/repor
 clue play --players baseline:expert,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline,baseline --edition large --seed 3
 ```
 
+## House rules for lower variance (opt-in)
+
+Six switches, all off by default, documented in [docs/variants.md](docs/variants.md): **A** duplicate-deal tournaments (`clue tournament --duplicate`: same deal, agents rotated through every seat, paired statistics), **B** teams (`teams:`), **C** private disproofs (`private_disproofs: true` — bystanders no longer learn who passed or who showed), **D** skip-turn penalty instead of elimination (`wrong_accusation: skip_turns`), **E** shuffled seats, **F** smaller tables. From the CLI: `--variants private,skip=2,teams`; the web lobby has the same toggles.
+
 ## Documentation
 | | |
 |---|---|
+| [docs/variants.md](docs/variants.md) | opt-in variance-reduction variants A–F: duplicate deals, teams, private disproofs, skip-turn penalty, shuffled seats |
 | [docs/playing.md](docs/playing.md) | TUI guide (panels, notebook symbols, hotkeys), plain CLI, spectating, save/resume |
 | [docs/web.md](docs/web.md) | web UI: `clue web`, pages, secret links & server-side redaction, hot-seat, remote seats (invite links), API, development |
 | [docs/configuration.md](docs/configuration.md) | `game.yaml`, `--players` shorthand, `.env` providers, every CLI flag |

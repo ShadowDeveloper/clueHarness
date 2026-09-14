@@ -32,6 +32,11 @@ export default function Lobby() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [remote, setRemote] = useState(false);
+  // opt-in house rules (docs/variants.md); all off = classic rules
+  const [privateDisproofs, setPrivateDisproofs] = useState(false);
+  const [skipTurns, setSkipTurns] = useState(0); // 0 = classic elimination
+  const [shuffleSeats, setShuffleSeats] = useState(false);
+  const [teams, setTeams] = useState(0); // 0 = no teams, else number of teams
   const [games, setGames] = useState<GameListItem[]>([]);
   const [saves, setSaves] = useState<{ name: string; seed: number; turn: number; labels: string[] }[]>([]);
 
@@ -49,6 +54,10 @@ export default function Lobby() {
     try {
       const cfg: Record<string, unknown> = { num_players: seats.length, dice, edition };
       if (uneven) cfg.uneven_deal = uneven;
+      if (privateDisproofs) cfg.private_disproofs = true;
+      if (skipTurns > 0) { cfg.wrong_accusation = "skip_turns"; cfg.accusation_penalty_turns = skipTurns; }
+      if (shuffleSeats) cfg.shuffle_seats = true;
+      if (teams > 1) { const ids = seats.map((_, i) => `P${i + 1}`); cfg.teams = Array.from({ length: teams }, (_, t) => ids.filter((_, i) => i % teams === t)); }
       const wantRemote = remote || (humans > 1 && !cat?.hotseat);
       const g = await api.createGame(resume ? { resume, delay } : { players: seats.map((s, i) => ({ ...s, id: `P${i + 1}` })), seed: seed === "" ? null : Number(seed), config: cfg, ponder, delay, provider: provider || null, remote: wantRemote });
       saveTokens(g.id, { owner: g.owner_token, spectator: g.spectator_token, seats: g.seat_tokens });
@@ -98,6 +107,13 @@ export default function Lobby() {
           <label>AI pace <input type="number" min={0} max={5} step={0.1} value={delay} onChange={(e) => setDelay(Number(e.target.value))} style={{ width: 70 }} /> s</label>
           <label><input type="checkbox" checked={ponder} onChange={(e) => setPonder(e.target.checked)} /> ponder</label>
           <label>provider <select value={provider} onChange={(e) => setProvider(e.target.value)}>{cat?.providers.map((p) => <option key={p}>{p}</option>)}</select></label>
+        </div>
+        <div className="row" style={{ marginTop: 8 }} title="Optional house rules; everything off = classic rules (see docs/variants.md)">
+          <span className="dim">house rules:</span>
+          <label><input type="checkbox" checked={privateDisproofs} onChange={(e) => setPrivateDisproofs(e.target.checked)} /> private disproofs</label>
+          <label>wrong accusation <select value={skipTurns} onChange={(e) => setSkipTurns(Number(e.target.value))}><option value={0}>eliminates</option><option value={1}>skip 1 turn</option><option value={2}>skip 2 turns</option><option value={3}>skip 3 turns</option></select></label>
+          <label><input type="checkbox" checked={shuffleSeats} onChange={(e) => setShuffleSeats(e.target.checked)} /> shuffle seats</label>
+          <label>teams <select value={teams} onChange={(e) => setTeams(Number(e.target.value))}><option value={0}>none</option>{[2, 3].filter((k) => seats.length % k === 0).map((k) => <option key={k} value={k}>{k} teams of {seats.length / k}</option>)}</select></label>
         </div>
         <div className="row" style={{ marginTop: 12 }}>
           <button className="primary" disabled={busy || !cat} onClick={() => start()}>{humans ? "Play" : "Spectate"}</button>

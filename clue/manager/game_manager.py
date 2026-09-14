@@ -56,6 +56,7 @@ class LogRecord(BaseModel):
     data: dict[str, Any]
     private: dict[str, Any] = Field(default_factory=dict)
     private_to: list[str] = Field(default_factory=list)
+    hidden: bool = False  # existence itself is private (see Event.hidden)
 
 
 class GameManager:
@@ -74,10 +75,7 @@ class GameManager:
         self._ponder_manager: Any = None
         self._saved_agent_state: dict[str, Any] = {}
         for p in self.state.players:
-            nb = Notebook(viewer=p.id, my_hand=list(p.hand), faceup=list(self.state.faceup))
-            for c in p.hand:
-                nb.known_holder[c] = p.id
-            self.notebooks[p.id] = nb
+            self.notebooks[p.id] = self._fresh_notebook(p.id)
         self._record(
             Event(
                 type="game_start",
@@ -93,6 +91,18 @@ class GameManager:
             )
         )
         self._record(Event(type="turn_start", turn=0, player=self.state.current_player().id))
+
+    def _fresh_notebook(self, pid: str) -> Notebook:
+        """Notebook seeded with the viewer's hand — and, in team mode, every teammate's hand."""
+        team = self.config.team_of(pid)
+        nb = Notebook(viewer=pid, team=team if len(team) > 1 else [], faceup=list(self.state.faceup))
+        for q in team:
+            hand = self.state.player(q).hand
+            nb.my_hand.extend(hand)
+            for c in hand:
+                nb.known_holder[c] = q
+        nb.my_hand.sort()
+        return nb
 
     # ------------------------------------------------------------------ factory
     @classmethod
@@ -138,8 +148,11 @@ class GameManager:
         if action.type == "show_card" and self.state.pending_suggestion is None and events:
             # keep the shown card private to suggester + shower, like the matching `disproved` event
             ev = next((e for e in events if e.type == "disproved"), None)
-            card = data.pop("card")
-            self.log.append(LogRecord(seq=len(self.log), kind="action", data=data, private={"card": card}, private_to=list(ev.private_to) if ev else []))
+            priv = {"card": data.pop("card")}
+            if self.config.private_disproofs:  # C: the shower's identity is private too
+                priv["player"] = data.pop("player")
+                data["player"] = None
+            self.log.append(LogRecord(seq=len(self.log), kind="action", data=data, private=priv, private_to=list(ev.private_to) if ev else []))
         else:
             self.log.append(LogRecord(seq=len(self.log), kind="action", data=data))
         for ev in events:
@@ -167,13 +180,14 @@ class GameManager:
 
     def _record(self, ev: Event) -> None:
         self.events.append(ev)
-        self.log.append(LogRecord(seq=len(self.log), kind="event", data=ev.redacted_for(None), private=ev.private, private_to=ev.private_to))
+        self.log.append(LogRecord(seq=len(self.log), kind="event", data=ev.redacted_for(None), private=ev.private, private_to=ev.private_to, hidden=ev.hidden))
         for pid, nb in self.notebooks.items():
-            nb.ingest(ev.redacted_for(pid), self.player_ids())
+            if ev.visible_to(pid):
+                nb.ingest(ev.redacted_for(pid), self.player_ids())
 
     # ------------------------------------------------------------------ observations
     def public_history(self, viewer: str | None, last_n: int | None = None) -> list[dict[str, Any]]:
-        evs = [e.redacted_for(viewer) for e in self.events if e.type not in ("game_start",)]
+        evs = [e.redacted_for(viewer) for e in self.events if e.type not in ("game_start",) and e.visible_to(viewer)]
         return evs[-last_n:] if last_n else evs
 
     def get_observation(self, player_id: str, history_limit: int | None = None) -> dict[str, Any]:
@@ -188,6 +202,9 @@ class GameManager:
                 "name": next((s.name for s in self.specs if s.id == p.id), None),
                 "suspect_token": sus[p.seat],
                 "hand": list(p.hand),
+                "team": self.config.team_of(p.id) if self.config.teams else None,
+                "team_hands": {q: list(st.player(q).hand) for q in self.config.team_of(p.id) if q != p.id} if self.config.teams else None,
+                "skip_turns": p.skip_turns,
                 "position": p.position,
                 "in_room": B.is_room(p.position),
                 "eliminated": p.eliminated,
@@ -196,7 +213,17 @@ class GameManager:
             "board": {
                 "token_positions": dict(st.token_positions),
                 "weapon_positions": dict(st.weapon_positions),
-                "players": [{"id": q.id, "suspect_token": sus[q.seat], "position": q.position, "eliminated": q.eliminated, "hand_size": len(q.hand)} for q in st.players],
+                "players": [
+                    {
+                        "id": q.id,
+                        "suspect_token": sus[q.seat],
+                        "position": q.position,
+                        "eliminated": q.eliminated,
+                        "hand_size": len(q.hand),
+                        "team": self.config.team_of(q.id) if self.config.teams else None,
+                    }
+                    for q in st.players
+                ],
                 "secret_passages": dict(B.passages_for(st.config.edition)),
                 "your_legal_moves": [a.to for a in acts if a.type == "move"],
             },
@@ -221,6 +248,8 @@ class GameManager:
         """Full log. viewer=None -> unredacted (God view). viewer=pid -> redacted for that player."""
         out = []
         for rec in self.log:
+            if rec.hidden and viewer is not None and viewer not in rec.private_to:
+                continue
             d: dict[str, Any] = {"seq": rec.seq, "kind": rec.kind, **rec.data}
             if viewer is None or viewer in rec.private_to:
                 d.update(rec.private)
@@ -291,15 +320,11 @@ class GameManager:
         gm.illegal_attempts = dict(data.get("illegal_attempts", {}))
         gm.ponder_stats = dict(data.get("ponder_stats", {}))
         gm._ponder_manager = None
-        gm.notebooks = {}
-        for p in gm.state.players:
-            nb = Notebook(viewer=p.id, my_hand=list(p.hand), faceup=list(gm.state.faceup))
-            for c in p.hand:
-                nb.known_holder[c] = p.id
-            gm.notebooks[p.id] = nb
+        gm.notebooks = {p.id: gm._fresh_notebook(p.id) for p in gm.state.players}
         for ev in gm.events:
             for pid, nb in gm.notebooks.items():
-                nb.ingest(ev.redacted_for(pid), gm.player_ids())
+                if ev.visible_to(pid):
+                    nb.ingest(ev.redacted_for(pid), gm.player_ids())
         for pid, notes in data.get("notes", {}).items():
             if pid in gm.notebooks:
                 gm.notebooks[pid].notes = list(notes)
@@ -322,6 +347,7 @@ class GameManager:
         return {
             "seed": self.seed,
             "winner": self.winner,
+            "winning_team": self.config.team_of(self.winner) if self.winner and self.config.teams else None,
             "solution": list(self.state.solution),
             "turns": self.state.turn_number,
             "actions": self.action_count,

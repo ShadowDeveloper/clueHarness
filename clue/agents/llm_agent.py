@@ -32,6 +32,24 @@ from clue.tools import (
 )
 
 BASE_PROMPT_PATH = Path(__file__).with_name("base_prompt.md")
+
+
+def variant_notes(cfg: dict[str, Any], you: dict[str, Any]) -> list[str]:
+    """Plain-language reminders for any opt-in variant in effect (docs/variants.md); empty for classic rules."""
+    out: list[str] = []
+    if cfg.get("teams"):
+        mates = [q for q in (you.get("team") or []) if q != you.get("id")]
+        out.append(f"TEAM PLAY: you and {', '.join(mates)} share hands (already merged into your notebook) and win together; teammates never disprove each other.")
+    if cfg.get("private_disproofs"):
+        out.append(
+            "PRIVATE DISPROOFS: you only learn who passed / who showed a card in suggestions you (or a teammate) made or were asked to disprove; "
+            "other disproofs only tell you that *someone* showed a card."
+        )
+    if cfg.get("wrong_accusation") == "skip_turns":
+        out.append(f"WRONG ACCUSATION PENALTY: a wrong accusation does not eliminate you; you sit out your next {cfg.get('accusation_penalty_turns', 2)} turn(s) instead (you still must disprove).")
+    return out
+
+
 PONDER_PROMPT_PATH = Path(__file__).with_name("ponder_prompt.md")
 
 
@@ -155,6 +173,9 @@ class LLMPlayerAgent(PlayerAgent):
     def _compact_obs(self, obs: dict[str, Any], legal: list[Action]) -> dict[str, Any]:
         o = {k: v for k, v in obs.items() if not k.startswith("_")}
         o["public_history"] = o["public_history"][-self.history_limit :]
+        notes = variant_notes(obs.get("config", {}), obs.get("you", {}))
+        if notes:
+            o["house_rules"] = notes
         if self.prompt_profile == "compact":
             # the notebook + analysis already summarise the history; keep only the last few events
             o["public_history"] = o["public_history"][-6:]

@@ -103,6 +103,7 @@ class CreateTournament(BaseModel):
     max_usd: float | None = None
     config: GameConfig | None = None
     probe: bool = True
+    duplicate: bool = Field(False, description="duplicate-deal blocks: same deal, agents rotated through every seat")
 
 
 class TournamentStatus(BaseModel):

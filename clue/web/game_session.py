@@ -283,6 +283,7 @@ class GameSession:
                 "position": q.position,
                 "eliminated": q.eliminated,
                 "hand_size": len(q.hand),
+                "team": st.config.team_of(q.id) if st.config.teams else None,
             }
             for q in st.players
         ]
@@ -376,8 +377,12 @@ class GameSession:
             if viewer == OMNI:
                 d: dict[str, Any] = {"type": e.type, "turn": e.turn, "player": e.player, **e.public, **e.private}
             elif pid is not None and self._seat_visible(viewer):
+                if not e.visible_to(pid):
+                    continue
                 d = dict(e.redacted_for(pid))
             else:
+                if e.hidden:  # spectators are bystanders too
+                    continue
                 d = dict(e.redacted_for(None))
             d["seq"] = i
             d["text"] = describe_event(d)

@@ -34,6 +34,7 @@ export interface SeatInfo {
   position: string;
   eliminated: boolean;
   hand_size: number;
+  team?: string[] | null;
 }
 
 export interface Notebook {
@@ -127,6 +128,6 @@ export interface ReplayFrame { idx: number; tokens: Record<string, string>; weap
 export interface ReplayFrames { info: ReplayInfo; frames: ReplayFrame[]; hands: Record<string, Card[]>; solution: Card[]; seat: Record<string, string>; weapon_start: Record<string, string>; private_records: Record<string, unknown>[]; }
 
 export interface TournamentRow { agent: string; games: number; wins: number; win_rate: number; false_accusation_rate: number | null; avg_turns_to_win: number | null; avg_suggestions_per_game?: number; illegal_attempts: number | null; elo?: number; win_ci95?: [number, number]; [k: string]: unknown; }
-export interface TournamentReport { games: number; seed: number; table: TournamentRow[]; results: { seed: number; winner_label: string | null; turns: number; seats: Record<string, string> }[]; pairwise?: Record<string, unknown>; curves: Record<string, number[]>; fingerprints?: Record<string, unknown>; }
+export interface TournamentReport { games: number; seed: number; table: TournamentRow[]; results: { seed: number; winner_label: string | null; turns: number; seats: Record<string, string> }[]; pairwise?: Record<string, unknown>; curves: Record<string, number[]>; fingerprints?: Record<string, unknown>; duplicate?: { deals: number; per_label: Record<string, { win_share: number; vs?: string; paired_diff?: number; se?: number }> }; }
 export interface TournamentStatus { id: string; status: "running" | "finished" | "cancelled" | "error"; games: number; done: number; seed: number; players: string[]; started: number; finished_at: number | null; error: string | null; report: TournamentReport | null; cost: Record<string, number>; }
 export type TournamentFrame = ({ type: "snapshot" } & TournamentStatus) | { type: "progress"; done: number; games: number; seed: number; winner_label: string | null; turns: number } | ({ type: "done" } & TournamentStatus) | { type: "pong" };

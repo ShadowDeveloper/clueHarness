@@ -170,7 +170,7 @@ export default function Board({ geo, tokens, weapons, players, highlights = [], 
         <div className="legend">
           {(players ? players.map((p) => p.suspect_token) : Object.keys(tokens)).map((s) => {
             const seat = seatBySuspect[s];
-            return <div key={s} className={seat?.eliminated ? "dim" : ""}><span className="swatch" style={{ background: tokenColor(s) }} /> <b>{s}</b>{seat ? <span className="dim"> · {seat.id} {seat.label}{seat.name ? ` · ${seat.name}` : ""}</span> : null}{s === you ? <span className="accent"> ← you</span> : null}{seat?.eliminated ? " ✗" : ""}</div>;
+            return <div key={s} className={seat?.eliminated ? "dim" : ""}><span className="swatch" style={{ background: tokenColor(s) }} /> <b>{s}</b>{seat ? <span className="dim"> · {seat.id} {seat.label}{seat.name ? ` · ${seat.name}` : ""}{seat.team && seat.team.length > 1 ? ` · team ${seat.team.join("+")}` : ""}</span> : null}{s === you ? <span className="accent"> ← you</span> : null}{seat?.eliminated ? " ✗" : ""}</div>;
           })}
           <div className="dim keys">◻ door · ⇄ secret passage · <span className="hlk">◆</span> gold = reachable · brass tags = weapons in their rooms</div>
         </div>

@@ -78,14 +78,20 @@ def _elo_update(ratings: dict[str, float], winner: str | None, players: list[str
         ratings[p] -= k * (1 - ea)
 
 
-def _play_one(args: tuple[list[dict[str, Any]], int, dict[str, Any] | None, str | None, bool, bool, str | None, bool], client: LLMClient | None = None) -> dict[str, Any]:
+def _play_one(args: tuple[list[dict[str, Any]], int, dict[str, Any] | None, str | None, bool, bool, str | None, bool, int], client: LLMClient | None = None) -> dict[str, Any]:
     """Play one tournament game and return its record. Called directly, from a thread (live LLM) or from a worker process
-    (offline: args are plain dicts so they pickle; `client` is then None and each process builds its own via make_agent)."""
-    spec_dicts, gseed, cfg_dict, provider, rotate_seats, ponder, replay_dir, probe = args
+    (offline: args are plain dicts so they pickle; `client` is then None and each process builds its own via make_agent).
+
+    `rotation` (duplicate-deal mode, A): the deal seed is shared by a whole block of games while the agents are cyclically
+    shifted through the seats, so every label plays the same deal from every seat; the block's games differ only by who
+    sits where."""
+    spec_dicts, gseed, cfg_dict, provider, rotate_seats, ponder, replay_dir, probe, rotation = args
     specs = [PlayerSpec(**d) for d in spec_dicts]
     config = GameConfig(**cfg_dict) if cfg_dict else None
     order = list(specs)
-    if rotate_seats:  # shuffle seat order per game (seeded) so neither absolute nor relative seat order favours a label
+    if rotation:  # duplicate deals: deterministic cyclic shift, seed identical across the block
+        order = order[rotation:] + order[:rotation]
+    elif rotate_seats:  # shuffle seat order per game (seeded) so neither absolute nor relative seat order favours a label
         random.Random(gseed * 7919 + 17).shuffle(order)
     gspecs = [s.model_copy(update={"id": f"P{i + 1}"}) for i, s in enumerate(order)]
     lab_of = {s.id: s.label() for s in gspecs}
@@ -98,6 +104,7 @@ def _play_one(args: tuple[list[dict[str, Any]], int, dict[str, Any] | None, str 
         gm.write_replay(Path(replay_dir) / f"game_{gseed}.jsonl")
     rec: dict[str, Any] = {
         "seed": gseed,
+        "rotation": rotation,
         "summary": s,
         "lab_of": lab_of,
         "winner": s["winner"],
@@ -140,6 +147,7 @@ def run_tournament(
     probe: bool = True,
     on_game: Any = None,
     workers: int = 1,
+    duplicate: bool = False,
 ) -> dict[str, Any]:
     """Play `games` games, up to `workers` at a time (0 = all cores).
 
@@ -149,14 +157,28 @@ def run_tournament(
     `workers` (each game is seeded by `seed + i`; records are aggregated in seed order). `on_game` fires as games finish.
     If the budget cap trips, remaining games are cancelled and `BudgetExceeded` propagates after `on_game` saw the
     completed ones.
+
+    `duplicate=True` (variance reduction, "duplicate bridge" style): games are played in blocks of `len(specs)`; every
+    game in a block uses the *same* deal (seed) with the agents cyclically rotated through the seats, so each label
+    meets each deal from each seat. `games` is rounded up to whole blocks. The report then also contains
+    `duplicate` paired statistics: per-deal win indicators per label and a paired win-rate difference vs the best other label.
     """
+    n = len(specs)
+    sd = [s.model_dump() for s in specs]
+    cd = config.model_dump() if config else None
+    rd = str(replay_dir) if replay_dir else None
+    if duplicate:
+        blocks = -(-games // n)
+        games = blocks * n
+        jobs = [(sd, seed + b, cd, provider, False, ponder, rd, probe, r) for b in range(blocks) for r in range(n)]
+    else:
+        jobs = [(sd, seed + g, cd, provider, rotate_seats, ponder, rd, probe, 0) for g in range(games)]
     workers = min(resolve_workers(workers), max(1, games))
     labels = {s.id: s.label() for s in specs}
-    jobs = [([s.model_dump() for s in specs], seed + g, config.model_dump() if config else None, provider, rotate_seats, ponder, str(replay_dir) if replay_dir else None, probe) for g in range(games)]
-    by_seed: dict[int, dict[str, Any]] = {}
+    by_seed: dict[tuple[int, int], dict[str, Any]] = {}
 
     def _done(rec: dict[str, Any], n_done: int) -> None:
-        by_seed[rec["seed"]] = rec
+        by_seed[(rec["seed"], rec.get("rotation", 0))] = rec
         if verbose:
             print(f"game {n_done}/{games} seed={rec['seed']} winner={rec['winner_label']} turns={rec['turns']}", flush=True)
         if on_game:
@@ -178,7 +200,42 @@ def run_tournament(
                     f.cancel()
                 raise
     recs = [by_seed[s] for s in sorted(by_seed)]
-    return aggregate(recs, labels, games=games, seed=seed)
+    rep = aggregate(recs, labels, games=games, seed=seed)
+    if duplicate:
+        rep["duplicate"] = duplicate_stats(recs, sorted(set(labels.values())))
+    return rep
+
+
+def duplicate_stats(recs: list[dict[str, Any]], labs: list[str]) -> dict[str, Any]:
+    """Paired analysis over duplicate-deal blocks: for every deal (seed) and label, the fraction of that block's games
+    the label won; then, per label, mean over deals and a paired difference vs the strongest other label with a
+    standard error — the deal's luck cancels because both terms come from the same deals."""
+    by_deal: dict[int, dict[str, float]] = {}
+    for r in recs:
+        d = by_deal.setdefault(int(r["seed"]), {})
+        for lab in labs:
+            d.setdefault(lab, 0.0)
+        wl = r.get("winner_label")
+        if wl in d:
+            d[wl] += 1.0
+    deals = sorted(by_deal)
+    for s in deals:
+        n_games = sum(1 for r in recs if int(r["seed"]) == s)
+        for lab in by_deal[s]:
+            by_deal[s][lab] /= max(1, n_games)
+    out: dict[str, Any] = {"deals": len(deals), "per_label": {}}
+    for lab in labs:
+        xs = [by_deal[s][lab] for s in deals]
+        mean = statistics.fmean(xs) if xs else 0.0
+        others = [o for o in labs if o != lab]
+        if others:
+            best = max(others, key=lambda o: statistics.fmean(by_deal[s][o] for s in deals) if deals else 0.0)
+            diffs = [by_deal[s][lab] - by_deal[s][best] for s in deals]
+            se = (statistics.stdev(diffs) / (len(diffs) ** 0.5)) if len(diffs) > 1 else 0.0
+            out["per_label"][lab] = {"win_share": round(mean, 3), "vs": best, "paired_diff": round(statistics.fmean(diffs), 3) if diffs else 0.0, "se": round(se, 3)}
+        else:
+            out["per_label"][lab] = {"win_share": round(mean, 3)}
+    return out
 
 
 def aggregate(recs: list[dict[str, Any]], labels: dict[str, str] | None = None, games: int | None = None, seed: int = 0) -> dict[str, Any]:

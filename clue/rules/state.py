@@ -17,6 +17,24 @@ class GameConfig(BaseModel):
     deal_remainder: Literal["uneven", "faceup"] = "uneven"
     num_players: int = Field(4, ge=3, le=12)  # edition caps this further (6 classic, 12 large)
     max_turns: int = 400
+    # ---- variance-reduction variants (all off by default = classic rules; see docs/variants.md) ----
+    # B. teams: groups of player ids; teammates share hands/notebooks and win together
+    teams: list[list[str]] | None = None
+    # C. only the suggester (and the disprover) learn WHO disproved; others only learn that it was disproved
+    private_disproofs: bool = False
+    # D. wrong accusation: classic elimination, or sit out `accusation_penalty_turns` of your own turns
+    wrong_accusation: Literal["eliminate", "skip_turns"] = "eliminate"
+    accusation_penalty_turns: int = Field(default=2, ge=1, le=10)
+    # E. randomise seat order (which suspect / who moves first) from the seed instead of Scarlet-first
+    shuffle_seats: bool = False
+
+    def team_of(self, pid: str) -> list[str]:
+        """Player ids on `pid`'s team (just [pid] when teams are off)."""
+        if self.teams:
+            for t in self.teams:
+                if pid in t:
+                    return list(t)
+        return [pid]
 
 
 class PlayerState(BaseModel):
@@ -25,6 +43,7 @@ class PlayerState(BaseModel):
     hand: list[str] = Field(default_factory=list)
     position: str
     eliminated: bool = False
+    skip_turns: int = 0  # penalty turns still to sit out (wrong_accusation == "skip_turns")
     # entered a room this turn / was moved into a room by a suggestion since last turn
     may_suggest: bool = False
     # room this player left this turn (may not re-enter)
@@ -99,6 +118,12 @@ class Event(BaseModel):
     public: dict[str, object] = Field(default_factory=dict)
     private: dict[str, object] = Field(default_factory=dict)
     private_to: list[str] = Field(default_factory=list)
+    # C. private_disproofs: the event's very existence is restricted to `private_to` (bystanders never receive it)
+    hidden: bool = False
+
+    def visible_to(self, viewer: str | None) -> bool:
+        """False when `viewer` (a player id) must not learn the event happened. None = omniscient/audit log."""
+        return not self.hidden or viewer is None or viewer in self.private_to
 
     def redacted_for(self, viewer: str | None) -> dict[str, object]:
         d: dict[str, object] = {"type": self.type, "turn": self.turn, "player": self.player, **self.public}
