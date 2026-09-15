@@ -57,6 +57,8 @@ receive a `disproved` event with `player: null` ("someone showed a card to P2") 
 `cannot_disprove` / `can_disprove` events at all: those carry `Event.hidden = True` and `private_to`, and
 `GameManager`, the runner, the TUI, the web session and `export_replay(viewer)` all filter on `Event.visible_to(pid)`.
 The omniscient audit log (`export_replay(None)`, replay hash) is complete as always.
+Web spectators (owner's omniscient view and the public table view) are not players, so they still see who passed and
+who showed — only players at the table are kept in the dark.
 
 This removes most of the "free" inference that a passive third party gets from watching other people's
 suggestions, so information advantage comes mainly from your own questions — the game becomes closer to a

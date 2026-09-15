@@ -381,9 +381,11 @@ class GameSession:
                     continue
                 d = dict(e.redacted_for(pid))
             else:
-                if e.hidden:  # spectators are bystanders too
-                    continue
+                # spectators/table view: not players, so private_disproofs does not apply to them — they see the
+                # full disproof round (who passed / who showed) but still no private cards
                 d = dict(e.redacted_for(None))
+                if e.type == "disproved" and self.gm.config.private_disproofs:
+                    d["disprover"] = e.private.get("disprover")
             d["seq"] = i
             d["text"] = describe_event(d)
             out.append(d)

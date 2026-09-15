@@ -438,3 +438,26 @@ def test_abandoned_human_games_are_checkpointed_to_free_slots(tmp_path: Path) ->
     assert reg.games[a["id"]].stopping and reg.games[b["id"]].stopping and not reg.games[d["id"]].stopping
     assert sorted(p.name for p in (tmp_path / "s").glob("*.json")) == ["game_1.json", "game_2.json", "game_3.json"] or (tmp_path / "s" / "game_1.json").exists()
     c.delete(f"/api/games/{d['id']}", params={"k": d["owner_token"]})
+
+
+def test_private_disproofs_seat_vs_table_view(client: TestClient) -> None:
+    """C: a seat viewer never receives bystander disproof-round events; the table/spectator view (not a player)
+    sees who passed / who showed but still no cards."""
+    g = _create(client, "baseline,baseline,baseline,baseline", seed=13, config={"num_players": 4, "private_disproofs": True})
+    sess = client.app.state.registry.games[g["id"]]  # type: ignore[attr-defined]
+    with client.websocket_connect(f"/ws/games/{g['id']}?k={g['spectator_token']}&view=P2") as ws:
+        _drain(ws)
+    seat = sess.render_events("P2")
+    table = sess.render_events("__table__")
+    for e in seat:
+        if e["type"] in ("cannot_disprove", "can_disprove"):
+            assert "P2" in (e["player"], e["suggester"])
+        if e["type"] == "disproved" and "P2" not in (e.get("suggester"), e.get("disprover")):
+            assert e.get("disprover") is None and "card" not in e
+    hidden = [e for e in table if e["type"] in ("cannot_disprove", "can_disprove")]
+    assert hidden and len(hidden) > len([e for e in seat if e["type"] in ("cannot_disprove", "can_disprove")])
+    for e in table:
+        assert "card" not in e or e["type"] != "disproved"
+        if e["type"] == "disproved":
+            assert e["disprover"] is not None
+    client.delete(f"/api/games/{g['id']}", params={"k": g["owner_token"]})
