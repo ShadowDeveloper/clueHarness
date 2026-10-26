@@ -9,7 +9,7 @@ from clue.agents.baselines import BaselineHeuristicBot, BaselineRandomBot
 from clue.agents.expert import BaselineExpertBot
 from clue.agents.human import HumanCLIAgent
 from clue.agents.llm_agent import LLMPlayerAgent
-from clue.agents.llm_client import LLMClient
+from clue.agents.llm_client import LLMClient, LLMConnection
 from clue.manager.game_manager import PlayerSpec
 
 STRATEGY_ALIASES = {
@@ -52,7 +52,15 @@ def parse_players_arg(arg: str) -> list[PlayerSpec]:
     return specs
 
 
-def make_agent(spec: PlayerSpec, seed: int = 0, client: LLMClient | None = None, provider: str | None = None, input_fn: Any = None, ui: str = "cli") -> PlayerAgent:
+def make_agent(
+    spec: PlayerSpec,
+    seed: int = 0,
+    client: LLMClient | None = None,
+    provider: str | None = None,
+    input_fn: Any = None,
+    ui: str = "cli",
+    connection: LLMConnection | None = None,
+) -> PlayerAgent:
     if spec.kind == "human":
         if ui == "tui":
             from clue.tui.app import TUIHumanAgent
@@ -77,5 +85,6 @@ def make_agent(spec: PlayerSpec, seed: int = 0, client: LLMClient | None = None,
             seed=seed,
             tool_mode=spec.tool_mode,
             prompt_profile=spec.prompt_profile,
+            connection=connection,
         )
     raise ValueError(f"unknown kind {spec.kind}")

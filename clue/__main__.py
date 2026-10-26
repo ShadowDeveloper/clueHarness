@@ -12,6 +12,7 @@ from rich.console import Console
 
 from clue.agents.factory import make_agent, parse_players_arg
 from clue.agents.human import describe_event
+from clue.agents.llm_client import LLMConnection
 from clue.config import load_yaml_config
 from clue.eval.tournament import markdown_table, run_tournament, write_csv
 from clue.manager import GameManager, PlayerSpec
@@ -57,10 +58,15 @@ def _specs(
     edition: Optional[str] = None,
     variants: Optional[str] = None,
 ) -> tuple[GameConfig, list[PlayerSpec], int]:
+    _YAML_EXTRA.clear()
     if config:
         cfg, specs, cseed, raw = load_yaml_config(config)
         seed = cseed if seed is None else seed
         _YAML_EXTRA.update({k: raw[k] for k in ("ponder", "workers") if k in raw})
+        llm = raw.get("llm", {})
+        if not isinstance(llm, dict) or set(llm) - {"provider", "model", "api", "api_key", "base_url"}:
+            raise typer.BadParameter("YAML llm must be a mapping with only provider, model, api, api_key, and base_url")
+        _YAML_EXTRA["llm"] = llm
     elif players:
         specs = parse_players_arg(players)
         cfg = GameConfig(num_players=len(specs))
@@ -93,16 +99,31 @@ def _specs(
     return cfg, specs, seed or 0
 
 
-def _resolve_models(specs: list[PlayerSpec]) -> list[PlayerSpec]:
-    """Fill LLM seats' model from env (CLUE_LLM_MODEL / provider) so labels & replays name the real model."""
+def _resolve_models(specs: list[PlayerSpec], *, use_yaml: bool = True) -> list[PlayerSpec]:
+    """Fill LLM seats' model from YAML/env so labels and replays name the real model."""
     from clue.agents.llm_client import _load_dotenv
 
     _load_dotenv()
-    provider = (os.getenv("CLUE_LLM_PROVIDER") or "mock").lower()
-    default = os.getenv("CLUE_LLM_MODEL") or "mock"
-    if provider == "mock":
+    yaml = _YAML_EXTRA.get("llm", {}) if use_yaml else {}
+    provider = str(yaml.get("provider") or os.getenv("CLUE_LLM_PROVIDER") or "mock").lower()
+    default = str(yaml.get("model") or os.getenv("CLUE_LLM_MODEL") or "mock")
+    if str(yaml.get("provider", "")).lower() == "mock" or (provider == "mock" and not yaml.get("model")):
         default = "mock"
     return [s.model_copy(update={"model": default}) if s.kind == "llm" and not s.model else s for s in specs]
+
+
+def _llm_provider(value: Optional[str], *, use_yaml: bool = True) -> Optional[str]:
+    yaml = _YAML_EXTRA.get("llm", {}) if use_yaml else {}
+    return value or (str(yaml["provider"]) if yaml.get("provider") else None)
+
+
+def _llm_connection(api: Optional[str], api_key: Optional[str], base_url: Optional[str], *, use_yaml: bool = True) -> LLMConnection:
+    yaml = _YAML_EXTRA.get("llm", {}) if use_yaml else {}
+    return LLMConnection(
+        api=api or (str(yaml["api"]) if yaml.get("api") else None),
+        api_key=api_key or (str(yaml["api_key"]) if yaml.get("api_key") else None),
+        base_url=base_url or (str(yaml["base_url"]) if yaml.get("base_url") else None),
+    )
 
 
 def _budget(max_usd: Optional[float]) -> None:
@@ -128,7 +149,10 @@ def play(
     variants: Optional[str] = typer.Option(None, "--variants", help="comma list: private | skip[=N] | shuffle | teams[=K] (docs/variants.md)"),
     strategy: Optional[str] = typer.Option(None, help="default strategy .md for LLM seats without one"),
     no_tools: bool = typer.Option(False, "--no-tools", help="ablation: LLM agents get no symbolic analysis"),
-    provider: Optional[str] = typer.Option(None, help="mock|openrouter|openai|local|anthropic (default env CLUE_LLM_PROVIDER)"),
+    provider: Optional[str] = typer.Option(None, help="mock|openrouter|openai|local|anthropic (default YAML/env CLUE_LLM_PROVIDER)"),
+    api: Optional[str] = typer.Option(None, "--api", help="wire API: chat_completions | completions | responses | messages"),
+    api_key: Optional[str] = typer.Option(None, "--api-key", help="LLM API key (prefer CLUE_LLM_API_KEY to avoid shell history)"),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="versioned API base URL, e.g. https://api.openai.com/v1"),
     replay_dir: str = typer.Option("replays"),
     quiet: bool = typer.Option(False, "--quiet"),
     ui: str = typer.Option("auto", help="tui | cli | auto (tui when a human or --spectate; plain text otherwise)"),
@@ -153,13 +177,15 @@ def play(
             raise typer.BadParameter(f"{resume} is a finished game")
     else:
         cfg, specs, seed = _specs(config, players, seed, dice, strategy, no_tools, tool_mode, prompt_profile, edition, variants)
+    provider = _llm_provider(provider, use_yaml=not resume)
+    connection = _llm_connection(api, api_key, base_url, use_yaml=not resume)
     ponder = ponder or bool(_YAML_EXTRA.get("ponder"))
     has_human = any(s.kind == "human" for s in specs)
     if ui == "auto":
         ui = "tui" if (has_human or spectate) else "cli"
     if not resume:
         gm = GameManager.create(specs, seed=seed, config=cfg)
-    agents = {s.id: make_agent(s, seed=seed + i, provider=provider, ui=ui) for i, s in enumerate(specs)}
+    agents = {s.id: make_agent(s, seed=seed + i, provider=provider, ui=ui, connection=connection) for i, s in enumerate(specs)}
     if resume:
         restored = gm.restore_agents(agents)
         console.print(f"[bold]Resumed[/bold] {resume}: turn {gm.state.turn_number}, {len(gm.events)} events, agent memory restored for {', '.join(restored) or 'nobody'}")
@@ -209,6 +235,9 @@ def tournament(
     variants: Optional[str] = typer.Option(None, "--variants", help="comma list: private | skip[=N] | shuffle | teams[=K] (docs/variants.md)"),
     no_tools: bool = typer.Option(False, "--no-tools"),
     provider: Optional[str] = typer.Option(None),
+    api: Optional[str] = typer.Option(None, "--api", help="wire API: chat_completions | completions | responses | messages"),
+    api_key: Optional[str] = typer.Option(None, "--api-key", help="LLM API key (prefer CLUE_LLM_API_KEY to avoid shell history)"),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="versioned API base URL"),
     report: str = typer.Option("elo.csv"),
     replay_dir: Optional[str] = typer.Option(None),
     ponder: bool = typer.Option(False, "--ponder"),
@@ -220,6 +249,8 @@ def tournament(
 ) -> None:
     """Run N AI-vs-AI games (optionally in parallel) and write win-rate / ELO stats."""
     cfg, specs, seed = _specs(config, players, seed, dice, None, no_tools, tool_mode, prompt_profile, edition, variants)
+    provider = _llm_provider(provider)
+    connection = _llm_connection(api, api_key, base_url)
     _budget(max_usd)
     if workers is None:
         workers = int(_YAML_EXTRA.get("workers", 1))
@@ -227,7 +258,7 @@ def tournament(
 
     console.print(f"[dim]{games} games, {min(resolve_workers(workers), games)} in parallel[/dim]")
     try:
-        rep = run_tournament(specs, games, seed=seed, config=cfg, provider=provider, replay_dir=replay_dir, verbose=True, ponder=ponder, workers=workers, duplicate=duplicate)
+        rep = run_tournament(specs, games, seed=seed, config=cfg, provider=provider, replay_dir=replay_dir, verbose=True, ponder=ponder, workers=workers, duplicate=duplicate, connection=connection)
     finally:
         _print_cost()
     console.print(markdown_table(rep))
@@ -248,6 +279,9 @@ def live_eval(
     out: str = typer.Option("eval/live"),
     max_usd: float = typer.Option(0.25, "--max-usd", help="hard spend cap for the whole run"),
     provider: str = typer.Option("openrouter"),
+    api: Optional[str] = typer.Option(None, "--api", help="wire API: chat_completions | completions | responses | messages"),
+    api_key: Optional[str] = typer.Option(None, "--api-key", help="LLM API key (prefer CLUE_LLM_API_KEY to avoid shell history)"),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="versioned API base URL"),
     brackets: str = typer.Option("ablation,ponder", help="comma list: ablation, ponder"),
     prompt_profile: str = typer.Option("compact", "--prompt-profile"),
     workers: int = typer.Option(1, "--workers", "-w", help="concurrent games per bracket (threads; the spend cap is shared)"),
@@ -255,9 +289,19 @@ def live_eval(
     """Live LLM eval: tool-mode ablation + ponder brackets on paired seeds vs expert+heuristic; Wilson CIs; cost cap."""
     from clue.eval.live_eval import run_live_eval
 
-    specs = _resolve_models([PlayerSpec(id="P1", kind="llm", model=model)])
+    specs = _resolve_models([PlayerSpec(id="P1", kind="llm", model=model)], use_yaml=False)
+    connection = _llm_connection(api, api_key, base_url, use_yaml=False)
     run_live_eval(
-        specs[0].model or "mock", games, seed=seed, out_dir=out, max_usd=max_usd, provider=provider, brackets=tuple(b.strip() for b in brackets.split(",")), profile=prompt_profile, workers=workers
+        specs[0].model or "mock",
+        games,
+        seed=seed,
+        out_dir=out,
+        max_usd=max_usd,
+        provider=provider,
+        brackets=tuple(b.strip() for b in brackets.split(",")),
+        profile=prompt_profile,
+        workers=workers,
+        connection=connection,
     )
     console.print(Path(out, "live_report.md").read_text())
     _print_cost()
@@ -287,11 +331,21 @@ def replay(
 
 
 @app.command()
-def eval(games: int = typer.Option(50), seed: int = typer.Option(0), out: str = typer.Option("eval"), live: bool = typer.Option(False, "--live")) -> None:
+def eval(
+    games: int = typer.Option(50),
+    seed: int = typer.Option(0),
+    out: str = typer.Option("eval"),
+    live: bool = typer.Option(False, "--live"),
+    provider: Optional[str] = typer.Option(None),
+    api: Optional[str] = typer.Option(None, "--api", help="wire API: chat_completions | completions | responses | messages"),
+    api_key: Optional[str] = typer.Option(None, "--api-key", help="LLM API key (prefer CLUE_LLM_API_KEY to avoid shell history)"),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="versioned API base URL"),
+) -> None:
     """Baseline vs Heuristic vs LLM+tools vs LLM no-tools; writes report.md + charts.png."""
     from clue.eval.report import run_eval
 
-    run_eval(games=games, seed=seed, out_dir=out, live=live)
+    connection = _llm_connection(api, api_key, base_url, use_yaml=False)
+    run_eval(games=games, seed=seed, out_dir=out, live=live, provider=provider, connection=connection)
 
 
 @app.command()

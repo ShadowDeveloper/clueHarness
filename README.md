@@ -81,6 +81,10 @@ python -m clue eval --games 50 --live    # real provider from .env
 # live LLM eval with a hard budget: tool-mode ablation + ponder brackets on paired seeds (see docs/evaluation.md)
 clue live-eval --model nvidia/nemotron-3-super-120b-a12b:free --games 5 --max-usd 0.10
 
+# any compatible model/API: Chat or legacy Completions, Responses, or Anthropic Messages
+# (set OPENAI_API_KEY or CLUE_LLM_API_KEY first; --api-key and YAML llm.api_key are also supported)
+clue play --players llm:bayesian:gpt-4o-mini,baseline,baseline --provider openai --api responses
+
 clue replay replays/game_7.jsonl           # pretty-print a replay
 clue replay replays/game_7.jsonl --tui     # step through it on the board (n/b, space, v = viewer redaction)
 pytest -q && ruff check clue tests && mypy clue      # 121 tests (~7 min), 93 % coverage, lint + strict types; CI: .github/workflows/ci.yml
@@ -172,7 +176,7 @@ are itemised in **[RULES_SPEC.md](RULES_SPEC.md)**. Config flags: `dice: 1|2`, `
 |---|---|---|
 | A Rules Engine | `clue/rules` | Pure functions `new_game / legal_actions / apply_action / check_winner`; deterministic under a passed `random.Random`; `IllegalAction` on anything not in `legal_actions`; imports nothing outside `clue.rules`. |
 | B Game State Manager | `clue/manager` | `GameManager.create / step / get_observation / export_replay / save / load / replay_hash`; per-player `Notebook` of *derived public facts*; `Event.private_to` redaction; JSONL replay incl. tool calls + agent notes; `runner.run_game` validates every agent action, retries once, then falls back (logged). Contains no strategy text and no LLM code. |
-| C Agent Interface | `clue/agents` | `PlayerAgent.choose_action / choose_card_to_show`; `BaselineRandomBot`, `BaselineHeuristicBot`, `HumanCLIAgent`, `LLMPlayerAgent` (+ `base_prompt.md`, `llm_client.py` with OpenRouter / OpenAI / local-OpenAI-compatible / Anthropic / Mock). |
+| C Agent Interface | `clue/agents` | `PlayerAgent.choose_action / choose_card_to_show`; `BaselineRandomBot`, `BaselineHeuristicBot`, `HumanCLIAgent`, `LLMPlayerAgent` (+ `base_prompt.md`, `llm_client.py` with OpenAI Chat/legacy Completions, Responses, Anthropic Messages, OpenRouter/local-compatible gateways, and Mock). |
 | D Strategy Layer | `strategies/*.md` | Text appended to the base system prompt. Cannot change `legal_actions`; the final action is always validated by the manager. |
 
 Observation schema (`GameManager.get_observation`): `you`, `board` (tokens, `your_legal_moves`), `turn`,
@@ -211,9 +215,11 @@ lets a straggler block the game. Everything is logged privately as `ponder` reco
 ## LLM tool modes & live hardening
 
 `--tool-mode precomputed|native|none` (or `llm:<strategy>:native`), `--prompt-profile full|compact`,
-`--max-usd` hard budget. The client has exponential backoff, timeouts, JSON mode with fallback, native
-function calling with auto-degradation, an on-disk response cache (`CLUE_LLM_CACHE`) and per-model cost
-accounting. Live eval (free OpenRouter model, 5 paired seeds/variant): with the tool layer the LLM was legal
+`--max-usd` hard budget. Select the wire format independently with `--api chat_completions|completions|responses|messages`
+and configure any provider key/base URL through `.env`, CLI, or YAML `llm:`. Every client has exponential
+backoff, timeouts, JSON/tool capability fallback, normalized usage, an on-disk response cache (`CLUE_LLM_CACHE`)
+and per-model cost accounting. Responses and Messages preserve reasoning/tool-call state across native tool
+rounds; legacy Completions uses prompt-only JSON and precomputed tools. Live eval (free OpenRouter model, 5 paired seeds/variant): with the tool layer the LLM was legal
 and patient (0 premature accusations); without it, 60 % of games ended in a premature accusation and only
 31 % of replies were valid JSON on the first try. Details: `docs/evaluation.md`, `eval/live_report_nemotron_free.md`.
 
@@ -257,16 +263,17 @@ measure it; the tournament table reports win-rate, `avg_turns_to_win` (accusatio
 ## Tech stack & why
 Python 3.11+ (fast to iterate, best LLM SDK ecosystem, ~0.3 s per simulated 4-player game), **Pydantic v2**
 for every schema (state/actions/events validate themselves and serialise to JSON for replays), **Typer +
-Rich** CLI, **Textual** TUI (same Rich rendering, async, mouse support, headless testable via `App.run_test`), **PyYAML** config, **httpx** direct REST calls (no vendor SDK lock-in; OpenAI-compatible format
-covers OpenRouter, OpenAI, Ollama, vLLM, LM Studio), **pytest / ruff / mypy**. **Web UI**: FastAPI + WebSocket backend (`clue/web`, optional extra) and a React + Vite +
+Rich** CLI, **Textual** TUI (same Rich rendering, async, mouse support, headless testable via `App.run_test`), **PyYAML** config, **httpx** direct REST calls (no vendor SDK lock-in; Chat/legacy Completions, Responses,
+and Messages cover OpenAI, Anthropic, OpenRouter, Ollama, vLLM, LM Studio, and compatible gateways), **pytest / ruff / mypy**. **Web UI**: FastAPI + WebSocket backend (`clue/web`, optional extra) and a React + Vite +
 TypeScript SPA (`web/`), prebuilt into the package so it runs without node; the same `Request`/queue human-agent
 pattern and `run_game(stop=, autosave=)` loop as the TUI, with all redaction done server-side per link token (see
 `docs/web.md`).
 
 ### Add a new LLM provider
-Implement `complete(system, messages, temperature) -> LLMResponse` (see `OpenAICompatibleClient`,
-`AnthropicClient` in `clue/agents/llm_client.py`) and add a branch in `make_client`. Select with
-`CLUE_LLM_PROVIDER=<name>` in `.env` or `--provider`.
+A compatible endpoint needs no new code: select its wire format with `--api`, its URL with `--base-url`, and
+its key with `--api-key` (or the equivalent YAML/environment settings). For a genuinely different protocol,
+implement `complete(system, messages, temperature, tools, json_mode) -> LLMResponse` (see the clients in
+`clue/agents/llm_client.py`) and add a branch in `make_client`. See `docs/extending.md`.
 
 ### Add a new strategy
 Create `strategies/my_style.md` with: name, description, when-to-use, DO / DON'T lists, example reasoning.

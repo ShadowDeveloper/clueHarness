@@ -9,6 +9,13 @@ deal_remainder: uneven          # uneven (official) | faceup (house rule)
 max_turns: 400                  # safety cap -> draw
 ponder: false                   # parallel thinking for AI seats (docs/pondering.md)
 workers: 1                      # tournament: games played concurrently (0 = all CPU cores)
+# Optional LLM connection for every LLM seat. CLI flags override these values.
+# llm:
+#   provider: openai            # openrouter | openai | local | anthropic | mock
+#   model: gpt-4o-mini          # default for seats without model:
+#   api: responses              # chat_completions | completions | responses | messages
+#   api_key: secret             # prefer CLUE_LLM_API_KEY; do not commit real keys
+#   base_url: https://api.openai.com/v1
 # optional house rules, all default off (docs/variants.md)
 # teams: [[P1, P3], [P2, P4]]   # B: shared hands, win together, teammates never disprove each other
 # private_disproofs: true       # C: only the parties involved learn who passed / who showed
@@ -60,20 +67,30 @@ Strategy aliases: `conservative`, `aggressive`, `bayesian`, `info_value_hunter` 
 ## CLI
 ```
 python -m clue play        [--config F | --players LIST] [--seed N] [--dice 1|2] [--strategy F]
-                           [--no-tools] [--provider P] [--ui auto|tui|cli] [--spectate] [--delay S]
-                           [--no-emoji] [--ponder] [--ponder-grace S] [--replay-dir D] [--quiet]
+                           [--no-tools] [--provider P] [--api API] [--api-key KEY] [--base-url URL]
+                           [--ui auto|tui|cli] [--spectate] [--delay S] [--no-emoji]
+                           [--ponder] [--ponder-grace S] [--replay-dir D] [--quiet]
                            [--save F] [--no-autosave] [--max-usd X] [--edition E] [--variants LIST]
-python -m clue play        --resume F [--ui ...] [--delay S] [--ponder] [--provider P] [--replay-dir D]
+python -m clue play        --resume F [--ui ...] [--delay S] [--ponder] [--provider P]
+                           [--api API] [--api-key KEY] [--base-url URL] [--replay-dir D]
 python -m clue tournament  --games N [--config F | --players LIST] [--seed N] [--dice 1|2] [--no-tools]
-                           [--provider P] [--report elo.csv] [--replay-dir D] [--ponder] [--workers N|0]
+                           [--provider P] [--api API] [--api-key KEY] [--base-url URL]
+                           [--report elo.csv] [--replay-dir D] [--ponder] [--workers N|0]
                            [--edition E] [--variants LIST] [--duplicate]
+python -m clue live-eval   [--model M] [--provider P] [--api API] [--api-key KEY] [--base-url URL]
+                           [--games N] [--max-usd X] [--workers N]
 python -m clue eval        [--games N] [--seed N] [--out DIR] [--live]
+                           [--provider P] [--api API] [--api-key KEY] [--base-url URL]
 python -m clue replay      PATH [--viewer Pn] [--tui]
 python -m clue web         [--host H] [--port N] [--hotseat] [--no-remote] [--open] [--saves-dir D] [--replay-dir D] [--max-usd X] [--dev-origin URL]
 ```
 * `--strategy F` applies `F` to every LLM seat that has no strategy of its own.
 * `--no-tools` flips `tools: false` for all LLM seats (ablation).
-* `--provider` overrides `CLUE_LLM_PROVIDER` for this run.
+* `--provider` selects credential/endpoint defaults and overrides YAML/`CLUE_LLM_PROVIDER` for this run.
+* `--api` independently selects the wire format: `chat_completions` (OpenAI Chat Completions), `completions`
+  (legacy text Completions), `responses` (OpenAI Responses), or `messages` (Anthropic Messages). Aliases such as
+  `chat`, `legacy`, and `anthropic` are accepted. `--api-key` and `--base-url` override all key/URL defaults;
+  prefer an environment variable over putting a key in shell history.
 * `--variants LIST` switches on house rules: comma list of `private | skip[=N] | shuffle | teams[=K]` (see `variants.md`); `--duplicate` plays tournament blocks on identical deals with the agents rotated through the seats.
 * `--ponder` lets idle AI seats think in parallel between turns (see `pondering.md`); `--ponder-grace` bounds the wait when their turn begins.
 * `--save F` checkpoints the game after every action; `--resume F` continues it (players/seed/rules come from the file, so
@@ -83,44 +100,67 @@ python -m clue web         [--host H] [--port N] [--hotseat] [--no-remote] [--op
 
 ## Environment (`.env`)
 ```
-CLUE_LLM_PROVIDER=openrouter        # mock | openrouter | openai | local | anthropic
-CLUE_LLM_MODEL=openai/gpt-4o-mini   # default model when a seat has none
-OPENROUTER_API_KEY=...
-OPENROUTER_BASE_URL=https://openrouter.ai/api/v1     # optional
-OPENAI_API_KEY=...
-OPENAI_BASE_URL=http://localhost:11434/v1            # for provider=local (Ollama default)
-LOCAL_API_KEY=ollama                                 # some local servers require any non-empty key
-ANTHROPIC_API_KEY=...
-```
-Loaded with `python-dotenv` on first client construction. No key is ever read from code or config files.
-Anything with `model: mock` (or provider `mock`) is fully offline.
+CLUE_LLM_PROVIDER=openai            # mock | openrouter | openai | local | anthropic
+CLUE_LLM_MODEL=gpt-4o-mini          # default model when a seat has none
+CLUE_LLM_API=responses              # optional; defaults from provider (see below)
+CLUE_LLM_API_KEY=...                # generic key for any provider/API
+CLUE_LLM_BASE_URL=https://api.openai.com/v1
 
-| Provider | Endpoint format | Notes |
+# Provider-specific fallbacks (CLUE_LLM_* above takes precedence):
+OPENROUTER_API_KEY=...
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENAI_API_KEY=...
+OPENAI_BASE_URL=https://api.openai.com/v1
+LOCAL_API_KEY=ollama                # some local servers require any non-empty key
+LOCAL_BASE_URL=http://localhost:11434/v1
+ANTHROPIC_API_KEY=...
+ANTHROPIC_BASE_URL=https://api.anthropic.com/v1
+
+CLUE_LLM_CACHE=eval/live/cache      # optional on-disk response cache
+CLUE_LLM_TIMEOUT=60                 # seconds per HTTP request
+CLUE_LLM_MAX_RETRIES=4              # retries after 429/5xx/timeouts
+CLUE_LLM_MAX_TOKENS=1500            # mapped to the field required by each API
+```
+Loaded with `python-dotenv` on first client construction. OpenAI-wire APIs send
+`Authorization: Bearer ...`; Messages sends `x-api-key` plus `anthropic-version: 2023-06-01`.
+Keys can instead be supplied with CLI `--api-key` or YAML `llm.api_key`; they are never put in replays,
+response-cache keys, or browser payloads. Do not commit a YAML file containing a real key.
+Anything with `model: mock` (or explicit provider `mock`) is fully offline.
+
+| Provider | Default API | Default base URL / compatibility |
 |---|---|---|
-| `openrouter` | OpenAI chat-completions | Any OpenRouter model id (`anthropic/claude-3.5-sonnet`, `openai/gpt-4o`, …) |
-| `openai` | OpenAI chat-completions | `OPENAI_BASE_URL` overridable (Azure-style gateways) |
-| `local` | OpenAI chat-completions | Ollama, vLLM, LM Studio, llama.cpp server |
-| `anthropic` | Messages API | Direct |
-| `mock` | — | Follows the tool recommendation; `garbage_rate` / `fail_first` for testing |
+| `openrouter` | `chat_completions` | `https://openrouter.ai/api/v1`; any OpenRouter model id |
+| `openai` | `chat_completions` | `https://api.openai.com/v1`; also OpenAI-compatible gateways |
+| `local` | `chat_completions` | `http://localhost:11434/v1`; Ollama, vLLM, LM Studio, llama.cpp |
+| `anthropic` | `messages` | `https://api.anthropic.com/v1`; also Messages-compatible gateways |
+| `mock` | — | Offline mock; `garbage_rate` / `fail_first` for testing |
+
+Select another supported API with `CLUE_LLM_API`, YAML `llm.api`, or `--api`; no new provider class is
+needed for a compatible endpoint. For example, direct OpenAI Responses uses `provider=openai` and
+`api=responses`, while a text-instruct endpoint uses `provider=openai` and `api=completions`.
 
 ## Precedence
-CLI flag > YAML key > `.env` > built-in default.
+CLI flag > YAML `llm:` key > generic `CLUE_LLM_*` environment > provider-specific environment > built-in default.
 
 ## LLM tool modes & prompt profiles
 
 | flag / token | effect |
 |---|---|
 | `--tool-mode precomputed` (default) | symbolic `analysis` bundle (posterior, certain facts, opponent threat, top suggestions, recommended action) is injected into the prompt |
-| `--tool-mode native` / `llm:<strat>:native` | the model additionally calls tools itself via OpenAI function calling (`TOOL_SPECS`), up to 4 rounds per decision; the final reply is forced to JSON mode |
+| `--tool-mode native` / `llm:<strat>:native` | the model additionally calls tools itself via Chat Completions, Responses, or Messages function/tool calling (`TOOL_SPECS`), up to 4 rounds per decision; the final reply is requested as JSON. Legacy Completions has no native tool channel, so it answers directly using the precomputed analysis |
 | `--tool-mode none` / `:notools` | ablation: no analysis, no tools |
 | `--prompt-profile compact` / `:compact` | drops most of `public_history` and bookkeeping counters (the notebook + analysis already summarise them) — ~35 % fewer prompt tokens |
 | `--max-usd X` | hard cap on live spend for the run (`BudgetExceeded` stops the tournament; usage is printed at exit) |
 
-Live hardening (`clue/agents/llm_client.py`): exponential backoff (4 retries) on 429/5xx/timeouts, per-call
-timeout, automatic JSON-mode fallback for providers that reject `response_format`, on-disk response cache
-(`CLUE_LLM_CACHE`) keyed by the full request, and per-model cost accounting (OpenRouter's reported `cost` when
-available, else a built-in price table). Measured: gpt-4o-mini, native+compact, 3-player game ≈ 40 calls,
-~110k prompt tokens, **≈ $0.02 per game**.
+Live hardening (`clue/agents/llm_client.py`) applies to every wire format: exponential backoff on
+429/5xx/timeouts, per-call timeout, on-disk response cache (`CLUE_LLM_CACHE`) keyed by API + endpoint + full
+request, normalized token usage, provider-reported or estimated cost, and the hard budget cap. JSON/tool
+requests automatically degrade only when a model explicitly rejects those capabilities. Chat Completions
+also handles reasoning-model `max_completion_tokens`, temperature, and system/developer-role differences;
+Responses preserves reasoning and function-call items across stateless tool rounds; Messages preserves
+thinking signatures with `tool_use` blocks. Legacy Completions renders conversation/tool results into its
+text prompt and uses a prompt-only JSON instruction because that API has no native tools or JSON mode.
+Measured: gpt-4o-mini, native+compact, 3-player game ≈ 40 calls, ~110k prompt tokens, **≈ $0.02 per game**.
 
 ## Parallel tournaments
 

@@ -2,6 +2,13 @@
 edition: classic-clue-2002   # classic-clue-1996 -> 1 die; classic-clue-2002 -> 2 dice; modern -> Dr. Orchid
 seed: 42
 deal_remainder: uneven       # or: faceup
+# Optional live-model defaults (CLI --provider/--api/--api-key/--base-url override these):
+# llm:
+#   provider: openai
+#   model: gpt-4o-mini
+#   api: responses              # chat_completions | completions | responses | messages
+#   api_key: secret             # prefer CLUE_LLM_API_KEY; never commit a real key
+#   base_url: https://api.openai.com/v1
 players:
   - id: P1
     kind: human
