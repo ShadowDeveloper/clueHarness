@@ -62,7 +62,7 @@ def _specs(
     if config:
         cfg, specs, cseed, raw = load_yaml_config(config)
         seed = cseed if seed is None else seed
-        _YAML_EXTRA.update({k: raw[k] for k in ("ponder", "workers") if k in raw})
+        _YAML_EXTRA.update({k: raw[k] for k in ("ponder", "workers", "spectate") if k in raw})
         llm = raw.get("llm", {})
         if not isinstance(llm, dict) or set(llm) - {"provider", "model", "api", "api_key", "base_url"}:
             raise typer.BadParameter("YAML llm must be a mapping with only provider, model, api, api_key, and base_url")
@@ -180,6 +180,7 @@ def play(
     provider = _llm_provider(provider, use_yaml=not resume)
     connection = _llm_connection(api, api_key, base_url, use_yaml=not resume)
     ponder = ponder or bool(_YAML_EXTRA.get("ponder"))
+    spectate = spectate or bool(_YAML_EXTRA.get("spectate"))
     has_human = any(s.kind == "human" for s in specs)
     if ui == "auto":
         ui = "tui" if (has_human or spectate) else "cli"

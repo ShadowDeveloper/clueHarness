@@ -93,6 +93,41 @@ async def test_human_can_build_accusation() -> None:
     assert gm.winner == "P1"
 
 
+async def test_large_board_has_natural_width_and_scrolls_without_wrapping() -> None:
+    """The 36-column Large board must not be squeezed through the Classic board's 56-column slot."""
+    from textual.containers import ScrollableContainer
+    from textual.widgets import Static
+
+    from clue.config import load_yaml_config
+
+    class LayoutApp(ClueApp):
+        def _game_loop(self) -> None:
+            pass  # Layout-only test: no agents or provider calls.
+
+    cfg, specs, seed, _ = load_yaml_config("strategy_game.yaml")
+    gm = GameManager.create(specs, seed=seed, config=cfg)
+    app = LayoutApp(gm, {s.id: BaselineHeuristicBot(s.id, i) for i, s in enumerate(specs)}, delay=0.0)
+    async with app.run_test(size=(170, 48)) as pilot:
+        await pilot.pause(0.05)
+        board = app.query_one("#board", ScrollableContainer)
+        content = app.query_one("#board_content", Static)
+        assert content.outer_size.width == 76
+        assert board.outer_size.width == 81  # full grid plus border, padding, and vertical scrollbar
+        assert board.max_scroll_x == 0
+
+        await pilot.resize_terminal(140, 45)
+        await pilot.pause(0.05)
+        assert board.outer_size.width == 72
+        assert content.outer_size.width == 76  # overflow scrolls; the text itself is never wrapped
+        assert board.max_scroll_x > 0 and board.max_scroll_y > 0
+
+        await pilot.resize_terminal(240, 60)
+        await pilot.pause(0.05)
+        assert board.outer_size.width == 80
+        assert board.max_scroll_x == 0 and board.max_scroll_y == 0
+        app.exit()
+
+
 @pytest.mark.filterwarnings("ignore")
 def test_token_glyphs_are_two_cells_wide() -> None:
     from rich.cells import cell_len
@@ -165,6 +200,29 @@ async def test_replay_viewer_steps_and_redacts(tmp_path) -> None:  # type: ignor
         await pilot.press("g", "space")
         await pilot.pause(0.5)
         assert app.rs.idx >= 1
+        app.exit()
+
+
+async def test_large_replay_board_uses_same_responsive_scrolling() -> None:
+    from textual.containers import ScrollableContainer
+    from textual.widgets import Static
+
+    from clue.config import load_yaml_config
+    from clue.tui.replay_viewer import ReplayApp
+
+    cfg, specs, seed, _ = load_yaml_config("strategy_game.yaml")
+    gm = GameManager.create(specs, seed=seed, config=cfg)
+    app = ReplayApp(gm.export_replay())
+    async with app.run_test(size=(240, 60)) as pilot:
+        await pilot.pause(0.05)
+        board = app.query_one("#board", ScrollableContainer)
+        assert board.outer_size.width == 80
+        assert board.max_scroll_x == 0 and board.max_scroll_y == 0
+        await pilot.resize_terminal(100, 45)
+        await pilot.pause(0.05)
+        assert board.outer_size.width == 60
+        assert app.query_one("#board_content", Static).outer_size.width == 76
+        assert board.max_scroll_x > 0 and board.max_scroll_y > 0
         app.exit()
 
 

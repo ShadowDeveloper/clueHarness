@@ -1,0 +1,60 @@
+# Ten players require the Large edition (3–12 players).
+edition: large
+ponder: true
+spectate: true
+
+players:
+  - id: P1
+    name: bayesian
+    kind: llm
+    model: openai
+    strategy: bayesian
+
+  - id: P2
+    name: conservative
+    kind: llm
+    model: openai
+    strategy: conservative
+
+  - id: P3
+    name: aggressive
+    kind: llm
+    model: openai
+    strategy: aggressive
+
+  - id: P4
+    name: info
+    kind: llm
+    model: openai
+    strategy: info
+
+  - id: P5
+    name: deceptive
+    kind: llm
+    model: openai
+    strategy: deceptive
+
+  - id: P6
+    name: room_rusher
+    kind: llm
+    model: openai
+    strategy: room_rusher
+
+  - id: P7
+    name: heuristic
+    kind: baseline
+
+  - id: P8
+    name: heuristic
+    kind: baseline
+    bot: heuristic
+
+  - id: P9
+    name: expert
+    kind: baseline
+    bot: expert
+
+  - id: P10
+    name: heuristic
+    kind: baseline
+    bot: heuristic

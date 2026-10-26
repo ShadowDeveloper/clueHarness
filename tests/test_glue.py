@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 
@@ -95,6 +96,56 @@ def test_yaml_aliases_and_defaults(tmp_path: Path) -> None:
     assert cfg.edition == "modern" and cfg.dice == 2 and seed == 0 and [s.id for s in specs] == ["P1", "P2", "P3"]
     cfg2, *_ = load_yaml_config(Path("game.yaml"))
     assert cfg2.num_players == 4 and cfg2.dice == 2
+
+
+def test_strategy_game_yaml_and_spectate(monkeypatch: pytest.MonkeyPatch) -> None:
+    """YAML spectate goes through the real run_tui path, not just a mocked UI-selection seam."""
+    from clue.tui import app as tui_app
+
+    seen: dict[str, object] = {}
+
+    def fake_app_run(tui: tui_app.ClueApp) -> None:
+        seen["app"] = tui
+        seen["gm"] = tui.gm
+        seen["agents"] = tui.agents
+
+        async def mount_tui() -> None:
+            async with tui.run_test(size=(170, 48)) as pilot:
+                await pilot.pause()
+                seen["status"] = str(tui.query_one("#status").render())
+                seen["omniscient"] = bool(tui.query_one("#omni").display)
+                tui.exit()
+
+        asyncio.run(mount_tui())
+
+    monkeypatch.setattr(tui_app.ClueApp, "_game_loop", lambda _tui: None)
+    monkeypatch.setattr(tui_app.ClueApp, "run", fake_app_run)
+    result = runner.invoke(app, ["play", "--config", "strategy_game.yaml"])
+
+    assert result.exit_code == 0, result.output
+    gm = seen["gm"]
+    assert isinstance(gm, GameManager)
+    assert gm.config.edition == "large" and gm.config.num_players == 10
+    assert [s.name for s in gm.specs] == ["bayesian", "conservative", "aggressive", "info", "deceptive", "room_rusher", "heuristic", "heuristic", "expert", "heuristic"]
+    llm_specs = [s for s in gm.specs if s.kind == "llm"]
+    assert len(llm_specs) == 6 and all(s.model == "openai" and s.temperature is None for s in llm_specs)
+    assert len(seen["agents"]) == 10
+    tui = seen["app"]
+    assert isinstance(tui, tui_app.ClueApp)
+    assert tui.human is None and tui.viewer is None and tui.ponder is True
+    assert seen["omniscient"] is True
+    assert "Spectating" in str(seen["status"]) and "omniscient" in str(seen["status"])
+
+
+def test_cli_spectate_flag_still_uses_real_run_tui(monkeypatch: pytest.MonkeyPatch) -> None:
+    from clue.tui import app as tui_app
+
+    launched: list[tui_app.ClueApp] = []
+    monkeypatch.setattr(tui_app.ClueApp, "run", lambda tui: launched.append(tui))
+    result = runner.invoke(app, ["play", "--players", "baseline,baseline,baseline", "--spectate", "--no-autosave"])
+
+    assert result.exit_code == 0, result.output
+    assert len(launched) == 1 and launched[0].human is None and launched[0].viewer is None
 
 
 def test_parse_players_errors_and_labels() -> None:

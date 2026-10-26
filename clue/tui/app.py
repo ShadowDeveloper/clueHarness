@@ -11,10 +11,10 @@ import queue
 from dataclasses import dataclass, field
 from typing import Any
 
-from textual import on
+from textual import events, on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, ScrollableContainer, Vertical, VerticalScroll
 from textual.widgets import Button, DataTable, Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
@@ -139,8 +139,9 @@ class ClueApp(App[None]):
     CSS = """
     Screen { layout: vertical; }
     #top { height: 1fr; }
-    #board { width: 56; height: 100%; border: round $accent; padding: 0 1; }
-    #middle { width: 1fr; min-width: 50; }
+    #board { width: 56; height: 100%; border: round $accent; padding: 0 1; scrollbar-size: 1 1; }
+    #board_content { height: auto; }
+    #middle { width: 1fr; min-width: 24; }
     #notebook { height: 1fr; border: round $secondary; }
     #omni { height: 1fr; border: round $secondary; display: none; }
     #facts { height: auto; max-height: 9; border: round $secondary; padding: 0 1; }
@@ -195,12 +196,16 @@ class ClueApp(App[None]):
         self._selected: str | None = None
         self.coach = False  # coach mode: on-demand exact-solver hints for the human viewer (never auto-shown)
         self._coach_used = 0
+        # Two display cells per board square, plus the four-cell row label.
+        self._board_content_width = 4 + 2 * B.board_for(gm.config.edition).cols
+        self._board_content_height = 0
 
     # ---------------- layout
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
         with Horizontal(id="top"):
-            yield Static(id="board")
+            with ScrollableContainer(id="board"):
+                yield Static(id="board_content")
             with Vertical(id="middle"):
                 yield NotebookView(id="notebook", zebra_stripes=True, cursor_type="none")
                 yield OmniscientView(id="omni", zebra_stripes=True, cursor_type="none")
@@ -230,7 +235,7 @@ class ClueApp(App[None]):
         self.sub_title = "  ".join(f"{s.id}: {s.label()}" for s in self.gm.specs)
         if self.human:
             self.human.app = self
-        self.query_one("#board", Static).border_title = "Board"
+        self.query_one("#board", ScrollableContainer).border_title = "Board"
         self.query_one("#notebook", NotebookView).border_title = "Notebook  ✔ has  ✘ hasn't  ? unknown"
         self.query_one("#facts", Static).border_title = "Deductions"
         self.query_one("#log", RichLog).border_title = "What happened"
@@ -239,6 +244,25 @@ class ClueApp(App[None]):
         self._set_banner("[dim]Waiting for the game to start…[/]")
         self.refresh_view()
         self.run_worker(self._game_loop, thread=True, exclusive=True)
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._fit_board(event.size.width, event.size.height)
+
+    def _fit_board(self, screen_width: int | None = None, screen_height: int | None = None) -> None:
+        """Give the board its natural width when possible; scroll instead of wrapping when space is tight."""
+        if not self.query("#board_content"):
+            return  # Resize can arrive before compose has finished.
+        screen_width = self.size.width if screen_width is None else screen_width
+        screen_height = self.size.height if screen_height is None else screen_height
+        right_width = 60 if screen_width >= 150 else 44
+        middle_min = 24 if screen_width >= 120 else 16
+        self.query_one("#right", Vertical).styles.width = right_width
+        self.query_one("#middle", Vertical).styles.min_width = middle_min
+        # Header/status/footer and the board border consume five rows outside the board content.
+        needs_vertical_scrollbar = self._board_content_height > max(0, screen_height - 5)
+        natural_width = self._board_content_width + 4 + int(needs_vertical_scrollbar)  # border, padding, scrollbar
+        available = max(24, screen_width - right_width - middle_min)
+        self.query_one("#board", ScrollableContainer).styles.width = min(natural_width, available)
 
     # ---------------- game loop (worker thread)
     def _game_loop(self) -> None:
@@ -330,7 +354,12 @@ class ClueApp(App[None]):
         obs = self.gm.get_observation(vid)
         hl = set(obs["board"]["your_legal_moves"]) if self.mode == "move" or obs["turn"]["roll"] else set()
         board_txt = render_board(obs["board"]["token_positions"], obs["cards"]["suspects"], hl, obs["board"]["weapon_positions"], obs["you"]["suspect_token"], self.emoji, obs["config"]["edition"])
-        self.query_one("#board", Static).update(board_txt)
+        board_content = self.query_one("#board_content", Static)
+        self._board_content_height = len(board_txt.plain.splitlines())
+        board_content.styles.width = self._board_content_width
+        board_content.styles.height = self._board_content_height
+        board_content.update(board_txt)
+        self._fit_board()
         nbv, ov = self.query_one("#notebook", NotebookView), self.query_one("#omni", OmniscientView)
         nbv.display, ov.display = not omni, omni
         if omni:

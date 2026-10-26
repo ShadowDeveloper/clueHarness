@@ -8,6 +8,7 @@ dice: 2                         # 1 | 2 (defaults from edition)
 deal_remainder: uneven          # uneven (official) | faceup (house rule)
 max_turns: 400                  # safety cap -> draw
 ponder: false                   # parallel thinking for AI seats (docs/pondering.md)
+spectate: false                 # watch an all-AI game in the TUI
 workers: 1                      # tournament: games played concurrently (0 = all CPU cores)
 # Optional LLM connection for every LLM seat. CLI flags override these values.
 # llm:
@@ -95,7 +96,7 @@ python -m clue web         [--host H] [--port N] [--hotseat] [--no-remote] [--op
 * `--ponder` lets idle AI seats think in parallel between turns (see `pondering.md`); `--ponder-grace` bounds the wait when their turn begins.
 * `--save F` checkpoints the game after every action; `--resume F` continues it (players/seed/rules come from the file, so
   `--players`/`--config`/`--seed` are ignored). The TUI autosaves to `saves/game_<seed>.json` unless `--no-autosave`. See `playing.md`.
-* `--ui auto` = TUI when a human seat exists or `--spectate` is given, plain text otherwise.
+* `--ui auto` = TUI when a human seat exists, `--spectate` is given, or the YAML has `spectate: true`; plain text otherwise.
 * `tournament --report X.csv` also writes `X.json` with per-game results.
 
 ## Environment (`.env`)
