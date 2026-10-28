@@ -6,56 +6,56 @@ spectate: true
 
 players:
   - id: P1
-    name: bayesian
+    name: Probabalist
     kind: llm
     model: openai
     strategy: bayesian
 
   - id: P2
-    name: conservative
+    name: Conservative
     kind: llm
     model: openai
     strategy: conservative
 
   - id: P3
-    name: aggressive
+    name: Aggressor
     kind: llm
     model: openai
     strategy: aggressive
 
   - id: P4
-    name: info
+    name: Hunter
     kind: llm
     model: openai
     strategy: info
 
   - id: P5
-    name: deceptive
+    name: Liar
     kind: llm
     model: openai
     strategy: deceptive
 
   - id: P6
-    name: room_rusher
+    name: Rusher
     kind: llm
     model: openai
     strategy: room_rusher
 
   - id: P7
-    name: heuristic
+    name: Baseline
     kind: baseline
 
   - id: P8
-    name: heuristic
+    name: Heuristic
     kind: baseline
     bot: heuristic
 
   - id: P9
-    name: expert
+    name: Expert
     kind: baseline
     bot: expert
 
   - id: P10
-    name: heuristic
+    name: Random
     kind: baseline
-    bot: heuristic
+    bot: random
