@@ -24,6 +24,43 @@ async def _wait(cond, timeout: float = 20.0) -> None:  # type: ignore[no-untyped
     assert cond(), "timeout"
 
 
+async def test_tui_reuses_board_render_until_board_state_changes(monkeypatch: pytest.MonkeyPatch) -> None:
+    import clue.tui.app as tui_module
+    from clue.rules import board as B
+
+    specs = [PlayerSpec(id=f"P{i}", kind="baseline") for i in range(1, 4)]
+    gm = GameManager.create(specs, seed=3)
+    agents = {pid: BaselineHeuristicBot(pid, i) for i, pid in enumerate(gm.player_ids())}
+    original_render = tui_module.render_board
+    calls = 0
+
+    def counted_render(*args, **kwargs):  # type: ignore[no-untyped-def]
+        nonlocal calls
+        calls += 1
+        return original_render(*args, **kwargs)
+
+    monkeypatch.setattr(tui_module, "render_board", counted_render)
+
+    class StaticApp(ClueApp):
+        def _game_loop(self) -> None:
+            pass
+
+    app = StaticApp(gm, agents, delay=0.0)
+    async with app.run_test(size=(140, 45)) as pilot:
+        await pilot.pause()
+        after_mount = calls
+        app.refresh_view()
+        assert calls == after_mount
+
+        token = next(iter(gm.state.token_positions))
+        current = gm.state.token_positions[token]
+        r, c = next(cell for cell in B.board_for("classic").corridor if f"{cell[0]},{cell[1]}" != current)
+        gm.state.token_positions[token] = f"{r},{c}"
+        app.refresh_view()
+        assert calls == after_mount + 1
+        app.exit()
+
+
 async def test_spectate_runs_to_completion() -> None:
     specs = [PlayerSpec(id=f"P{i}", kind="baseline") for i in range(1, 4)]
     gm = GameManager.create(specs, seed=3)
@@ -200,6 +237,44 @@ async def test_replay_viewer_steps_and_redacts(tmp_path) -> None:  # type: ignor
         await pilot.press("g", "space")
         await pilot.pause(0.5)
         assert app.rs.idx >= 1
+        app.exit()
+
+
+async def test_private_replay_tui_counts_only_viewer_visible_events() -> None:
+    from textual.widgets import Static
+
+    from clue.tui.replay_viewer import ReplayApp
+
+    records = [
+        {
+            "kind": "event",
+            "type": "game_start",
+            "players": [{"id": f"P{i}", "kind": "baseline"} for i in range(1, 4)],
+            "config": {"edition": "classic", "private_disproofs": True},
+        },
+        {"kind": "event", "type": "can_disprove", "turn": 1, "player": "P2", "suggester": "P1"},
+        {
+            "kind": "event",
+            "type": "disproved",
+            "turn": 1,
+            "player": None,
+            "suggester": "P1",
+            "disprover": "P2",
+            "card": "Rope",
+        },
+    ]
+    app = ReplayApp(records)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("v", "v", "v")  # P3 is a bystander to both private events
+        await pilot.pause()
+        status = str(app.query_one("#status", Static).render())
+        assert "viewer: P3" in status and "event 0/1" in status
+        await pilot.press("G")
+        await pilot.pause()
+        status = str(app.query_one("#status", Static).render())
+        assert "event 1/1" in status
+        assert app.rs.idx == 2  # hidden intermediate event is not reflected in the visible counter
+        assert "showed a card" not in str(app.query_one("#log").render())
         app.exit()
 
 

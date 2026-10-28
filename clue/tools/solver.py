@@ -1,13 +1,13 @@
-"""Exact deduction solver for Clue.
+"""Exact-or-sampled deduction solver for Clue.
 
-Model: the deck (21 cards classic, 36 large) minus face-up cards are partitioned into the envelope (exactly one suspect, one
-weapon, one room) and the players' hands (known sizes). Constraints from the notebook:
+Model: the deck (21 cards classic, 36 large) minus face-up cards is partitioned into the envelope (one suspect,
+one weapon, one room) and the players' hands (known sizes). Constraints from the notebook:
   * known_holder[card] = player            (card is in that hand)
   * not_held[player] ⊇ cards               (player lacks them)
   * has_one_of: player holds ≥1 of a triple (they disproved a suggestion)
-We count, exactly, the number of complete assignments consistent with all constraints, per envelope
-combo. Cards that are "free" (no constraint mentions them) are never branched on individually: their
-placements are counted combinatorially, which keeps enumeration tiny in practice.
+Within configured size bounds, we count every complete assignment consistent with the constraints, per envelope
+combo. Cards that are "free" (no constraint mentions them) are counted combinatorially. Larger cases use
+constraint propagation plus deterministic sampling; `Solution.exact` identifies which result was returned.
 
 Public API
   solve(nb, players, hand_sizes, edition) -> Solution
@@ -89,7 +89,7 @@ def solve(nb: Notebook, players: list[str], hand_sizes: dict[str, int] | None = 
     head_n = len({c for ts in triples.values() for t in ts for c in t if c not in known})
     if len(players) > EXACT_MAX_PLAYERS or head_n > EXACT_MAX_HEAD or len(all_cards) > EXACT_MAX_CARDS:
         if not _propagate(players, sizes, known, not_held, triples, all_cards, faceup):
-            return Solution()
+            return Solution(exact=False)
         return _solve_sampled(players, sizes, known, not_held, triples, all_cards, faceup, edition)
     # Cards that are constrained (mentioned by any triple or known) vs free per category
     mentioned: set[str] = set(known)

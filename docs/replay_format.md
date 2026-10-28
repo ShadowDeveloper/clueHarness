@@ -5,7 +5,7 @@
 |---|---|---|
 | `replays/game_<seed>.jsonl` | `play`, `tournament --replay-dir` | **Unredacted** ("God view"): one `LogRecord` per line |
 | `replays/game_<seed>_redacted_<Pn>.json` | `play` | The same log as player *Pn* is allowed to see |
-| `<path>.json` via `GameManager.save()` | API | Full checkpoint (state, RNG state, log) for `GameManager.load()` |
+| `<path>.json` via `--save`, TUI autosave, API, or `GameManager.save()` | play / API | Full checkpoint (state, RNG state, log) for `GameManager.load()` |
 | `elo.csv` / `elo.json` | `tournament` | Aggregate table / per-game results |
 
 ## Record kinds
@@ -16,9 +16,11 @@ Every line has `seq` (0-based, contiguous) and `kind`.
 {"seq": 10, "kind": "event", "type": "disproved", "turn": 0, "player": "P2",
  "suggester": "P1", "disprover": "P2", "card": "Rope"}
 ```
-| `type` | Public fields | Private fields (`private_to`) |
+Every event record also carries the event `type`, `turn`, and `player` when present; the table lists fields inside the separate `public` and `private` payloads.
+
+| `type` | Additional public fields (`Event.public`) | Private fields (`private_to`) |
 |---|---|---|
-| `game_start` | seed, players (specs), config, faceup | `solution`, `hands` (nobody — God view only) |
+| `game_start` | seed, players (specs), config, faceup, weapon_positions | `solution`, `hands` (nobody — omniscient view only) |
 | `turn_start` | player, turn | |
 | `roll` | dice[], total | |
 | `boxed_in` | | |
@@ -26,22 +28,27 @@ Every line has `seq` (0-based, contiguous) and `kind`.
 | `suggest` | suspect, weapon, room | |
 | `cannot_disprove` | suggester | |
 | `can_disprove` | suggester | |
-| `disproved` | suggester, disprover | `card` (suggester, disprover) |
+| `disproved` | suggester and (unless private disproofs are enabled) disprover | `card` (suggester, disprover, and their teammates when teams are enabled) |
 | `no_one_disproved` | suspect, weapon, room | |
 | `accuse` | suspect, weapon, room, correct | |
 | `eliminated` | | |
-| `game_over` | winner (or null), solution, reason? | |
+| `penalised` | skip_turns | |
+| `turn_skipped` | remaining | |
+| `game_over` | winner (or null), team when applicable, solution, reason? | |
+
+Under `private_disproofs`, `can_disprove` and `cannot_disprove` events are hidden from bystanders entirely.
+With teams enabled, the `disproved` card/identity is shared with the suggester's and disprover's teams. Individual `can_disprove` / `cannot_disprove` events are visible to the suggester's team and the player currently asked, not that player's other teammates.
 
 ### `action` — the validated action that produced the following events
 ```json
 {"seq": 9, "kind": "action", "type": "show_card", "player": "P2", "card": "Rope"}
 ```
-Actions are public in the God view. In a redacted view `show_card` actions are still listed (the *fact* of
-disproving is public) but the `card` field is removed unless the viewer was involved.
-
-> Note: action records are visible to all viewers *except* their private `card`. Implementation:
-> `GameManager.step` stores the action; `export_replay(viewer)` strips `card` from `show_card` actions when
-> the viewer is neither the suggester nor the shower.
+Actions are public in the omniscient view. In the default rules, redacted `show_card` action records reveal that
+a player showed a card, but keep the card itself private to the suggester and shower. With
+`private_disproofs: true`, the shower's identity is also private to the involved parties; bystanders do not
+receive hidden `can_disprove` / `cannot_disprove` events. Team mode grants the configured team visibility.
+`GameManager.step` stores these fields using `private` / `private_to`; `export_replay(viewer)` applies the same
+redaction rules as observations.
 
 ### `tool_call` — symbolic tool invocation by an LLM agent (private to that player)
 ```json
@@ -82,7 +89,8 @@ drift from the log.
 
 ## Reading replays
 ```
-python -m clue replay replays/game_42.jsonl              # God view, pretty-printed
-python -m clue replay replays/game_42.jsonl --viewer P3  # (pretty-printer only; redaction is in the *_redacted files)
+python -m clue replay replays/game_42.jsonl                    # unredacted JSONL, pretty-printed (local omniscient view)
+python -m clue replay replays/game_42_redacted_P3.json          # pre-redacted view for P3
+python -m clue replay replays/game_42.jsonl --tui               # step through the replay; press v to cycle views
 jq 'select(.type=="accuse")' replays/game_42.jsonl
 ```

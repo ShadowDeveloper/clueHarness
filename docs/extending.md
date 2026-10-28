@@ -53,10 +53,10 @@ for the live `Notebook` when calling `clue.tools` functions. Returning an illega
 rejects it, retries once with `observation["last_error"]`, then substitutes a legal fallback and logs both.
 
 ## Add a UI / transport
-Everything a UI needs is `GameManager.get_observation(pid)`, `legal_actions(pid)`, `step(action)` and
-`export_replay(viewer)`. The TUI (`clue/tui/app.py`) is ~300 lines on top of these; a FastAPI server would
-expose the same four calls and run `run_game` in a background task with a queue-backed agent exactly like
-`TUIHumanAgent`.
+The TUI and shipped FastAPI/React web UI are adapters over `GameManager.get_observation(pid)`,
+`legal_actions(pid)`, `step(action)`, and `export_replay(viewer)`. The web implementation lives in `clue/web/`
+and `web/`; its `WebHumanAgent` uses the same request/queue pattern as `TUIHumanAgent`. Use
+[`web.md`](web.md) for current routes and frontend development instructions.
 
 ## Add a rule variant
 1. Add a field to `GameConfig` (`clue/rules/state.py`) with the official behaviour as default.
@@ -76,7 +76,7 @@ DOORS`), so renaming rooms means updating both; suspects/weapons are free-standi
 ## Development workflow
 ```
 pip install -e ".[dev]"
-pytest -q                     # 98 tests incl. headless TUI, solver, expert bot, glue/CLI (~6 min); pytest -n is not used, use --workers in tournaments instead
+pytest -q                     # full Python test suite (includes headless TUI, solver, expert bot, glue/CLI); use --workers in tournaments for parallel games
 pytest -q tests/test_rules.py # engine only (~2 s)
 ruff format . && ruff check . && mypy clue
 python eval/make_demo.py            # regenerate demo_game.md
@@ -84,8 +84,8 @@ python eval/make_tui_screenshot.py  # regenerate docs/tui_screenshot.*
 python -m clue eval --games 50      # regenerate eval/report.md + charts.png
 ```
 Invariants to preserve: `clue.rules` imports nothing outside itself; the manager contains no strategy text;
-every action applied goes through `rules.is_legal`; every private datum is carried in `Event.private` with
-an explicit `private_to`.
+every action applied goes through `rules.is_legal`; event-level sensitive payloads stay in `Event.private` with
+an explicit `private_to` (private action/log records use the corresponding `LogRecord` fields).
 
 ## Web UI
 

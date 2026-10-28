@@ -5,7 +5,7 @@
 ## DO
 - Choose the suggestion with the highest `score` in `top_suggestions`; break ties toward the one whose `first_unknown_disprover` has shown you the fewest cards.
 - Include 1 of your own cards deliberately when you want to test whether the next player holds a *specific* other card.
-- Move to rooms you have not seen (rooms are the scarcest category: 9 cards, ~40% of the solution uncertainty).
+- Move to rooms you have not seen; use `cards.rooms` and the current edition's board rather than assuming a fixed room count.
 - Write a note after every disproof about which card the shower could NOT have shown.
 
 ## DON'T

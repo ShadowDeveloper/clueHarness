@@ -1,6 +1,6 @@
 # HANDOFF — Clue AI harness
 
-_Last updated 2026-10-04. Repo head: `d4ae727`. Working tree clean except stray `replays/game_2_redacted_P*.json` (safe to delete)._
+_Last updated 2026-10-28. This is a project handoff, not a statement of Git/worktree status; use `git status` and CI for current branch state._
 
 ## 1. What this project is
 
@@ -9,20 +9,24 @@ A modular AI harness for Classic US Clue (3–6 players; 3–12 in the Large edi
 never imports LLM code) → **manager** (`clue/manager`: notebooks, redaction, audit log, save/resume) →
 **agents** (`clue/agents`: human CLI/TUI/web, baselines random/heuristic/expert, LLM with JSON retry + fallback)
 → **strategies** (`strategies/*.md`, prompt text only). Symbolic math tools in `clue/tools` (exact solver for ≤6
-players, sampled solver beyond), eval/tournaments in `clue/eval`, Textual TUI in `clue/tui`, FastAPI + React web
+players within configured limits, sampled solver beyond), eval/tournaments in `clue/eval`, Textual TUI in `clue/tui`, FastAPI + React web
 UI in `clue/web` + `web/`.
 
-**Everything in the spec is complete**, plus: ponder mode, exact solver/expert bot, save/resume, parallel
-tournaments, full web UI (game, replay, tournament dashboard, hot-seat, remote invite links), Large edition,
-and the opt-in variance-reduction variants A–F. There is no unfinished work in flight.
+The shipped product includes the Classic baseline, ponder mode, solver/expert bot, save/resume, parallel
+tournaments, web UI (game, replay, tournament dashboard, hot-seat, remote invite links), Large edition, and
+opt-in variants A–F. A and F are not `GameConfig` switches: A is duplicate-deal tournament evaluation and F
+is an ordinary table-size choice; B–E are rule settings. This overview describes shipped capabilities, not the
+current worktree or an assertion that no documentation maintenance remains.
 
 ## 2. Standing user decisions (do not reverse without asking)
 
 - Rules edition: Hasbro 2002, **2d6 default** (1d6 via config); uneven-deal handling is a config toggle; board is the "hybrid" model.
-- LLM providers: OpenRouter + local OpenAI-compatible. Key lives in `.env` (gitignored) — never in code. Keep live runs small; `eval` is offline by default, `--live` opt-in.
+- LLM providers/APIs: OpenRouter, OpenAI-compatible gateways, local endpoints, and Anthropic Messages are supported; live requests are opt-in and API keys stay out of code/replays/logs. Keep live runs small; `eval` is offline by default, `--live` opt-in.
 - Solver hard deductions are **gated** behind coach mode for humans, never auto-shown. Expert bot is deterministic; strength maximised.
 - Web UI: React + Vite + TS; LAN deployment with secret links, no accounts. Rules/manager stay UI-agnostic; privacy enforced server-side; the prebuilt bundle in `clue/web/static` is committed (pip users need no node). **Rebuild it (`cd web && npm run build`) and commit whenever `web/src` changes** — CI has a drift check.
-- Variants A–F are **opt-in config toggles; classic defaults unchanged** (also not defaults for the Large edition).
+- Variants A–F are **opt-in settings/modes; classic defaults unchanged** (also not defaults for the Large edition). B–E are `GameConfig` rule settings; A is duplicate-deal evaluation and F means choosing a smaller table.
+- Omitted CLI/YAML seeds generate a fresh seed; explicit integer seeds remain reproducible (`game.yaml` intentionally has an example seed). YAML `baseline: none` uses the heuristic bot; unsupported bot values fail clearly. YAML `spectate: true` must pass through just as `--spectate` does.
+- Keep YAML player display names visible in UI labels while keeping ids stable for game logic. Preserve configured strategy/model/bot semantics.
 - Under private disproofs, **web spectators/table view see the full disproof round**; only seated players are kept in the dark (user asked for this explicitly).
 - Rejected and not to be revisited: character-grid web board (replaced by the SVG mansion), emoji weapon icons.
 - Ask the user clarifying questions before planning/coding a new feature area.
@@ -33,7 +37,7 @@ and the opt-in variance-reduction variants A–F. There is no unfinished work in
 pip install -r requirements.lock.txt          # ruff/mypy/textual sometimes vanish from the sandbox — reinstall
 cd web && npm ci && cd ..                     # node_modules is not persisted either
 ruff check clue tests && ruff format --check clue tests && mypy clue
-python -m pytest -q -p no:warnings            # 141 tests, ~4–5 min (expert games dominate)
+python -m pytest -q -p no:warnings            # run the full current Python suite (expert-game tests dominate runtime)
 cd web && npx tsc --noEmit -p . && npx vitest run && npm run build
 python -m clue web                            # server entry (NOT clue.cli); bind 0.0.0.0, :8000
 ```
@@ -60,10 +64,10 @@ Git commits need `-c user.name=... -c user.email=...` (no global identity in the
 
 - `Board` dataclass must stay `eq=False` (identity hash; `_bfs` is `@cache`d on it). Board validator requires starts on corridor cells; `ROOM_RECTS` must not overlap starts/doors.
 - Never seed RNG with `hash()` of strings — use `repr(seed_src)`.
-- Exact DP solver is unusable beyond 6 players / 21 cards → sampled solver with node budget; running `_propagate` before the exact DP doubles classic expert time — keep it sampled-path only. Expert only gambles on sampled posteriors at p ≥ 0.9.
+- Exact assignment counting is used only when there are at most 6 players, at most 22 constrained cards, and at most 21 cards total. Large (36-card) and other out-of-bounds cases use propagation plus deterministic sampling; `Solution.exact` is false there and `solution_probabilities` must preserve that status. Propagation-derived hard deductions remain sound. Keep `_propagate` on the sampled path only.
 - Pydantic + mypy: use `Field(default=..., ge=...)`, not positional defaults, or mypy flags missing kwargs.
 - FastAPI 0.141: `FileResponse | JSONResponse` routes need `response_model=None`. Mock-LLM games over `TestClient` take ~75 s — web tests use baseline players and must `DELETE` their games (registry cap `max_concurrent_games=8`). `turn_number` starts at 0; `game_over` includes `solution` publicly by design.
-- TUI pilot tests need `await pilot.pause()`. Playwright is unavailable: web integration tests use jsdom + `ws` (4 skip without a live server — expected). SVG visual checks: render via `cairosvg` after stripping the `svg.board` prefix, `.board{}` size rule and `filter="url(#shadow)"`.
+- TUI pilot tests need `await pilot.pause()`. Web frontend tests use jsdom + `ws`; live-server integration tests require a running server. SVG visual checks: render via `cairosvg` after stripping the `svg.board` prefix, `.board{}` size rule and `filter="url(#shadow)"`.
 - `make_agent(spec, seed:int)`; `run_game(gm, agents, on_events=, stop=)`; `GameManager.get_observation(pid)` (not `observation`).
 - `git stash` also stashes new test files; `git rm --cached` + `git add -A` in one shell re-adds ignored dirs.
 - `openrouter/free` is unusable for live eval; keep live spend tiny.

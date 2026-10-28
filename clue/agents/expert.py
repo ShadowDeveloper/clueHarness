@@ -1,4 +1,4 @@
-"""BaselineExpertBot: deterministic, exact-inference Clue player.
+"""BaselineExpertBot: deterministic, solver-guided Clue player.
 
 Decision policy
   Accuse    when exactly one envelope combo remains, or (rarely) when an opponent is about to win and our best
@@ -10,8 +10,9 @@ Decision policy
             through the real board incl. secret passages; enters a reachable room when it beats the target.
   Show      the card that minimises what the suggester learns: prefer cards already shown to them, then
             cards most opponents already know we hold, then the category we hold most of.
-Everything is derived from the exact solver in clue/tools/solver.py; no randomness except a seeded
-tie-breaker so runs are reproducible.
+Inference is exact when `clue/tools/solver.py` can exhaustively count assignments and sampled otherwise;
+Large-edition estimates are handled conservatively. No randomness except a seeded tie-breaker, so runs are
+reproducible.
 """
 
 from __future__ import annotations

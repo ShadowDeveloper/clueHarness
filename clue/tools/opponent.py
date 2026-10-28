@@ -1,7 +1,8 @@
 """Opponent modelling: how close is each rival to solving the case?
 
 We rebuild a *shadow notebook* for every opponent from information that is public (or that we personally
-gave them) and run the exact solver on it. Because we cannot see the cards shown to them by third parties,
+gave them) and run the edition-aware solver on it (exact within solver bounds, sampled otherwise). Because we
+cannot see the cards shown to them by third parties,
 we fill each such disproof with the card the shower most probably holds (from OUR posterior) — a
 pessimistic-for-us estimate that, together with their hand, yields an upper-bound-ish knowledge state.
 

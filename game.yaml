@@ -1,5 +1,5 @@
 # Example game config: 1 human + 3 AIs.
-edition: classic-clue-2002   # classic-clue-1996 -> 1 die; classic-clue-2002 -> 2 dice; modern -> Dr. Orchid
+edition: classic-clue-2002   # classic-clue-1996 -> 1 die; classic-clue-2002 -> 2 dice; modern -> Dr. Orchid; large -> Hill House (3–12 players)
 seed: 42
 deal_remainder: uneven       # or: faceup
 # Optional live-model defaults (CLI --provider/--api/--api-key/--base-url override these):

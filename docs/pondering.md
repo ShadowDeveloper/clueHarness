@@ -52,7 +52,7 @@ daemon and costs nothing else.
 ## What each agent does while pondering
 | Agent | Behaviour |
 |---|---|
-| `BaselineHeuristicBot` | recomputes the consistent-solution set, caches a target-room list, notes forced cards ("weapon must be Rope") and single-solution states |
+| `BaselineHeuristicBot` | recomputes candidate solutions, caches a target-room list, and notes single-card / single-candidate deductions; Large-edition candidates are propagation-filtered and may be unverified |
 | `LLMPlayerAgent` | bounded loop (≤ 5 rounds) driven by `agents/ponder_prompt.md`: reply with `{"tool": …}` to call a tool or `{"plan": …, "notes": […], "done": true}` to finish. The plan is injected into the next real decision as `your_plan_from_pondering`. Interrupt is checked before and after each LLM call and inside every tool call |
 | `MockLLMClient` | offline stand-in: asks for `solution_probabilities`, notes the leading combo, returns a plan |
 | `BaselineRandomBot`, humans | `supports_ponder = False` — never scheduled |
@@ -87,9 +87,10 @@ Rules: never touch live state, never block without checking, keep results on `se
 Long network calls: check `ctx.stopped` right after they return and discard the result if set.
 
 ## Performance
-Sessions are OS threads; tools are pure Python, so with 4 heuristic seats a game gains ~30 % wall time offline
-(≈0.4 s → 0.5 s). LLM pondering costs extra API calls: roughly one to five per informative event per idle
-LLM seat. Use `--ponder` in tournaments only when that budget is acceptable.
+Sessions are OS threads; tools are pure Python. In one historical small-table benchmark, four heuristic seats
+increased wall time from roughly 0.4 s to 0.5 s; actual overhead depends on game length and the tools used.
+LLM pondering costs extra API calls (observed at roughly one to five per informative event per idle LLM seat).
+Use `--ponder` in tournaments only when that time and budget are acceptable.
 
 ## Tests
 `tests/test_ponder.py`: interrupts by info and by turn, grace timeout non-blocking, snapshot isolation, note

@@ -68,11 +68,16 @@ def make_agent(
             return TUIHumanAgent(spec.id)
         return HumanCLIAgent(spec.id, input_fn) if input_fn else HumanCLIAgent(spec.id)
     if spec.kind == "baseline":
-        if (spec.bot or "heuristic") == "random":
+        bot = (spec.bot or "heuristic").strip().lower()
+        if bot == "none":
+            bot = "heuristic"
+        if bot == "random":
             return BaselineRandomBot(spec.id, seed=seed)
-        if spec.bot == "expert":
+        if bot == "expert":
             return BaselineExpertBot(spec.id, seed=seed)
-        return BaselineHeuristicBot(spec.id, seed=seed)
+        if bot == "heuristic":
+            return BaselineHeuristicBot(spec.id, seed=seed)
+        raise ValueError(f"unknown baseline bot {spec.bot!r}; choose none, heuristic, random, or expert")
     if spec.kind == "llm":
         return LLMPlayerAgent(
             spec.id,

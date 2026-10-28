@@ -98,7 +98,7 @@ class TournamentSession:
             "games": self.games,
             "done": len(self.recs),
             "seed": self.seed,
-            "players": [s.label() for s in self.specs],
+            "players": [s.display_label() for s in self.specs],
             "started": self.started,
             "finished_at": self.finished_at,
             "error": self.error,

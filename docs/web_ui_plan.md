@@ -1,4 +1,9 @@
-# Web UI — Plan (Phase 7)
+# Web UI — Original Plan (Historical)
+
+This file records the original design and implementation plan; it is **not a list of pending work**. M0–M7,
+including remote multi-browser seats, are implemented. Current user-facing behavior and commands are documented
+in [`web.md`](web.md); the code in `clue/web/` and `web/` is authoritative. The original plan used some proposed
+route names and milestones that changed during implementation.
 
 Status: **implemented (M0–M7)**, including remote multi-browser seats (per-seat HMAC tokens, waiting room with
 presence, host force-start, reconnection via snapshot). User guide: `web.md`.
@@ -12,7 +17,7 @@ Decisions taken with the user (2026-09-06):
 |---|---|
 | Frontend stack | **React + Vite + TypeScript** (separate `web/` package, built assets served by FastAPI) |
 | Scope | **Everything**: play/spectate a game, replay viewer, tournament dashboard |
-| Humans per game | **1 human seat by default**; **hot-seat (several humans, one browser) behind a flag**; **remote multi-browser seats = stretch milestone** |
+| Humans per game | One human seat by default; hot-seat is opt-in; remote multi-browser seats are implemented (one invite link per human seat) |
 | Deployment | **LAN / shared host, light protection**: bind `0.0.0.0`, per-game secret links, no accounts |
 
 Hard constraints carried over from the spec: the rules engine and manager stay UI-agnostic (`clue/rules`, `clue/manager` import nothing from `clue/web`); privacy is enforced **server-side** by the existing `redacted_for` / `get_observation` machinery — the browser never receives another seat's cards; all existing acceptance tests keep passing; the harness must still run fully offline (`npm` is needed only to *build* the frontend, and a prebuilt bundle is committed/packaged so `pip install` users get the UI without node).
@@ -158,7 +163,7 @@ Each milestone is independently shippable, lint/type/test clean, and updates doc
 | **M4** | Replay viewer | Replays page: pick file, viewer selector (redaction), step/auto-play, board+notebook+log at each frame | frames equal `ReplayState` outputs used by the TUI viewer (shared code, golden test) |
 | **M5** | Tournament dashboard | Start form (players/games/seed/workers/ponder/max_usd), live progress, table with Wilson CIs & ELO, candidate curves, downloads | test: 4-game mock tournament via API → final table equals `run_tournament` direct call |
 | **M6** | Packaging & polish | committed bundle in `clue/web/static`, `[web]` extra, CI web job with bundle-drift check, README/docs (`docs/web.md` + screenshot), keyboard shortcuts parity (`r p s a e h v space + -`), a11y pass (focus order, aria-live on log) | `pip install .[web] && clue web` works without node; CI green |
-| **M7** *(stretch, later)* | Remote seats | seat tokens (`/api/games/{id}/seats/{pid}/claim`), room code join page, presence, reconnection resume | two test clients each own a seat and complete a game; privacy assertions per seat |
+| **M7** *(implemented)* | Remote seats | Per-seat invite tokens, waiting room, presence, reconnection via snapshot | `tests/test_web.py` covers two browsers playing to completion with per-seat privacy |
 
 Suggested order for the first approval batch: **M0 → M1 → M2** (a playable browser game end-to-end), then review before M3–M6.
 
@@ -181,7 +186,7 @@ Suggested order for the first approval batch: **M0 → M1 → M2** (a playable b
 | Two tabs owning the same seat | last `act` wins by `request_id`; UI shows "answered elsewhere" |
 | Hot-seat leak by refresh | curtain state is server-side; a refresh re-shows the curtain, not the seat |
 
-## 7. Open questions (non-blocking; defaults in bold)
+## 7. Original open questions (resolved during implementation; recorded here for history)
 
 1. Board rendering fidelity: **SVG drawn from `board_geometry()` in the "hybrid" grid** (same squares as the TUI) vs. a bitmap of the real board — SVG keeps click-to-move exact and diff-able.
 2. Should the web lobby be able to edit `game.yaml`-level rules (dice, uneven deal toggle)? **Yes, expose `GameConfig` fields** — it's already a pydantic model.
@@ -190,4 +195,4 @@ Suggested order for the first approval batch: **M0 → M1 → M2** (a playable b
 
 ---
 
-**Next step:** on approval, start M0 (seam refactors) and M1 (backend + tests), then M2. Each will be reported with the usual test/lint/type summary.
+**Historical next step (superseded):** this was the proposed start of implementation. All milestones above are now complete; consult `web.md` and the current code for the shipped interface.

@@ -1,5 +1,10 @@
 # Agent Prompt: Build an AI Harness That Can Play Clue / Cluedo
 
+> **Historical project brief:** this is the original build prompt, not a current task list or complete description
+> of the shipped product. Its Classic-first scope and unchecked acceptance checklist predate implemented support
+> for Modern/Large editions, teams, private disproofs, the web UI, and other features. For current behavior consult
+> `README.md`, `RULES_SPEC.md`, and `docs/`; use `HANDOFF.md` for standing project decisions.
+
 ## ROLE
 You are an expert game-systems + AI engineer. Build a modular AI harness for playing Classic US Clue (3-6 players).
 

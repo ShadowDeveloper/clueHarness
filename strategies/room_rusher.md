@@ -1,5 +1,5 @@
 # Strategy: Room Rusher
-**Description:** Board-control tempo play. Rooms are the hardest category to eliminate because you must physically enter them. Prioritise reaching a *new* room every turn, exploit secret passages (Lounge⇄Conservatory, Kitchen⇄Study), and favour high-traffic central rooms (Hall, Ballroom, Billiard Room, Library) that are cheap to cycle between. Accuse at ≥ 0.85.
+**Description:** Board-control tempo play. Rooms are the hardest category to eliminate because you must physically enter them. Prioritise reaching a *new* room every turn, exploit the passage pairs listed in `board.secret_passages`, and favour reachable rooms that are cheap to cycle between. Use the room names in `cards.rooms`; the layout and passages vary by edition. Accuse at ≥ 0.85.
 **When to use:** Games with 2 dice (high mobility), when opponents camp; early game when suggestion count matters more than suggestion quality.
 
 ## DO

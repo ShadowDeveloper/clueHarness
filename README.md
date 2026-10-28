@@ -1,7 +1,8 @@
 # Clue / Cluedo AI Harness
 
-A modular, fully-tested harness for playing **Classic US Clue (3–6 players)** with any mix of humans, LLM
-agents (with pluggable strategy prompts) and scripted baseline bots — interactively or in batch tournaments.
+A modular, tested harness for **Classic, Modern, and Large-edition Clue** (3–6 players in Classic/Modern;
+3–12 in Large) with any mix of humans, LLM agents (pluggable strategy prompts), and baseline bots — interactively
+or in batch tournaments.
 
 ```
 clue/
@@ -11,11 +12,11 @@ clue/
   tui/        Textual full-screen interface for humans / spectating (board, notebook, log, action menu)
   web/        FastAPI backend (REST + WebSocket) + prebuilt React SPA in web/static: play, replays, tournaments
   replay/     UI-independent replay state reconstruction (shared by the TUI and web viewers)
-  tools/      exact deduction solver, opponent model, symbolic tools shared by LLM agents and bots
-  eval/       tournament runner (multiprocess), Wilson CIs / paired tests / fingerprints, offline + live eval
+  tools/      assignment-counting solver (exact when tractable; sampled for Large), opponent model, symbolic tools
+  eval/       process/thread-parallel tournaments, Wilson CIs / paired tests / fingerprints, offline + live eval
 strategies/   D) strategy prompt fragments (*.md) — appended to the base prompt, never change legality
-tests/        121 pytest tests (+13 vitest): rules, manager, TUI (headless), web API/WS privacy, ponder, solver, expert bot, LLM client, stats, glue
-web/          React + Vite + TypeScript source of the web UI (npm run build -> clue/web/static; node not needed to run)
+tests/        pytest and Vitest suites: rules, manager, TUI, web API/WS privacy, ponder, solver, expert bot, LLM client, stats, glue
+web/          React + Vite + TypeScript source of the web UI (npm run build -> clue/web/static; Node is not needed to run the built app)
 docs/         full documentation set (see docs/README.md)
 RULES_SPEC.md rules edition + every edge-case decision
 game.yaml     example config     demo_game.md  example transcript     eval/report.md  example eval
@@ -31,7 +32,7 @@ clue play --players baseline:expert,baseline,baseline,baseline,baseline,baseline
 
 ## House rules for lower variance (opt-in)
 
-Six switches, all off by default, documented in [docs/variants.md](docs/variants.md): **A** duplicate-deal tournaments (`clue tournament --duplicate`: same deal, agents rotated through every seat, paired statistics), **B** teams (`teams:`), **C** private disproofs (`private_disproofs: true` — bystanders no longer learn who passed or who showed), **D** skip-turn penalty instead of elimination (`wrong_accusation: skip_turns`), **E** shuffled seats, **F** smaller tables. From the CLI: `--variants private,skip=2,teams`; the web lobby has the same toggles.
+[docs/variants.md](docs/variants.md) describes four opt-in `GameConfig` rule settings (teams, private disproofs, wrong-accusation penalty, shuffled seating), plus duplicate-deal tournament evaluation and choosing a smaller table. These are not six `GameConfig` switches. From the CLI: `--variants private,skip=2,teams`; the web lobby exposes the supported game settings.
 
 ## Documentation
 | | |
@@ -78,7 +79,8 @@ clue tournament --games 100 --players llm:bayesian,baseline:expert,baseline,base
 python -m clue eval --games 50           # offline (MockLLM)
 python -m clue eval --games 50 --live    # real provider from .env
 
-# live LLM eval with a hard budget: tool-mode ablation + ponder brackets on paired seeds (see docs/evaluation.md)
+# live LLM eval with a hard budget: the checked-in report is a 2026-09-06, 5-seed historical snapshot
+# rerun paired tool-mode ablation + ponder brackets for current results (see docs/evaluation.md)
 clue live-eval --model nvidia/nemotron-3-super-120b-a12b:free --games 5 --max-usd 0.10
 
 # any compatible model/API: Chat or legacy Completions, Responses, or Anthropic Messages
@@ -87,7 +89,7 @@ clue play --players llm:bayesian:gpt-4o-mini,baseline,baseline --provider openai
 
 clue replay replays/game_7.jsonl           # pretty-print a replay
 clue replay replays/game_7.jsonl --tui     # step through it on the board (n/b, space, v = viewer redaction)
-pytest -q && ruff check clue tests && mypy clue      # 121 tests (~7 min), 93 % coverage, lint + strict types; CI: .github/workflows/ci.yml
+pytest -q && ruff check clue tests && mypy clue      # run the current test suite, lint, and strict types; CI: .github/workflows/ci.yml
 ```
 
 ### The TUI
@@ -154,12 +156,16 @@ the symbolic tool layer for all LLM seats (ablation).
 
 ### YAML config (`game.yaml`)
 ```yaml
-edition: classic-clue-2002   # classic-clue-1996 (1 die) | classic-clue-2002 (2 dice) | modern (Dr. Orchid)
+edition: classic-clue-2002   # classic-clue-1996 (1 die) | classic-clue-2002 (2 dice) | modern (Dr. Orchid) | large (Hill House, 3–12 players)
 seed: 42
 deal_remainder: uneven       # uneven (official) | faceup (house rule)
+llm:
+  provider: openai
+  api: responses
+  # set OPENAI_API_KEY or CLUE_LLM_API_KEY in .env; never put a real key in this file
 players:
   - {id: P1, kind: human, name: You}
-  - {id: P2, kind: llm, model: openai/gpt-4o-mini, strategy: strategies/bayesian_probabilist.md, temperature: 0.2}
+  - {id: P2, kind: llm, model: gpt-4o-mini, strategy: strategies/bayesian_probabilist.md, temperature: 0.2}
   - {id: P3, kind: llm, model: mock, strategy: strategies/deceptive_misdirector.md, tools: false}
   - {id: P4, kind: baseline, bot: heuristic}
 ```
@@ -185,21 +191,23 @@ agents additionally receive `analysis` (pre-computed tool output) when tools are
 
 ## Stronger AI: exact solver, expert bot, opponent model
 
-* `clue/tools/solver.py` — **exact** inference: counts every complete hand assignment consistent with the
-  notebook (memoised DP; verified against brute force), giving exact envelope posteriors, per-card holder
-  probabilities and forced facts. Hard deductions are **gated** for humans (coach mode only, never written to
-  the notebook); bots and LLMs use them freely.
+* `clue/tools/solver.py` — exact assignment counting when within configured solver bounds (memoised DP;
+  verified against brute force), producing exact envelope posteriors, holder probabilities, and forced facts.
+  Larger cases, including Large edition, use propagation plus deterministic sampling; sampled probabilities are
+  estimates and are marked `exact: false`. Hard deductions remain sound and are **gated** for humans (coach
+  mode only, never written to the notebook); bots and LLMs use them freely.
 * `baseline:expert` — deterministic bot on top of the solver: accuses only when certain (or when the
-  decision-theoretic gamble rule fires), picks suggestions by **expected information gain** (exact re-solve
-  per disproof outcome), BFS room targeting through the real board, min-leak card showing. Wins ~40 % of
+  decision-theoretic gamble rule fires), scores suggestions by **expected information gain** (re-solving each
+  disproof outcome; exact when assignment counting is tractable, approximate on Large), BFS room targeting,
+  and min-leak card showing. In the archived benchmark it wins ~40 % of
   seat-shuffled 4-player games against three heuristic bots (fair share 25 %) and 4/5 vs a live LLM.
-* `clue/tools/opponent.py` — `opponent_threat()`: shadow notebooks + exact solver estimate how close each
-  rival is to solving (correlation 0.97 with their true candidate count). Used by the expert bot and
+* `clue/tools/opponent.py` — `opponent_threat()`: shadow notebooks + edition-aware exact-or-sampled solver
+  estimate how close each rival is to solving (0.97 correlation in a historical Classic benchmark). Used by the expert bot and
   injected into LLM prompts as `analysis.opponent_threat`.
 
 ## Symbolic tools (`clue/tools/deduction.py`)
-`get_unseen_cards`, `get_possible_solutions` (constraint-consistent combos), `solution_probabilities`
-(rejection-sampled posterior over hand assignments), `suggestion_ev` (novelty / potential disprovers),
+`get_unseen_cards`, `get_possible_solutions` (exhaustive feasible triples within exact bounds; propagation-filtered candidates otherwise),
+`solution_probabilities` (exact or sampled posterior over hand assignments, as reported by `exact`), `suggestion_ev` (novelty / potential disprovers),
 `can_accuse_confidently(threshold)`, `update_notebook(note)`, plus `best_suggestion`. LLM agents get the bundle
 pre-computed in `analysis` together with a `recommended_action` from the heuristic policy, and every call is
 logged as a `tool_call` record in the replay (private to that player). `--no-tools` removes all of it.
@@ -229,10 +237,12 @@ validated against `legal_actions` / accusation schema, one retry with the error 
 fallback — all logged as `agent_note` records (`llm_response`, `llm_error`, `fallback_to_heuristic`).
 Per-agent `stats` (`calls, valid_first_try, retries, fallbacks`) are printed after each game.
 
-## Evaluation (offline, 50 games/bracket, seed 0 — see `eval/report.md`, `eval/charts.png`)
+## Archived evaluation snapshot (offline, 50 games/bracket, seed 0 — see `eval/report.md`, `eval/charts.png`)
+
+These are checked-in benchmark results, not output from the current checkout; regenerate with `python -m clue eval --games 50 --seed 0`.
 | agent | win_rate | false_accusation_rate |
 |---|---|---|
-| baseline:expert (new, exact solver + expected-info-gain) | 0.36 vs 3× heuristic (fair share 0.25) | 0.00 |
+| baseline:expert (archived Classic benchmark; exact solver + expected-info-gain) | 0.36 vs 3× heuristic (fair share 0.25) | 0.00 |
 | baseline:heuristic | 0.56 | 0.00 |
 | llm(mock)+tools (bayesian) | 0.30 | 0.00 |
 | llm(mock) **no-tools** | 0.04 | 0.86 |
@@ -249,7 +259,7 @@ is therefore noise (documented in the report). Run `python -m clue eval --live` 
 measure it; the tournament table reports win-rate, `avg_turns_to_win` (accusation timing) and
 `false_accusation_rate` per strategy label.
 
-## Acceptance checklist
+## Acceptance evidence (historical snapshots; see cited tests and CI for current verification)
 - [x] 4-player Human + 3 AI game to completion, zero illegal moves — `demo_game.md` (`illegal attempts = 0`)
 - [x] Privacy — `tests/test_manager.py::test_no_leak_in_redacted_replay`, `replays/game_42_redacted_P3.json`
 - [x] Determinism — `test_same_seed_same_replay_hash`, `test_save_load_roundtrip`
@@ -257,8 +267,8 @@ measure it; the tournament table reports win-rate, `avg_turns_to_win` (accusatio
 - [x] Strategy swapping measurable via tournament labels (live) — see above
 - [x] Tools ablation — 50-game offline eval above + live paired ablation (`eval/live_report_nemotron_free.md`)
 - [x] Web UI (optional `[web]` extra): human seat over HTTP finishes a game with 0 illegal moves, per-frame privacy, API save/resume reproduces the replay hash, hot-seat gating, **remote seats** (two browsers, per-seat links, per-seat privacy to completion), tournament API == direct run (`tests/test_web.py`, 15 tests) + 13 vitest tests
-- [x] `pytest` (121 passed), `ruff check` + `ruff format --check` clean, `mypy --strict` clean; total coverage 93 % (CI gate 90 %)
-- [x] Exact solver verified against brute force; expert bot 0 illegal moves / 0 false accusations (gamble off) across all tournaments
+- [x] Python and frontend test suites, Ruff, formatting, and mypy have CI coverage; consult the current CI run for the latest counts and results
+- [x] Exact solver verified against brute force; archived Classic benchmark reports 0 illegal moves / 0 false accusations for the expert with gambling off
 
 ## Tech stack & why
 Python 3.11+ (fast to iterate, best LLM SDK ecosystem, ~0.3 s per simulated 4-player game), **Pydantic v2**
@@ -289,5 +299,6 @@ Subclass `clue.agents.base.PlayerAgent`, implement `choose_action` and `choose_c
   interior squares) — door *approach* squares can be blocked, room capacity is unlimited.
 - If a roll cannot be used in full (boxed in), the furthest reachable squares are offered; if none, the turn
   passes (rulebook is silent).
-- `solution_probabilities` is a Monte-Carlo approximation; `get_possible_solutions` is exact w.r.t. the
-  per-player constraints it checks (has-one-of / not-held / hand-size pigeonhole).
+- Solver results are exact when exhaustive assignment counting is within solver bounds; larger cases (including
+  Large edition) use propagation plus deterministic sampling and are marked `exact: false`. Forced facts from
+  propagation remain sound; Large-edition candidate lists may include unverified triples, and posterior probabilities are estimates.

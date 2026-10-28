@@ -36,7 +36,9 @@ Hence bracket A measures the tool layer; bracket B is expected to be flat (the m
 Uses `.env` provider/model for every LLM seat. Budget estimate: ~45 decisions per LLM seat per game ×
 ~3 k prompt tokens. 50 games × 2 LLM seats ≈ 4 500 calls per bracket.
 
-## Latest offline result (50 games/bracket, seed 0)
+## Archived offline benchmark snapshot (50 games/bracket, seed 0)
+
+These values are the checked-in `eval/report.md` snapshot, not a promise that a fresh run will match exactly. Regenerate with `python -m clue eval --games 50 --seed 0`.
 | agent | win_rate | false_acc | avg_turns_to_win | sugg/game |
 |---|---|---|---|---|
 | baseline:heuristic | 0.56 | 0.00 | 68.0 | 34.6 |
@@ -62,14 +64,15 @@ Determinism: same seed ⇒ same deals, dice and bot choices ⇒ identical tables
 | Full 4-player Human + 3 AI game, zero illegal moves | `demo_game.md` (`illegal attempts = 0`), `tests/test_tui.py::test_human_seat_drives_game_via_option_list` |
 | Privacy | `test_no_leak_in_redacted_replay`, `test_observation_hides_other_hands_and_solution`, `replays/game_42_redacted_P3.json` |
 | Determinism | `test_same_seed_same_replay_hash`, `test_save_load_roundtrip` |
-| Valid JSON ≥ 99 %, retry then fallback | `test_llm_agent_fail_first_then_valid`, `test_llm_agent_retry_then_fallback`; per-game `stats` printout |
+| JSON validation, retry, and fallback paths | `test_llm_agent_fail_first_then_valid`, `test_llm_agent_retry_then_fallback`; per-game `stats` printout (live rates vary by model) |
 | Tools ablation | table above |
 | Strategy swapping measurable | labels + `avg_turns_to_win` / `false_accusation_rate` per strategy; requires `--live` |
-| pytest / ruff / mypy | 52 passed; `ruff check` clean; `mypy --strict` clean; rules+manager coverage 95 % |
+| Test and static checks | Current results are reported by CI; run the commands in `docs/extending.md` locally |
 
-## Expert bot (exact solver)
+## Expert bot (Classic benchmark snapshot)
 
-`baseline:expert` vs three `baseline:heuristic` seats, seats shuffled per game (fair share = 0.25):
+The following archived Classic-edition results compare `baseline:expert` with three `baseline:heuristic` seats,
+with seats shuffled per game (fair share = 0.25). The expert uses exact assignment counting only within solver bounds; Large-edition suggestion scoring is approximate.
 
 | variant | games | expert win rate |
 |---|---|---|
@@ -89,8 +92,8 @@ sits idle; it matters against stronger fields (expert-vs-expert) where the race 
 ## Statistics (`clue/eval/stats.py`)
 
 Every tournament table now carries a **Wilson 95 % interval** (`win_ci95`), all-pairs **paired sign tests**
-over shared seeds (`pairwise`), a **candidate-count curve** (mean #consistent envelope combos at each of the
-agent's turn starts, computed with the exact solver on the agent's own notebook) and a behavioural
+over shared seeds (`pairwise`), a **candidate-count curve** (mean solver-reported envelope candidate count at each of the
+agent's turn starts, using the agent's own notebook; exact when solver bounds permit, propagation-filtered on Large) and a behavioural
 **fingerprint** per label (suggestions, passages, rooms visited, own cards in suggestions, solved rate,
 accusation rate, premature-accusation rate = accused while >1 combo remained). Written to `<report>.json`.
 
@@ -109,9 +112,10 @@ below measures it with a real model.
 `live-eval --model M --games N --max-usd X [--brackets ablation,ponder]` runs, for each variant, the SAME N
 seeds vs `baseline:expert` + `baseline:heuristic` (seats shuffled per seed), so variants are directly
 paired. Ablation = tool mode precomputed / native / none; ponder = native with ponder off / on. Results are
-saved incrementally (`live_*.partial.json`) and summarised in `eval/live/live_report.md` — see that file for
-the latest numbers (free OpenRouter model `nvidia/nemotron-3-super-120b-a12b:free`; `openrouter/free`
-itself was unusable because it routes to reasoning/safety-classifier models that return no JSON).
+saved incrementally (`live_*.partial.json`) and summarised in `eval/live/live_report.md`. The checked-in report
+is a historical snapshot; rerun `live-eval` for current measurements. It used the free OpenRouter model
+`nvidia/nemotron-3-super-120b-a12b:free`; `openrouter/free` itself was unusable in that run because it routed
+to reasoning/safety-classifier models that returned no JSON.
 
 ### Results (2026-09-06, `nvidia/nemotron-3-super-120b-a12b:free`, 5 paired seeds/variant, compact prompt)
 

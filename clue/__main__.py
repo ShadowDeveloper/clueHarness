@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 from pathlib import Path
 from typing import Any, Optional
 
@@ -61,7 +62,8 @@ def _specs(
     _YAML_EXTRA.clear()
     if config:
         cfg, specs, cseed, raw = load_yaml_config(config)
-        seed = cseed if seed is None else seed
+        if seed is None:
+            seed = cseed if raw.get("seed") is not None else secrets.randbits(32)
         _YAML_EXTRA.update({k: raw[k] for k in ("ponder", "workers", "spectate") if k in raw})
         llm = raw.get("llm", {})
         if not isinstance(llm, dict) or set(llm) - {"provider", "model", "api", "api_key", "base_url"}:
@@ -70,7 +72,8 @@ def _specs(
     elif players:
         specs = parse_players_arg(players)
         cfg = GameConfig(num_players=len(specs))
-        seed = seed or 0
+        if seed is None:
+            seed = secrets.randbits(32)
     else:
         raise typer.BadParameter("provide --config or --players")
     if edition:
@@ -96,7 +99,8 @@ def _specs(
     if prompt_profile:
         specs = [s.model_copy(update={"prompt_profile": prompt_profile}) if s.kind == "llm" else s for s in specs]
     specs = _resolve_models(specs)
-    return cfg, specs, seed or 0
+    assert seed is not None
+    return cfg, specs, seed
 
 
 def _resolve_models(specs: list[PlayerSpec], *, use_yaml: bool = True) -> list[PlayerSpec]:
@@ -143,7 +147,7 @@ def _print_cost() -> None:
 def play(
     config: Optional[str] = typer.Option(None, help="game.yaml"),
     players: Optional[str] = typer.Option(None, help="e.g. human,llm:bayesian,llm:aggressive,baseline"),
-    seed: Optional[int] = typer.Option(None),
+    seed: Optional[int] = typer.Option(None, help="random when omitted; YAML seed or this option makes the run reproducible"),
     dice: Optional[int] = typer.Option(None, help="1 or 2"),
     edition: Optional[str] = typer.Option(None, "--edition", help="classic | modern | large (12 suspects/weapons/rooms, up to 12 players)"),
     variants: Optional[str] = typer.Option(None, "--variants", help="comma list: private | skip[=N] | shuffle | teams[=K] (docs/variants.md)"),
@@ -201,7 +205,7 @@ def play(
             console.print(f"game not finished - resume with: clue play --resume {autosave or '<save file>'}")
             return
     else:
-        console.print(f"[bold]Clue[/bold] seed={seed} dice={cfg.dice} players: " + ", ".join(f"{s.id}={s.label()}" for s in specs))
+        console.print(f"[bold]Clue[/bold] seed={seed} dice={cfg.dice} players: " + ", ".join(f"{s.id}={s.display_label()}" for s in specs))
 
         def on_events(g: GameManager, evs: list[dict[str, Any]]) -> None:
             if has_human or quiet:
@@ -230,7 +234,7 @@ def tournament(
     games: int = typer.Option(20),
     players: Optional[str] = typer.Option(None),
     config: Optional[str] = typer.Option(None),
-    seed: int = typer.Option(0),
+    seed: Optional[int] = typer.Option(None, help="random when omitted; YAML seed or this option makes runs reproducible"),
     dice: Optional[int] = typer.Option(None),
     edition: Optional[str] = typer.Option(None, "--edition", help="classic | modern | large"),
     variants: Optional[str] = typer.Option(None, "--variants", help="comma list: private | skip[=N] | shuffle | teams[=K] (docs/variants.md)"),
@@ -311,7 +315,6 @@ def live_eval(
 @app.command()
 def replay(
     path: str,
-    viewer: Optional[str] = typer.Option(None, help="player id to redact for"),
     tui: bool = typer.Option(False, "--tui", help="step through the replay in the TUI viewer"),
     no_emoji: bool = typer.Option(False, "--no-emoji"),
 ) -> None:

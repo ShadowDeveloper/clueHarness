@@ -14,7 +14,7 @@
 | [extending.md](extending.md) | developers | Add an LLM provider, a new agent, a rule variant, a metric |
 | [pondering.md](pondering.md) | developers / researchers | Parallel thinking between turns: lifecycle, interrupts, isolation, audit |
 | [evaluation.md](evaluation.md) | researchers | Tournament metrics, ELO, ablations, reproducing the report |
-| [tui_screenshot.txt](tui_screenshot.txt) / [.svg](tui_screenshot.svg) | — | Headless capture of the TUI |
+| [tui_screenshot.txt](tui_screenshot.txt) / [.svg](tui_screenshot.svg) | — | Illustrative headless TUI capture snapshot; regenerate with `python eval/make_tui_screenshot.py` |
 
 - [web.md](web.md) — web UI: `clue web`, pages, secret links & redaction, hot-seat, API, development
-- [web_ui_plan.md](web_ui_plan.md) — web UI design & milestones
+- [web_ui_plan.md](web_ui_plan.md) — historical web UI plan (all milestones implemented; see `web.md` for current behavior)

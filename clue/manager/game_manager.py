@@ -34,6 +34,7 @@ class PlayerSpec(BaseModel):
     prompt_profile: str = "full"  # full | compact
 
     def label(self) -> str:
+        """Stable semantic label for evaluation aggregation and replay reports."""
         parts = [self.kind]
         if self.kind == "llm":
             parts.append(self.model or "mock")
@@ -46,8 +47,13 @@ class PlayerSpec(BaseModel):
             if self.prompt_profile != "full":
                 parts.append(self.prompt_profile)
         elif self.kind == "baseline":
-            parts.append(self.bot or "heuristic")
+            bot = (self.bot or "heuristic").strip().lower()
+            parts.append("heuristic" if bot == "none" else bot)
         return ":".join(parts)
+
+    def display_label(self) -> str:
+        """Seat label for user interfaces, preferring the optional configured name."""
+        return self.name or self.label()
 
 
 class LogRecord(BaseModel):

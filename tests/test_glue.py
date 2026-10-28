@@ -89,6 +89,46 @@ def test_cli_live_eval_mock(tmp_path: Path) -> None:
 
 
 # ------------------------------------------------------------------ config / factory
+def test_cli_generates_seed_when_not_configured_and_preserves_explicit_seed(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    import clue.__main__ as cli
+
+    config = tmp_path / "unseeded.yaml"
+    config.write_text("players:\n  - {kind: baseline}\n  - {kind: baseline}\n  - {kind: baseline}\n")
+    generated = iter((123456, 654321))
+    monkeypatch.setattr(cli.secrets, "randbits", lambda _bits: next(generated))
+
+    first = cli._specs(str(config), None, None, None, None, False)[2]
+    second = cli._specs(str(config), None, None, None, None, False)[2]
+    assert (first, second) == (123456, 654321)
+    assert cli._specs(str(config), None, 7, None, None, False)[2] == 7
+
+    config.write_text("seed: 42\nplayers:\n  - {kind: baseline}\n  - {kind: baseline}\n  - {kind: baseline}\n")
+    assert cli._specs(str(config), None, None, None, None, False)[2] == 42
+
+
+def test_yaml_baseline_bot_choices(tmp_path: Path) -> None:
+    from clue.agents.baselines import BaselineHeuristicBot, BaselineRandomBot
+    from clue.agents.expert import BaselineExpertBot
+
+    config = tmp_path / "bots.yaml"
+    config.write_text(
+        """players:
+  - {kind: baseline, bot: none}
+  - {kind: baseline, bot: expert}
+  - {kind: baseline, bot: random}
+"""
+    )
+    _, specs, _, _ = load_yaml_config(config)
+    agents = [make_agent(spec, seed=7) for spec in specs]
+
+    assert isinstance(agents[0], BaselineHeuristicBot)
+    assert isinstance(agents[1], BaselineExpertBot)
+    assert isinstance(agents[2], BaselineRandomBot)
+    assert specs[0].label() == "baseline:heuristic"
+    with pytest.raises(ValueError, match="unknown baseline bot"):
+        make_agent(specs[0].model_copy(update={"bot": "typo"}))
+
+
 def test_yaml_aliases_and_defaults(tmp_path: Path) -> None:
     y = tmp_path / "g.yaml"
     y.write_text("edition: modern\nplayers:\n  - {kind: baseline}\n  - {kind: baseline}\n  - {kind: baseline}\n")
@@ -135,6 +175,52 @@ def test_strategy_game_yaml_and_spectate(monkeypatch: pytest.MonkeyPatch) -> Non
     assert tui.human is None and tui.viewer is None and tui.ponder is True
     assert seen["omniscient"] is True
     assert "Spectating" in str(seen["status"]) and "omniscient" in str(seen["status"])
+
+
+def test_yaml_player_names_are_used_in_tui_roster(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from clue.manager.game_manager import PlayerSpec
+    from clue.tui import app as tui_app
+
+    config = tmp_path / "named_players.yaml"
+    config.write_text(
+        """spectate: true
+players:
+  - id: P1
+    name: Bayesian
+    kind: llm
+    model: openai
+    strategy: bayesian
+  - id: P2
+    name: The Conservative
+    kind: baseline
+  - id: P3
+    name: Baseline
+    kind: baseline
+"""
+    )
+    seen: dict[str, object] = {}
+
+    def fake_app_run(tui: tui_app.ClueApp) -> None:
+        async def mount_tui() -> None:
+            async with tui.run_test(size=(100, 30)) as pilot:
+                await pilot.pause()
+                seen["subtitle"] = tui.sub_title
+                seen["event"] = tui._describe_event({"type": "turn_start", "turn": 1, "player": "P1"})
+                tui.exit()
+
+        asyncio.run(mount_tui())
+
+    monkeypatch.setattr(tui_app.ClueApp, "_game_loop", lambda _tui: None)
+    monkeypatch.setattr(tui_app.ClueApp, "run", fake_app_run)
+    result = runner.invoke(app, ["play", "--config", str(config)])
+
+    assert result.exit_code == 0, result.output
+    assert seen["subtitle"] == "P1: Bayesian  P2: The Conservative  P3: Baseline"
+    assert seen["event"] == "--- Turn 1: Bayesian (P1) ---"
+    bayesian = PlayerSpec(id="P1", name="AI", kind="llm", model="mock", strategy="bayesian")
+    aggressive = PlayerSpec(id="P2", name="AI", kind="llm", model="mock", strategy="aggressive")
+    assert bayesian.display_label() == aggressive.display_label() == "AI"
+    assert bayesian.label() != aggressive.label()
 
 
 def test_cli_spectate_flag_still_uses_real_run_tui(monkeypatch: pytest.MonkeyPatch) -> None:

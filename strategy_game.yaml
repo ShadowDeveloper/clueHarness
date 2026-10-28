@@ -1,4 +1,5 @@
-# Ten players require the Large edition (3–12 players).
+# Test fixture for named Large-edition seats and TUI layout, not a live-ready provider config.
+# Replace the placeholder model: openai entries with a real model id/provider (or mock) before playing.
 edition: large
 ponder: true
 spectate: true

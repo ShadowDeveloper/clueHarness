@@ -2,7 +2,7 @@
 
 These are exposed to LLM agents as callable tools AND pre-computed into the observation, and
 are also used by the baseline bots. All reasoning is over *public + own-private* info only.
-`get_possible_solutions` / `solution_probabilities` are EXACT (see clue/tools/solver.py).
+Inference is exact when the solver can count all assignments; Large-edition results use deterministic sampling (see clue/tools/solver.py).
 """
 
 from __future__ import annotations
@@ -36,7 +36,11 @@ def _hand_sizes(nb: Notebook, players: list[str], hand_sizes: dict[str, int] | N
 
 
 def get_possible_solutions(nb: Notebook, players: list[str], hand_sizes: dict[str, int] | None = None, edition: str = "classic") -> list[Combo]:
-    """All (suspect, weapon, room) combos for which at least one full hand assignment is consistent (exact)."""
+    """Potential (suspect, weapon, room) candidates not ruled out by the solver.
+
+    The result is exhaustive and constraint-consistent with exact counting; sampled cases return the
+    propagation-filtered candidate set, which can include unverified candidates.
+    """
     return solve(nb, players, hand_sizes, edition).possible
 
 
@@ -48,13 +52,14 @@ def solution_probabilities(
     samples: int = 0,
     rng: random.Random | None = None,
 ) -> dict[str, Any]:
-    """Exact posterior over envelope combos and cards, assuming all consistent deals are equally likely.
+    """Posterior over envelope combos and cards, assuming consistent deals are equally likely.
 
+    Exact when the solver exhaustively counts assignments; deterministic-sampling estimates otherwise.
     (`samples`/`rng` are accepted for backwards compatibility and ignored.)
     """
     sol = solve(nb, players, hand_sizes, edition)
     if not sol.combos:
-        return {"combos": {}, "cards": {}, "n_possible": 0}
+        return {"combos": {}, "cards": {}, "n_possible": 0, "exact": sol.exact}
     total = sol.n_assignments
     ranked = sorted(sol.combos.items(), key=lambda kv: -kv[1])
     best, best_prob = sol.best
@@ -65,7 +70,7 @@ def solution_probabilities(
         "cards": cards,
         "best": list(best) if best else None,
         "best_prob": round(best_prob, 4),
-        "exact": True,
+        "exact": sol.exact,
     }
 
 
@@ -110,13 +115,14 @@ def suggestion_ev(nb: Notebook, players: list[str], me: str, suspect: str, weapo
 def can_accuse_confidently(nb: Notebook, players: list[str], threshold: float = 0.9, hand_sizes: dict[str, int] | None = None, edition: str = "classic") -> dict[str, Any]:
     post = solution_probabilities(nb, players, hand_sizes, edition)
     if post["n_possible"] == 0:
-        return {"accuse": False, "reason": "notebook inconsistent", "best": None, "confidence": 0.0}
+        return {"accuse": False, "reason": "notebook inconsistent", "best": None, "confidence": 0.0, "exact": post["exact"]}
     return {
         "accuse": post["best_prob"] >= threshold,
         "best": post["best"],
         "confidence": post["best_prob"],
         "n_possible": post["n_possible"],
         "threshold": threshold,
+        "exact": post["exact"],
     }
 
 
@@ -141,21 +147,61 @@ def best_suggestion(nb: Notebook, players: list[str], me: str, room: str, editio
 
 
 TOOL_SPECS: list[dict[str, Any]] = [
-    {"name": "get_unseen_cards", "description": "Cards not in your hand, not face-up and not shown to you, by category.", "parameters": {"type": "object", "properties": {}}},
-    {"name": "get_possible_solutions", "description": "All (suspect, weapon, room) combos consistent with everything you know.", "parameters": {"type": "object", "properties": {}}},
-    {"name": "solution_probabilities", "description": "Approximate posterior over cards and top combos.", "parameters": {"type": "object", "properties": {}}},
+    {
+        "name": "get_unseen_cards",
+        "description": "Cards not in your hand, not face-up and not shown to you, by category.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "get_possible_solutions",
+        "description": ("Potential (suspect, weapon, room) candidates not ruled out by your evidence; Large edition returns propagation-filtered candidates and sampled estimates."),
+        "parameters": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "solution_probabilities",
+        "description": ("Posterior over cards and top combos; exact when assignment counting is tractable, otherwise a deterministic-sampling estimate."),
+        "parameters": {"type": "object", "properties": {}},
+    },
     {
         "name": "suggestion_ev",
         "description": "Information value of suggesting (suspect, weapon) in your current room.",
-        "parameters": {"type": "object", "properties": {"suspect": {"type": "string"}, "weapon": {"type": "string"}, "room": {"type": "string"}}, "required": ["suspect", "weapon", "room"]},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "suspect": {"type": "string"},
+                "weapon": {"type": "string"},
+                "room": {"type": "string"},
+            },
+            "required": ["suspect", "weapon", "room"],
+        },
     },
-    {"name": "update_notebook", "description": "Append a deduction note to your private notebook.", "parameters": {"type": "object", "properties": {"note": {"type": "string"}}, "required": ["note"]}},
-    {"name": "can_accuse_confidently", "description": "Best guess + confidence vs a threshold.", "parameters": {"type": "object", "properties": {"threshold": {"type": "number"}}}},
+    {
+        "name": "update_notebook",
+        "description": "Append a deduction note to your private notebook.",
+        "parameters": {
+            "type": "object",
+            "properties": {"note": {"type": "string"}},
+            "required": ["note"],
+        },
+    },
+    {
+        "name": "can_accuse_confidently",
+        "description": ("Best guess + confidence vs threshold; includes exact=true for exhaustive counting or false for sampled inference."),
+        "parameters": {"type": "object", "properties": {"threshold": {"type": "number"}}},
+    },
     {
         "name": "opponent_threat",
-        "description": "Estimate how close each opponent is to solving (shadow notebooks + exact solver): n_possible, p_win_next_turn, most_dangerous.",
+        "description": ("Estimate how close each opponent is to solving using shadow notebooks and the edition-aware exact-or-sampled solver."),
         "parameters": {"type": "object", "properties": {}},
     },
-    {"name": "holder_probabilities", "description": "Exact probability that each card is held by each player or is in the envelope.", "parameters": {"type": "object", "properties": {}}},
-    {"name": "hard_deductions", "description": "Certain facts provable from the evidence (e.g. 'P3 must hold Lounge', 'Rope is in the envelope').", "parameters": {"type": "object", "properties": {}}},
+    {
+        "name": "holder_probabilities",
+        "description": ("Probability that each card is held by each player or is in the envelope; exact when assignment counting is tractable, otherwise estimated by deterministic sampling."),
+        "parameters": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "hard_deductions",
+        "description": "Certain facts provable from the evidence (e.g. 'P3 must hold Lounge').",
+        "parameters": {"type": "object", "properties": {}},
+    },
 ]
