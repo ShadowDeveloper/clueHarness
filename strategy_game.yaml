@@ -12,13 +12,13 @@ players:
     strategy: bayesian
 
   - id: P2
-    name: Conservative
+    name: Note-taker
     kind: llm
     model: openai
     strategy: conservative
 
   - id: P3
-    name: Aggressor
+    name: Accuser
     kind: llm
     model: openai
     strategy: aggressive
