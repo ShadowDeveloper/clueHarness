@@ -166,9 +166,11 @@ def test_strategy_game_yaml_and_spectate(monkeypatch: pytest.MonkeyPatch) -> Non
     gm = seen["gm"]
     assert isinstance(gm, GameManager)
     assert gm.config.edition == "large" and gm.config.num_players == 10
-    assert [s.name for s in gm.specs] == ["bayesian", "conservative", "aggressive", "info", "deceptive", "room_rusher", "heuristic", "heuristic", "expert", "heuristic"]
+    assert [s.name for s in gm.specs] == ["Probabalist", "Note-taker", "Accuser", "Hunter", "Liar", "Rusher", "Baseline", "Heuristic", "Expert", "Random"]
     llm_specs = [s for s in gm.specs if s.kind == "llm"]
     assert len(llm_specs) == 6 and all(s.model == "openai" and s.temperature is None for s in llm_specs)
+    assert [Path(s.strategy or "").stem for s in llm_specs] == ["bayesian_probabilist", "conservative_notebook", "aggressive_accuser", "info_value_hunter", "deceptive_misdirector", "room_rusher"]
+    assert [s.bot for s in gm.specs[6:]] == [None, "heuristic", "expert", "random"]
     assert len(seen["agents"]) == 10
     tui = seen["app"]
     assert isinstance(tui, tui_app.ClueApp)
