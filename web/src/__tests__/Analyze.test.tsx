@@ -65,6 +65,33 @@ describe("Analyze page", () => {
   });
 });
 
+describe("Analyze page face-up cards on touch", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("tap-cycles a chip none -> hand -> face-up -> none when face-up mode is on", () => {
+    render(<Analyze />);
+    fireEvent.click(screen.getByRole("checkbox")); // enable face-up cards
+    expect(screen.getByText(/tap again for face-up/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Rope" })); // none -> hand
+    expect(screen.getByText(/Your hand \(1\)/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Rope" })); // hand -> face-up
+    expect(screen.getByText(/Your hand \(0\)/)).toBeInTheDocument();
+    expect(screen.getByTitle("Rope (face-up)")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Rope" })); // face-up -> none
+    expect(screen.queryByTitle("Rope (face-up)")).not.toBeInTheDocument();
+  });
+
+  it("shift-click still jumps straight to face-up, and unchecking clears them", () => {
+    render(<Analyze />);
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Hall" }), { shiftKey: true });
+    expect(screen.getByTitle("Hall (face-up)")).toBeInTheDocument();
+    expect(screen.getByText(/Your hand \(0\)/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox")); // disable face-up mode -> clears face-up cards
+    expect(screen.queryByTitle("Hall (face-up)")).not.toBeInTheDocument();
+  });
+});
+
 describe("Analyze page card renames", () => {
   beforeEach(() => localStorage.clear());
 

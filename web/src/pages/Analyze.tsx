@@ -2,7 +2,7 @@
 // hard deductions, opponent threat, and coach-style guidance. All math runs client-side
 // (src/analysis is a cross-validated port of the Python solver), so this page also works on the
 // static GitHub Pages deployment where there is no backend.
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AnalysisSession,
   analyze,
@@ -53,12 +53,26 @@ export default function Analyze() {
   const [renaming, setRenaming] = useState(false);
   const [renameCard, setRenameCard] = useState("");
   const [renameLabel, setRenameLabel] = useState("");
+  // true when the probability grid actually overflows sideways (phones / Large edition):
+  // used to surface a swipe affordance, since mobile browsers hide scrollbars.
+  const probRef = useRef<HTMLDivElement | null>(null);
+  const [probOverflow, setProbOverflow] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORE, JSON.stringify(session));
   }, [session]);
 
   const report = useMemo(() => analyze(session), [session]);
+
+  useEffect(() => {
+    const check = () => {
+      const el = probRef.current;
+      setProbOverflow(!!el && el.scrollWidth > el.clientWidth + 1);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [report]);
   const patch = (p: Partial<AnalysisSession>) => setSession((s) => ({ ...s, ...p }));
   const label = (c: string) => labelFor(session, c);
   const renames = session.card_names ?? {};
@@ -91,6 +105,18 @@ export default function Analyze() {
     if (key === "my_cards" && session.faceup.includes(card)) other.faceup = session.faceup.filter((c) => c !== card);
     if (key === "faceup" && session.my_cards.includes(card)) other.my_cards = session.my_cards.filter((c) => c !== card);
     patch({ [key]: next, ...other });
+  };
+
+  // Touch-friendly face-up marking: with face-up mode on, each tap cycles the chip
+  // none -> in my hand -> face-up -> none (shift-click still jumps straight to face-up).
+  const cycleCard = (card: string) => {
+    if (session.my_cards.includes(card)) {
+      patch({ my_cards: session.my_cards.filter((c) => c !== card), faceup: [...session.faceup, card] });
+    } else if (session.faceup.includes(card)) {
+      patch({ faceup: session.faceup.filter((c) => c !== card) });
+    } else {
+      patch({ my_cards: [...session.my_cards, card] });
+    }
   };
 
   const addObservation = (ob: Observation) => patch({ observations: [...session.observations, ob] });
@@ -184,7 +210,9 @@ export default function Analyze() {
             </label>
           </div>
           <div style={{ marginTop: 8 }}>
-            <div className="dim" style={{ fontSize: 12 }}>Your hand ({session.my_cards.length}) — click to toggle{showFaceup ? "; shift-click marks face-up" : ""}</div>
+            <div className="dim" style={{ fontSize: 12 }}>
+              Your hand ({session.my_cards.length}) — click to toggle{showFaceup ? "; tap again for face-up ◇, again to clear" : ""}
+            </div>
             {cardGroups.map(([groupName, cards]) => (
               <div className="row" key={groupName} style={{ marginTop: 4 }}>
                 <span className="dim" style={{ width: 64, fontSize: 11 }}>{groupName}</span>
@@ -194,7 +222,11 @@ export default function Analyze() {
                       key={c}
                       className={`chip ${session.my_cards.includes(c) ? "mine" : ""} ${session.faceup.includes(c) ? "faceup" : ""}`}
                       title={session.faceup.includes(c) ? `${c} (face-up)` : c}
-                      onClick={(e) => toggleCard(showFaceup && e.shiftKey ? "faceup" : "my_cards", c)}
+                      onClick={(e) => {
+                        if (!showFaceup) toggleCard("my_cards", c);
+                        else if (e.shiftKey) toggleCard("faceup", c);
+                        else cycleCard(c);
+                      }}
                     >
                       {label(c)}
                     </button>
@@ -329,18 +361,18 @@ export default function Analyze() {
               {report.errors.map((e, i) => <div key={i} className="dim">• {e}</div>)}
             </div>
           ) : (
-            <div className="scroll-x"><table className="prob-table">
+            <div className="scroll-x" ref={probRef}><table className="prob-table">
               <thead>
                 <tr>
                   <th />
                   <th>Env</th>
-                  {report.players.map((p) => <th key={p} className={p === report.me ? "accent" : ""}>{p}</th>)}
+                  {report.players.map((p) => <th key={p} className={p === report.me ? "accent" : ""} title={p}>{p}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {cardGroups.map(([groupName, cards]) => (
                   [
-                    <tr key={groupName} className="group"><td colSpan={2 + report.players.length}>{groupName}</td></tr>,
+                    <tr key={groupName} className="group"><td colSpan={2 + report.players.length}><span>{groupName}</span></td></tr>,
                     ...cards.map((card) => {
                       const env = report.conflicts.length ? 0 : sol.cards[card] ?? 0;
                       const hp = report.holders[card] ?? {};
@@ -360,6 +392,9 @@ export default function Analyze() {
                 ))}
               </tbody>
             </table></div>
+          )}
+          {report.ok && probOverflow && (
+            <div className="dim swipe-hint">⇄ swipe the grid sideways — the card column stays put</div>
           )}
         </div>
       </div>

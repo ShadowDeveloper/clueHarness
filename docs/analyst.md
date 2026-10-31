@@ -103,8 +103,12 @@ marginals) stay canonical; the report's `card_names` echo lets clients label the
 human-readable `deductions`/`advice` strings arrive already labelled.
 
 The page is **mobile-friendly** (it is the surface you would use at a real table): single-column layout,
-larger touch targets, and a horizontally scrollable probability grid with a sticky card column on
-phones. The **Rename cards** editor in the setup panel adapts the card names to your copy of the game.
+larger touch targets, and a probability grid tuned to fit a phone screen. When the grid is still wider
+than the screen (Large edition, many players) it scrolls sideways inside its own pane with a visible
+scrollbar, edge shadows, a "swipe" hint, and sticky card column + player header, so nothing is hidden
+silently. Face-up cards need no keyboard: with the *face-up cards* toggle on, tapping a card cycles
+*in my hand -> face-up -> unmarked* (desktop shift-click still jumps straight to face-up). The
+**Rename cards** editor in the setup panel adapts the card names to your copy of the game.
 
 ## Guarantees and limits
 
