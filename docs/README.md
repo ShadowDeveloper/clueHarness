@@ -10,6 +10,7 @@
 | [observation_schema.md](observation_schema.md) | agent authors | Every field an agent receives, with an example |
 | [replay_format.md](replay_format.md) | analysts | JSONL replay records, redaction rules, determinism hash, save/load |
 | [tools.md](tools.md) | agent authors | Symbolic deduction tools: signatures, algorithms, guarantees |
+| [analyst.md](analyst.md) | players | Standalone analyst for real-table games: `clue analyze` TUI/CLI, web Analyst page, GitHub Pages build |
 | [strategies.md](strategies.md) | prompt authors | How strategy prompts are composed, writing your own, evaluating them |
 | [extending.md](extending.md) | developers | Add an LLM provider, a new agent, a rule variant, a metric |
 | [pondering.md](pondering.md) | developers / researchers | Parallel thinking between turns: lifecycle, interrupts, isolation, audit |

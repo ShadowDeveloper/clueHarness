@@ -335,6 +335,75 @@ def replay(
 
 
 @app.command()
+def analyze(
+    session: Optional[str] = typer.Argument(None, help="session JSON saved by the analyst TUI (or written by hand; see docs/analyst.md)"),
+    ui: str = typer.Option("tui", help="tui | cli (cli prints a one-shot report and needs a session file)"),
+    out: Optional[str] = typer.Option(None, "--out", help="also write the full JSON report to this file"),
+    threshold: float = typer.Option(0.9, help="accusation confidence threshold used by the guide"),
+) -> None:
+    """Standalone analyst for a real-table game: enter your cards + observed suggestions, get posterior
+    probabilities, hard deductions, opponent threat, and coach-style guidance (solver-backed)."""
+    from clue.tools.analyst import AnalysisSession
+    from clue.tools.analyst import analyze as run_analysis
+
+    sess: Optional[AnalysisSession] = None
+    if session:
+        sess = AnalysisSession.model_validate(json.loads(Path(session).read_text(encoding="utf-8")))
+    if ui == "tui":
+        from clue.tui.analyst_app import run_analyst
+
+        run_analyst(sess, path=session, threshold=threshold)
+        return
+    if ui != "cli":
+        raise typer.BadParameter("ui must be tui or cli")
+    if sess is None:
+        raise typer.BadParameter("cli mode needs a session file: clue analyze mygame.json --ui cli")
+    report = run_analysis(sess, accuse_threshold=threshold)
+    if out:
+        Path(out).write_text(json.dumps(report, indent=1), encoding="utf-8")
+    _print_analysis(report)
+
+
+def _print_analysis(report: dict[str, Any]) -> None:
+    from rich.table import Table
+
+    if not report["ok"]:
+        console.print("[red]Session problems:[/red]")
+        for e in report["errors"]:
+            console.print(f"  - {e}")
+        raise typer.Exit(1)
+    from clue.rules.cards import rooms, suspects, weapons
+
+    sol = report["solution"]
+    mark = "" if sol["exact"] else " (estimated - large table)"
+    console.print(f"\n[bold]{sol['n_possible']}[/bold] candidate solution(s){mark}")
+    for combo, p in list(sol["combos"].items())[:8]:
+        console.print(f"  {100 * p:5.1f}%  {combo}")
+    t = Table(title="P(%) card is in the envelope / held by...", show_lines=False)
+    t.add_column("Card")
+    t.add_column("Env", justify="right")
+    for p in report["players"]:
+        t.add_column(p, justify="right")
+    holders = report["holders"]
+    for cards in (suspects(report["edition"]), weapons(report["edition"]), rooms(report["edition"])):
+        t.add_section()
+        for card in cards:
+            probs = holders.get(card, {})
+            cells = [f"{100 * probs.get(h, 0.0):.0f}" if probs.get(h, 0.0) > 0.0005 else "." for h in ["envelope", *report["players"]]]
+            t.add_row(card, *cells)
+    console.print(t)
+    if report["deductions"]:
+        console.print("[bold]Hard deductions[/bold] (provable facts):")
+        for d in report["deductions"]:
+            console.print(f"  - {d}")
+    console.print("\n[bold]Guide[/bold]")
+    for line in report["guide"]["advice"]:
+        console.print(f"  {line}")
+    if report["guide"]["suggestions"]:
+        console.print("  Best suggestions: " + "; ".join(f"{s['suspect']} + {s['weapon']} in {s['room']} ({s['score']:.2f})" for s in report["guide"]["suggestions"]))
+
+
+@app.command()
 def eval(
     games: int = typer.Option(50),
     seed: int = typer.Option(0),

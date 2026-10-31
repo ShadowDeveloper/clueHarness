@@ -1,5 +1,8 @@
 # Symbolic deduction tools
 
+> Playing at a real table? `clue analyze` and the web **Analyst** page expose these tools (plus
+> coach-style guidance) for hand-entered observations — see [analyst.md](analyst.md).
+
 Location: `clue/tools/deduction.py`. The functions reason from a viewer's `Notebook`, player list,
 hand sizes, and edition; they do not inspect hidden game state. They are used in three ways:
 

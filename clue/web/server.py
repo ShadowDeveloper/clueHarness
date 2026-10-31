@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from clue.web import ws
-from clue.web.routes import games, meta, replays, tournaments
+from clue.web.routes import analyze, games, meta, replays, tournaments
 from clue.web.sessions import Registry
 from clue.web.settings import WebSettings
 
@@ -22,7 +22,7 @@ def create_app(settings: WebSettings | None = None) -> FastAPI:
     app.state.registry = Registry(st)
     if st.dev_origin:
         app.add_middleware(CORSMiddleware, allow_origins=[st.dev_origin], allow_methods=["*"], allow_headers=["*"])
-    for r in (meta.router, games.router, replays.router, tournaments.router):
+    for r in (meta.router, games.router, replays.router, tournaments.router, analyze.router):
         app.include_router(r, prefix="/api")
     app.include_router(ws.router)
 

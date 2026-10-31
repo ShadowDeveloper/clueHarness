@@ -198,3 +198,25 @@ h1, h2 { overflow-wrap: anywhere; }
 .tourn-grid { grid-template-columns: minmax(0, 340px) minmax(0, 1fr); }
 @media (max-width: 900px) { .replay-grid, .tourn-grid { grid-template-columns: 1fr; } }
 .replay-grid svg.board { max-height: 70vh; }
+
+/* ---- Analyst page (client-side solver: Play-less, works on GitHub Pages too) ---- */
+.analyze-grid { grid-template-columns: minmax(300px, 1.15fr) minmax(320px, 1fr) minmax(300px, 1fr); align-items: start; }
+@media (max-width: 1100px) { .analyze-grid { grid-template-columns: 1fr; } }
+.chip { padding: 2px 7px; border-radius: 10px; font-size: 11.5px; line-height: 1.5; background: var(--panel2); border: 1px solid var(--border); color: var(--dim); }
+.chip.mine { background: #5a4712; border-color: var(--accent); color: #fff3cc; }
+.chip.faceup { background: #1f4356; border-color: var(--info); color: #d9f0fb; }
+.obs-list { display: flex; flex-direction: column; gap: 2px; max-height: 260px; overflow-y: auto; }
+.obs-list .obs { border-bottom: 1px dotted #3a2d22; padding: 2px 0; font-size: 12.5px; }
+.obs-list .obs button { padding: 0 6px; font-size: 11px; }
+.prob-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.prob-table th { color: var(--dim); font-weight: 400; padding: 2px 4px; text-align: center; font-size: 11px; }
+.prob-table td { padding: 1px 4px; border-bottom: 1px solid #2a2018; }
+.prob-table td.name { white-space: nowrap; }
+.prob-table td.p { text-align: center; min-width: 30px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+.prob-table td.p.env { font-weight: 700; }
+.prob-table tr.group td { color: var(--brass); text-transform: uppercase; letter-spacing: 1.5px; font-size: 10.5px; padding-top: 7px; border-bottom: 1px solid var(--border); }
+.bar { flex: 1; max-width: 110px; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); }
+.coachbox { border-color: #3f7a5a; }
+.coachbox .lead { font-weight: 700; color: #e8f4e6; margin-bottom: 4px; }
+.coachbox .subhead { margin: 10px 0 3px; color: var(--brass); text-transform: uppercase; letter-spacing: 1px; font-size: 10.5px; }

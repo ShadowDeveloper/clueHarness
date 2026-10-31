@@ -1,0 +1,1578 @@
+{
+ "fresh_hand_only": {
+  "session": {
+   "edition": "classic",
+   "players": [
+    "P1",
+    "P2",
+    "P3"
+   ],
+   "me": "P1",
+   "my_cards": [
+    "Miss Scarlet",
+    "Rope",
+    "Hall",
+    "Study",
+    "Candlestick",
+    "Wrench"
+   ],
+   "faceup": [],
+   "observations": []
+  },
+  "expected": {
+   "hand_sizes": {
+    "P1": 6,
+    "P2": 6,
+    "P3": 6
+   },
+   "ok": true,
+   "consistent": true,
+   "exact": true,
+   "n_possible": 105,
+   "combos": {
+    "Col. Mustard | Dagger | Ballroom": 0.009524,
+    "Col. Mustard | Dagger | Billiard Room": 0.009524,
+    "Col. Mustard | Dagger | Conservatory": 0.009524,
+    "Col. Mustard | Dagger | Dining Room": 0.009524,
+    "Col. Mustard | Dagger | Kitchen": 0.009524,
+    "Col. Mustard | Dagger | Library": 0.009524,
+    "Col. Mustard | Dagger | Lounge": 0.009524,
+    "Col. Mustard | Lead Pipe | Ballroom": 0.009524,
+    "Col. Mustard | Lead Pipe | Billiard Room": 0.009524,
+    "Col. Mustard | Lead Pipe | Conservatory": 0.009524,
+    "Col. Mustard | Lead Pipe | Dining Room": 0.009524,
+    "Col. Mustard | Lead Pipe | Kitchen": 0.009524,
+    "Col. Mustard | Lead Pipe | Library": 0.009524,
+    "Col. Mustard | Lead Pipe | Lounge": 0.009524,
+    "Col. Mustard | Revolver | Ballroom": 0.009524,
+    "Col. Mustard | Revolver | Billiard Room": 0.009524,
+    "Col. Mustard | Revolver | Conservatory": 0.009524,
+    "Col. Mustard | Revolver | Dining Room": 0.009524,
+    "Col. Mustard | Revolver | Kitchen": 0.009524,
+    "Col. Mustard | Revolver | Library": 0.009524,
+    "Col. Mustard | Revolver | Lounge": 0.009524,
+    "Mr. Green | Dagger | Ballroom": 0.009524,
+    "Mr. Green | Dagger | Billiard Room": 0.009524,
+    "Mr. Green | Dagger | Conservatory": 0.009524,
+    "Mr. Green | Dagger | Dining Room": 0.009524,
+    "Mr. Green | Dagger | Kitchen": 0.009524,
+    "Mr. Green | Dagger | Library": 0.009524,
+    "Mr. Green | Dagger | Lounge": 0.009524,
+    "Mr. Green | Lead Pipe | Ballroom": 0.009524,
+    "Mr. Green | Lead Pipe | Billiard Room": 0.009524,
+    "Mr. Green | Lead Pipe | Conservatory": 0.009524,
+    "Mr. Green | Lead Pipe | Dining Room": 0.009524,
+    "Mr. Green | Lead Pipe | Kitchen": 0.009524,
+    "Mr. Green | Lead Pipe | Library": 0.009524,
+    "Mr. Green | Lead Pipe | Lounge": 0.009524,
+    "Mr. Green | Revolver | Ballroom": 0.009524,
+    "Mr. Green | Revolver | Billiard Room": 0.009524,
+    "Mr. Green | Revolver | Conservatory": 0.009524,
+    "Mr. Green | Revolver | Dining Room": 0.009524,
+    "Mr. Green | Revolver | Kitchen": 0.009524,
+    "Mr. Green | Revolver | Library": 0.009524,
+    "Mr. Green | Revolver | Lounge": 0.009524,
+    "Mrs. Peacock | Dagger | Ballroom": 0.009524,
+    "Mrs. Peacock | Dagger | Billiard Room": 0.009524,
+    "Mrs. Peacock | Dagger | Conservatory": 0.009524,
+    "Mrs. Peacock | Dagger | Dining Room": 0.009524,
+    "Mrs. Peacock | Dagger | Kitchen": 0.009524,
+    "Mrs. Peacock | Dagger | Library": 0.009524,
+    "Mrs. Peacock | Dagger | Lounge": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Ballroom": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Billiard Room": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Conservatory": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Dining Room": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Kitchen": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Library": 0.009524,
+    "Mrs. Peacock | Lead Pipe | Lounge": 0.009524,
+    "Mrs. Peacock | Revolver | Ballroom": 0.009524,
+    "Mrs. Peacock | Revolver | Billiard Room": 0.009524,
+    "Mrs. Peacock | Revolver | Conservatory": 0.009524,
+    "Mrs. Peacock | Revolver | Dining Room": 0.009524,
+    "Mrs. Peacock | Revolver | Kitchen": 0.009524,
+    "Mrs. Peacock | Revolver | Library": 0.009524,
+    "Mrs. Peacock | Revolver | Lounge": 0.009524,
+    "Mrs. White | Dagger | Ballroom": 0.009524,
+    "Mrs. White | Dagger | Billiard Room": 0.009524,
+    "Mrs. White | Dagger | Conservatory": 0.009524,
+    "Mrs. White | Dagger | Dining Room": 0.009524,
+    "Mrs. White | Dagger | Kitchen": 0.009524,
+    "Mrs. White | Dagger | Library": 0.009524,
+    "Mrs. White | Dagger | Lounge": 0.009524,
+    "Mrs. White | Lead Pipe | Ballroom": 0.009524,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.009524,
+    "Mrs. White | Lead Pipe | Conservatory": 0.009524,
+    "Mrs. White | Lead Pipe | Dining Room": 0.009524,
+    "Mrs. White | Lead Pipe | Kitchen": 0.009524,
+    "Mrs. White | Lead Pipe | Library": 0.009524,
+    "Mrs. White | Lead Pipe | Lounge": 0.009524,
+    "Mrs. White | Revolver | Ballroom": 0.009524,
+    "Mrs. White | Revolver | Billiard Room": 0.009524,
+    "Mrs. White | Revolver | Conservatory": 0.009524,
+    "Mrs. White | Revolver | Dining Room": 0.009524,
+    "Mrs. White | Revolver | Kitchen": 0.009524,
+    "Mrs. White | Revolver | Library": 0.009524,
+    "Mrs. White | Revolver | Lounge": 0.009524,
+    "Prof. Plum | Dagger | Ballroom": 0.009524,
+    "Prof. Plum | Dagger | Billiard Room": 0.009524,
+    "Prof. Plum | Dagger | Conservatory": 0.009524,
+    "Prof. Plum | Dagger | Dining Room": 0.009524,
+    "Prof. Plum | Dagger | Kitchen": 0.009524,
+    "Prof. Plum | Dagger | Library": 0.009524,
+    "Prof. Plum | Dagger | Lounge": 0.009524,
+    "Prof. Plum | Lead Pipe | Ballroom": 0.009524,
+    "Prof. Plum | Lead Pipe | Billiard Room": 0.009524,
+    "Prof. Plum | Lead Pipe | Conservatory": 0.009524,
+    "Prof. Plum | Lead Pipe | Dining Room": 0.009524,
+    "Prof. Plum | Lead Pipe | Kitchen": 0.009524,
+    "Prof. Plum | Lead Pipe | Library": 0.009524,
+    "Prof. Plum | Lead Pipe | Lounge": 0.009524,
+    "Prof. Plum | Revolver | Ballroom": 0.009524,
+    "Prof. Plum | Revolver | Billiard Room": 0.009524,
+    "Prof. Plum | Revolver | Conservatory": 0.009524,
+    "Prof. Plum | Revolver | Dining Room": 0.009524,
+    "Prof. Plum | Revolver | Kitchen": 0.009524,
+    "Prof. Plum | Revolver | Library": 0.009524,
+    "Prof. Plum | Revolver | Lounge": 0.009524
+   },
+   "card_probs": {
+    "Ballroom": 0.142857,
+    "Billiard Room": 0.142857,
+    "Candlestick": 0.0,
+    "Col. Mustard": 0.2,
+    "Conservatory": 0.142857,
+    "Dagger": 0.333333,
+    "Dining Room": 0.142857,
+    "Hall": 0.0,
+    "Kitchen": 0.142857,
+    "Lead Pipe": 0.333333,
+    "Library": 0.142857,
+    "Lounge": 0.142857,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.2,
+    "Mrs. Peacock": 0.2,
+    "Mrs. White": 0.2,
+    "Prof. Plum": 0.2,
+    "Revolver": 0.333333,
+    "Rope": 0.0,
+    "Study": 0.0,
+    "Wrench": 0.0
+   },
+   "holder_probs": {
+    "Ballroom": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Billiard Room": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Candlestick": {
+     "P1": 1.0
+    },
+    "Col. Mustard": {
+     "P2": 0.4,
+     "P3": 0.4,
+     "envelope": 0.2
+    },
+    "Conservatory": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Dagger": {
+     "P2": 0.333333,
+     "P3": 0.333333,
+     "envelope": 0.333333
+    },
+    "Dining Room": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Hall": {
+     "P1": 1.0
+    },
+    "Kitchen": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Lead Pipe": {
+     "P2": 0.333333,
+     "P3": 0.333333,
+     "envelope": 0.333333
+    },
+    "Library": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Lounge": {
+     "P2": 0.428571,
+     "P3": 0.428571,
+     "envelope": 0.142857
+    },
+    "Miss Scarlet": {
+     "P1": 1.0
+    },
+    "Mr. Green": {
+     "P2": 0.4,
+     "P3": 0.4,
+     "envelope": 0.2
+    },
+    "Mrs. Peacock": {
+     "P2": 0.4,
+     "P3": 0.4,
+     "envelope": 0.2
+    },
+    "Mrs. White": {
+     "P2": 0.4,
+     "P3": 0.4,
+     "envelope": 0.2
+    },
+    "Prof. Plum": {
+     "P2": 0.4,
+     "P3": 0.4,
+     "envelope": 0.2
+    },
+    "Revolver": {
+     "P2": 0.333333,
+     "P3": 0.333333,
+     "envelope": 0.333333
+    },
+    "Rope": {
+     "P1": 1.0
+    },
+    "Study": {
+     "P1": 1.0
+    },
+    "Wrench": {
+     "P1": 1.0
+    }
+   },
+   "certain_holder": {
+    "Candlestick": "P1",
+    "Hall": "P1",
+    "Miss Scarlet": "P1",
+    "Rope": "P1",
+    "Study": "P1",
+    "Wrench": "P1"
+   },
+   "deductions": [],
+   "best": [
+    "Col. Mustard",
+    "Dagger",
+    "Lounge"
+   ],
+   "best_prob": 0.0095,
+   "accuse": false,
+   "suggestions": [
+    {
+     "room": "Ballroom",
+     "score": 1.0
+    },
+    {
+     "room": "Billiard Room",
+     "score": 1.0
+    },
+    {
+     "room": "Conservatory",
+     "score": 1.0
+    }
+   ],
+   "threat": {
+    "opponents": {
+     "P2": {
+      "n_possible": 58,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 0
+     },
+     "P3": {
+      "n_possible": 58,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 0
+     }
+    },
+    "max_threat": 0.0,
+    "most_dangerous": null,
+    "p_any_wins_before_my_turn": 0.0
+   },
+   "advice_first": "105 candidate solutions remain; most likely: Col. Mustard / Dagger / Lounge at p=0.01."
+  }
+ },
+ "demo_midgame": {
+  "session": {
+   "edition": "classic",
+   "players": [
+    "Me",
+    "Alice",
+    "Bob",
+    "Cara"
+   ],
+   "me": "Me",
+   "my_cards": [
+    "Miss Scarlet",
+    "Rope",
+    "Hall",
+    "Study",
+    "Candlestick"
+   ],
+   "faceup": [],
+   "observations": [
+    {
+     "type": "suggestion",
+     "suggester": "Me",
+     "suspect": "Prof. Plum",
+     "weapon": "Dagger",
+     "room": "Lounge",
+     "disprover": "Bob",
+     "shown_card": "Dagger"
+    },
+    {
+     "type": "suggestion",
+     "suggester": "Alice",
+     "suspect": "Mrs. Peacock",
+     "weapon": "Revolver",
+     "room": "Kitchen",
+     "disprover": "Cara"
+    },
+    {
+     "type": "suggestion",
+     "suggester": "Bob",
+     "suspect": "Col. Mustard",
+     "weapon": "Lead Pipe",
+     "room": "Ballroom",
+     "disprover": null
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Library",
+     "has": true
+    }
+   ]
+  },
+  "expected": {
+   "hand_sizes": {
+    "Me": 5,
+    "Alice": 5,
+    "Bob": 4,
+    "Cara": 4
+   },
+   "ok": true,
+   "consistent": true,
+   "exact": true,
+   "n_possible": 89,
+   "combos": {
+    "Col. Mustard | Lead Pipe | Ballroom": 0.11411,
+    "Col. Mustard | Lead Pipe | Billiard Room": 0.036208,
+    "Col. Mustard | Lead Pipe | Conservatory": 0.036208,
+    "Col. Mustard | Lead Pipe | Dining Room": 0.036208,
+    "Col. Mustard | Lead Pipe | Kitchen": 0.035842,
+    "Col. Mustard | Lead Pipe | Lounge": 0.062541,
+    "Col. Mustard | Revolver | Ballroom": 0.035842,
+    "Col. Mustard | Revolver | Billiard Room": 0.006949,
+    "Col. Mustard | Revolver | Conservatory": 0.006949,
+    "Col. Mustard | Revolver | Dining Room": 0.006949,
+    "Col. Mustard | Revolver | Kitchen": 0.004389,
+    "Col. Mustard | Revolver | Lounge": 0.014995,
+    "Col. Mustard | Wrench | Ballroom": 0.036208,
+    "Col. Mustard | Wrench | Billiard Room": 0.008046,
+    "Col. Mustard | Wrench | Conservatory": 0.008046,
+    "Col. Mustard | Wrench | Dining Room": 0.008046,
+    "Col. Mustard | Wrench | Kitchen": 0.006949,
+    "Col. Mustard | Wrench | Lounge": 0.016092,
+    "Mr. Green | Lead Pipe | Ballroom": 0.036208,
+    "Mr. Green | Lead Pipe | Billiard Room": 0.008046,
+    "Mr. Green | Lead Pipe | Conservatory": 0.008046,
+    "Mr. Green | Lead Pipe | Dining Room": 0.008046,
+    "Mr. Green | Lead Pipe | Kitchen": 0.006949,
+    "Mr. Green | Lead Pipe | Lounge": 0.016092,
+    "Mr. Green | Revolver | Ballroom": 0.006949,
+    "Mr. Green | Revolver | Billiard Room": 0.000658,
+    "Mr. Green | Revolver | Conservatory": 0.000658,
+    "Mr. Green | Revolver | Dining Room": 0.000658,
+    "Mr. Green | Revolver | Kitchen": 0.000366,
+    "Mr. Green | Revolver | Lounge": 0.001829,
+    "Mr. Green | Wrench | Ballroom": 0.008046,
+    "Mr. Green | Wrench | Billiard Room": 0.000878,
+    "Mr. Green | Wrench | Conservatory": 0.000878,
+    "Mr. Green | Wrench | Dining Room": 0.000878,
+    "Mr. Green | Wrench | Kitchen": 0.000658,
+    "Mr. Green | Wrench | Lounge": 0.002268,
+    "Mrs. Peacock | Lead Pipe | Ballroom": 0.035842,
+    "Mrs. Peacock | Lead Pipe | Billiard Room": 0.006949,
+    "Mrs. Peacock | Lead Pipe | Conservatory": 0.006949,
+    "Mrs. Peacock | Lead Pipe | Dining Room": 0.006949,
+    "Mrs. Peacock | Lead Pipe | Kitchen": 0.004389,
+    "Mrs. Peacock | Lead Pipe | Lounge": 0.014995,
+    "Mrs. Peacock | Revolver | Ballroom": 0.004389,
+    "Mrs. Peacock | Revolver | Billiard Room": 0.000366,
+    "Mrs. Peacock | Revolver | Conservatory": 0.000366,
+    "Mrs. Peacock | Revolver | Dining Room": 0.000366,
+    "Mrs. Peacock | Revolver | Lounge": 0.001097,
+    "Mrs. Peacock | Wrench | Ballroom": 0.006949,
+    "Mrs. Peacock | Wrench | Billiard Room": 0.000658,
+    "Mrs. Peacock | Wrench | Conservatory": 0.000658,
+    "Mrs. Peacock | Wrench | Dining Room": 0.000658,
+    "Mrs. Peacock | Wrench | Kitchen": 0.000366,
+    "Mrs. Peacock | Wrench | Lounge": 0.001829,
+    "Mrs. White | Lead Pipe | Ballroom": 0.036208,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.008046,
+    "Mrs. White | Lead Pipe | Conservatory": 0.008046,
+    "Mrs. White | Lead Pipe | Dining Room": 0.008046,
+    "Mrs. White | Lead Pipe | Kitchen": 0.006949,
+    "Mrs. White | Lead Pipe | Lounge": 0.016092,
+    "Mrs. White | Revolver | Ballroom": 0.006949,
+    "Mrs. White | Revolver | Billiard Room": 0.000658,
+    "Mrs. White | Revolver | Conservatory": 0.000658,
+    "Mrs. White | Revolver | Dining Room": 0.000658,
+    "Mrs. White | Revolver | Kitchen": 0.000366,
+    "Mrs. White | Revolver | Lounge": 0.001829,
+    "Mrs. White | Wrench | Ballroom": 0.008046,
+    "Mrs. White | Wrench | Billiard Room": 0.000878,
+    "Mrs. White | Wrench | Conservatory": 0.000878,
+    "Mrs. White | Wrench | Dining Room": 0.000878,
+    "Mrs. White | Wrench | Kitchen": 0.000658,
+    "Mrs. White | Wrench | Lounge": 0.002268,
+    "Prof. Plum | Lead Pipe | Ballroom": 0.062541,
+    "Prof. Plum | Lead Pipe | Billiard Room": 0.016092,
+    "Prof. Plum | Lead Pipe | Conservatory": 0.016092,
+    "Prof. Plum | Lead Pipe | Dining Room": 0.016092,
+    "Prof. Plum | Lead Pipe | Kitchen": 0.014995,
+    "Prof. Plum | Lead Pipe | Lounge": 0.028528,
+    "Prof. Plum | Revolver | Ballroom": 0.014995,
+    "Prof. Plum | Revolver | Billiard Room": 0.001829,
+    "Prof. Plum | Revolver | Conservatory": 0.001829,
+    "Prof. Plum | Revolver | Dining Room": 0.001829,
+    "Prof. Plum | Revolver | Kitchen": 0.001097,
+    "Prof. Plum | Revolver | Lounge": 0.004023,
+    "Prof. Plum | Wrench | Ballroom": 0.016092,
+    "Prof. Plum | Wrench | Billiard Room": 0.002268,
+    "Prof. Plum | Wrench | Conservatory": 0.002268,
+    "Prof. Plum | Wrench | Dining Room": 0.002268,
+    "Prof. Plum | Wrench | Kitchen": 0.001829,
+    "Prof. Plum | Wrench | Lounge": 0.004755
+   },
+   "card_probs": {
+    "Ballroom": 0.429376,
+    "Billiard Room": 0.09853,
+    "Candlestick": 0.0,
+    "Col. Mustard": 0.480579,
+    "Conservatory": 0.09853,
+    "Dagger": 0.0,
+    "Dining Room": 0.09853,
+    "Hall": 0.0,
+    "Kitchen": 0.085802,
+    "Lead Pipe": 0.718309,
+    "Library": 0.0,
+    "Lounge": 0.189233,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.108112,
+    "Mrs. Peacock": 0.093775,
+    "Mrs. White": 0.108112,
+    "Prof. Plum": 0.209421,
+    "Revolver": 0.130495,
+    "Rope": 0.0,
+    "Study": 0.0,
+    "Wrench": 0.151196
+   },
+   "holder_probs": {
+    "Ballroom": {
+     "Bob": 0.570624,
+     "envelope": 0.429376
+    },
+    "Billiard Room": {
+     "Alice": 0.454831,
+     "Bob": 0.169849,
+     "Cara": 0.27679,
+     "envelope": 0.09853
+    },
+    "Candlestick": {
+     "Me": 1.0
+    },
+    "Col. Mustard": {
+     "Bob": 0.519421,
+     "envelope": 0.480579
+    },
+    "Conservatory": {
+     "Alice": 0.454831,
+     "Bob": 0.169849,
+     "Cara": 0.27679,
+     "envelope": 0.09853
+    },
+    "Dagger": {
+     "Bob": 1.0
+    },
+    "Dining Room": {
+     "Alice": 0.454831,
+     "Bob": 0.169849,
+     "Cara": 0.27679,
+     "envelope": 0.09853
+    },
+    "Hall": {
+     "Me": 1.0
+    },
+    "Kitchen": {
+     "Alice": 0.444591,
+     "Cara": 0.469607,
+     "envelope": 0.085802
+    },
+    "Lead Pipe": {
+     "Bob": 0.281691,
+     "envelope": 0.718309
+    },
+    "Library": {
+     "Alice": 1.0
+    },
+    "Lounge": {
+     "Bob": 0.309853,
+     "Cara": 0.500914,
+     "envelope": 0.189233
+    },
+    "Miss Scarlet": {
+     "Me": 1.0
+    },
+    "Mr. Green": {
+     "Alice": 0.448906,
+     "Bob": 0.168971,
+     "Cara": 0.274011,
+     "envelope": 0.108112
+    },
+    "Mrs. Peacock": {
+     "Alice": 0.441372,
+     "Cara": 0.464853,
+     "envelope": 0.093775
+    },
+    "Mrs. White": {
+     "Alice": 0.448906,
+     "Bob": 0.168971,
+     "Cara": 0.274011,
+     "envelope": 0.108112
+    },
+    "Prof. Plum": {
+     "Bob": 0.305098,
+     "Cara": 0.48548,
+     "envelope": 0.209421
+    },
+    "Revolver": {
+     "Alice": 0.427328,
+     "Cara": 0.442177,
+     "envelope": 0.130495
+    },
+    "Rope": {
+     "Me": 1.0
+    },
+    "Study": {
+     "Me": 1.0
+    },
+    "Wrench": {
+     "Alice": 0.424402,
+     "Bob": 0.165825,
+     "Cara": 0.258577,
+     "envelope": 0.151196
+    }
+   },
+   "certain_holder": {
+    "Candlestick": "Me",
+    "Dagger": "Bob",
+    "Hall": "Me",
+    "Library": "Alice",
+    "Miss Scarlet": "Me",
+    "Rope": "Me",
+    "Study": "Me"
+   },
+   "deductions": [],
+   "best": [
+    "Col. Mustard",
+    "Lead Pipe",
+    "Ballroom"
+   ],
+   "best_prob": 0.1141,
+   "accuse": false,
+   "suggestions": [
+    {
+     "room": "Ballroom",
+     "score": 1.0
+    },
+    {
+     "room": "Billiard Room",
+     "score": 1.0
+    },
+    {
+     "room": "Conservatory",
+     "score": 1.0
+    }
+   ],
+   "threat": {
+    "opponents": {
+     "Alice": {
+      "n_possible": 79,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 2
+     },
+     "Bob": {
+      "n_possible": 113,
+      "p_win_next_turn": 0.5,
+      "unrefuted": true,
+      "repeat_suggestion": false,
+      "known_cards": 1
+     },
+     "Cara": {
+      "n_possible": 102,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 0
+     }
+    },
+    "max_threat": 0.5,
+    "most_dangerous": "Bob",
+    "p_any_wins_before_my_turn": 0.5
+   },
+   "advice_first": "89 candidate solutions remain; most likely: Col. Mustard / Lead Pipe / Ballroom at p=0.11."
+  }
+ },
+ "solved_deal": {
+  "session": {
+   "edition": "classic",
+   "players": [
+    "Me",
+    "Alice",
+    "Bob",
+    "Cara"
+   ],
+   "me": "Me",
+   "my_cards": [
+    "Miss Scarlet",
+    "Rope",
+    "Hall",
+    "Study",
+    "Candlestick"
+   ],
+   "faceup": [],
+   "observations": [
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Col. Mustard",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Dagger",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Lounge",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Library",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Mrs. White",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Lead Pipe",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Kitchen",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Ballroom",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Mr. Green",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Revolver",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Conservatory",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Billiard Room",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Prof. Plum",
+     "has": true
+    }
+   ]
+  },
+  "expected": {
+   "hand_sizes": {
+    "Me": 5,
+    "Alice": 5,
+    "Bob": 4,
+    "Cara": 4
+   },
+   "ok": true,
+   "consistent": true,
+   "exact": true,
+   "n_possible": 1,
+   "combos": {
+    "Mrs. Peacock | Wrench | Dining Room": 1.0
+   },
+   "card_probs": {
+    "Ballroom": 0.0,
+    "Billiard Room": 0.0,
+    "Candlestick": 0.0,
+    "Col. Mustard": 0.0,
+    "Conservatory": 0.0,
+    "Dagger": 0.0,
+    "Dining Room": 1.0,
+    "Hall": 0.0,
+    "Kitchen": 0.0,
+    "Lead Pipe": 0.0,
+    "Library": 0.0,
+    "Lounge": 0.0,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.0,
+    "Mrs. Peacock": 1.0,
+    "Mrs. White": 0.0,
+    "Prof. Plum": 0.0,
+    "Revolver": 0.0,
+    "Rope": 0.0,
+    "Study": 0.0,
+    "Wrench": 1.0
+   },
+   "holder_probs": {
+    "Ballroom": {
+     "Bob": 1.0
+    },
+    "Billiard Room": {
+     "Cara": 1.0
+    },
+    "Candlestick": {
+     "Me": 1.0
+    },
+    "Col. Mustard": {
+     "Alice": 1.0
+    },
+    "Conservatory": {
+     "Cara": 1.0
+    },
+    "Dagger": {
+     "Alice": 1.0
+    },
+    "Dining Room": {
+     "envelope": 1.0
+    },
+    "Hall": {
+     "Me": 1.0
+    },
+    "Kitchen": {
+     "Bob": 1.0
+    },
+    "Lead Pipe": {
+     "Bob": 1.0
+    },
+    "Library": {
+     "Alice": 1.0
+    },
+    "Lounge": {
+     "Alice": 1.0
+    },
+    "Miss Scarlet": {
+     "Me": 1.0
+    },
+    "Mr. Green": {
+     "Bob": 1.0
+    },
+    "Mrs. Peacock": {
+     "envelope": 1.0
+    },
+    "Mrs. White": {
+     "Alice": 1.0
+    },
+    "Prof. Plum": {
+     "Cara": 1.0
+    },
+    "Revolver": {
+     "Cara": 1.0
+    },
+    "Rope": {
+     "Me": 1.0
+    },
+    "Study": {
+     "Me": 1.0
+    },
+    "Wrench": {
+     "envelope": 1.0
+    }
+   },
+   "certain_holder": {
+    "Ballroom": "Bob",
+    "Billiard Room": "Cara",
+    "Candlestick": "Me",
+    "Col. Mustard": "Alice",
+    "Conservatory": "Cara",
+    "Dagger": "Alice",
+    "Dining Room": "envelope",
+    "Hall": "Me",
+    "Kitchen": "Bob",
+    "Lead Pipe": "Bob",
+    "Library": "Alice",
+    "Lounge": "Alice",
+    "Miss Scarlet": "Me",
+    "Mr. Green": "Bob",
+    "Mrs. Peacock": "envelope",
+    "Mrs. White": "Alice",
+    "Prof. Plum": "Cara",
+    "Revolver": "Cara",
+    "Rope": "Me",
+    "Study": "Me",
+    "Wrench": "envelope"
+   },
+   "deductions": [
+    "Dining Room is in the envelope",
+    "Mrs. Peacock is in the envelope",
+    "Wrench is in the envelope",
+    "SOLVED: Mrs. Peacock / Wrench / Dining Room"
+   ],
+   "best": [
+    "Mrs. Peacock",
+    "Wrench",
+    "Dining Room"
+   ],
+   "best_prob": 1.0,
+   "accuse": true,
+   "suggestions": [
+    {
+     "room": "Dining Room",
+     "score": 1.0
+    },
+    {
+     "room": "Ballroom",
+     "score": 0.833
+    },
+    {
+     "room": "Billiard Room",
+     "score": 0.833
+    }
+   ],
+   "threat": {
+    "opponents": {
+     "Alice": {
+      "n_possible": 140,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 5
+     },
+     "Bob": {
+      "n_possible": 175,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 4
+     },
+     "Cara": {
+      "n_possible": 175,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 4
+     }
+    },
+    "max_threat": 0.0,
+    "most_dangerous": null,
+    "p_any_wins_before_my_turn": 0.0
+   },
+   "advice_first": "SOLVED - the envelope must be Mrs. Peacock / Wrench / Dining Room. Accuse on your turn."
+  }
+ },
+ "modern_faceup_sixplayers": {
+  "session": {
+   "edition": "modern",
+   "players": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "me": "C",
+   "my_cards": [
+    "Dr. Orchid",
+    "Wrench",
+    "Library"
+   ],
+   "faceup": [],
+   "observations": [
+    {
+     "type": "suggestion",
+     "suggester": "A",
+     "suspect": "Miss Scarlet",
+     "weapon": "Rope",
+     "room": "Hall",
+     "disprover": "D"
+    },
+    {
+     "type": "suggestion",
+     "suggester": "B",
+     "suspect": "Miss Scarlet",
+     "weapon": "Rope",
+     "room": "Study",
+     "disprover": "E"
+    },
+    {
+     "type": "suggestion",
+     "suggester": "C",
+     "suspect": "Mr. Green",
+     "weapon": "Revolver",
+     "room": "Kitchen",
+     "disprover": "F",
+     "shown_card": "Revolver"
+    },
+    {
+     "type": "suggestion",
+     "suggester": "D",
+     "suspect": "Mrs. Peacock",
+     "weapon": "Candlestick",
+     "room": "Ballroom",
+     "disprover": null
+    },
+    {
+     "type": "fact",
+     "player": "B",
+     "card": "Lounge",
+     "has": false
+    }
+   ]
+  },
+  "expected": {
+   "hand_sizes": {
+    "A": 3,
+    "B": 3,
+    "C": 3,
+    "D": 3,
+    "E": 3,
+    "F": 3
+   },
+   "ok": true,
+   "consistent": true,
+   "exact": true,
+   "n_possible": 68,
+   "combos": {
+    "Col. Mustard | Candlestick | Ballroom": 0.036704,
+    "Col. Mustard | Candlestick | Billiard Room": 0.004924,
+    "Col. Mustard | Candlestick | Conservatory": 0.004924,
+    "Col. Mustard | Candlestick | Dining Room": 0.004924,
+    "Col. Mustard | Candlestick | Kitchen": 0.006299,
+    "Col. Mustard | Candlestick | Lounge": 0.007163,
+    "Col. Mustard | Candlestick | Study": 0.004261,
+    "Col. Mustard | Dagger | Ballroom": 0.004924,
+    "Col. Mustard | Lead Pipe | Ballroom": 0.004924,
+    "Col. Mustard | Rope | Ballroom": 0.005424,
+    "Miss Scarlet | Candlestick | Ballroom": 0.045597,
+    "Miss Scarlet | Candlestick | Billiard Room": 0.005424,
+    "Miss Scarlet | Candlestick | Conservatory": 0.005424,
+    "Miss Scarlet | Candlestick | Dining Room": 0.005424,
+    "Miss Scarlet | Candlestick | Kitchen": 0.006935,
+    "Miss Scarlet | Candlestick | Lounge": 0.00763,
+    "Miss Scarlet | Candlestick | Study": 0.003734,
+    "Miss Scarlet | Dagger | Ballroom": 0.005424,
+    "Miss Scarlet | Lead Pipe | Ballroom": 0.005424,
+    "Miss Scarlet | Rope | Ballroom": 0.003734,
+    "Mr. Green | Candlestick | Ballroom": 0.05346,
+    "Mr. Green | Candlestick | Billiard Room": 0.006299,
+    "Mr. Green | Candlestick | Conservatory": 0.006299,
+    "Mr. Green | Candlestick | Dining Room": 0.006299,
+    "Mr. Green | Candlestick | Kitchen": 0.007839,
+    "Mr. Green | Candlestick | Lounge": 0.00937,
+    "Mr. Green | Candlestick | Study": 0.005404,
+    "Mr. Green | Dagger | Ballroom": 0.006299,
+    "Mr. Green | Lead Pipe | Ballroom": 0.006299,
+    "Mr. Green | Rope | Ballroom": 0.006935,
+    "Mrs. Peacock | Candlestick | Ballroom": 0.153537,
+    "Mrs. Peacock | Candlestick | Billiard Room": 0.036704,
+    "Mrs. Peacock | Candlestick | Conservatory": 0.036704,
+    "Mrs. Peacock | Candlestick | Dining Room": 0.036704,
+    "Mrs. Peacock | Candlestick | Kitchen": 0.05346,
+    "Mrs. Peacock | Candlestick | Lounge": 0.050143,
+    "Mrs. Peacock | Candlestick | Study": 0.035995,
+    "Mrs. Peacock | Dagger | Ballroom": 0.036704,
+    "Mrs. Peacock | Dagger | Billiard Room": 0.004924,
+    "Mrs. Peacock | Dagger | Conservatory": 0.004924,
+    "Mrs. Peacock | Dagger | Dining Room": 0.004924,
+    "Mrs. Peacock | Dagger | Kitchen": 0.006299,
+    "Mrs. Peacock | Dagger | Lounge": 0.007163,
+    "Mrs. Peacock | Dagger | Study": 0.004261,
+    "Mrs. Peacock | Lead Pipe | Ballroom": 0.036704,
+    "Mrs. Peacock | Lead Pipe | Billiard Room": 0.004924,
+    "Mrs. Peacock | Lead Pipe | Conservatory": 0.004924,
+    "Mrs. Peacock | Lead Pipe | Dining Room": 0.004924,
+    "Mrs. Peacock | Lead Pipe | Kitchen": 0.006299,
+    "Mrs. Peacock | Lead Pipe | Lounge": 0.007163,
+    "Mrs. Peacock | Lead Pipe | Study": 0.004261,
+    "Mrs. Peacock | Rope | Ballroom": 0.045597,
+    "Mrs. Peacock | Rope | Billiard Room": 0.005424,
+    "Mrs. Peacock | Rope | Conservatory": 0.005424,
+    "Mrs. Peacock | Rope | Dining Room": 0.005424,
+    "Mrs. Peacock | Rope | Kitchen": 0.006935,
+    "Mrs. Peacock | Rope | Lounge": 0.00763,
+    "Mrs. Peacock | Rope | Study": 0.003734,
+    "Prof. Plum | Candlestick | Ballroom": 0.036704,
+    "Prof. Plum | Candlestick | Billiard Room": 0.004924,
+    "Prof. Plum | Candlestick | Conservatory": 0.004924,
+    "Prof. Plum | Candlestick | Dining Room": 0.004924,
+    "Prof. Plum | Candlestick | Kitchen": 0.006299,
+    "Prof. Plum | Candlestick | Lounge": 0.007163,
+    "Prof. Plum | Candlestick | Study": 0.004261,
+    "Prof. Plum | Dagger | Ballroom": 0.004924,
+    "Prof. Plum | Lead Pipe | Ballroom": 0.004924,
+    "Prof. Plum | Rope | Ballroom": 0.005424
+   },
+   "card_probs": {
+    "Ballroom": 0.509665,
+    "Billiard Room": 0.073545,
+    "Candlestick": 0.716781,
+    "Col. Mustard": 0.084469,
+    "Conservatory": 0.073545,
+    "Dagger": 0.090767,
+    "Dining Room": 0.073545,
+    "Dr. Orchid": 0.0,
+    "Hall": 0.0,
+    "Kitchen": 0.100362,
+    "Lead Pipe": 0.090767,
+    "Library": 0.0,
+    "Lounge": 0.103427,
+    "Miss Scarlet": 0.09475,
+    "Mr. Green": 0.1145,
+    "Mrs. Peacock": 0.621813,
+    "Prof. Plum": 0.084469,
+    "Revolver": 0.0,
+    "Rope": 0.101684,
+    "Study": 0.065911,
+    "Wrench": 0.0
+   },
+   "holder_probs": {
+    "Ballroom": {
+     "D": 0.490335,
+     "envelope": 0.509665
+    },
+    "Billiard Room": {
+     "A": 0.206933,
+     "B": 0.279319,
+     "D": 0.101115,
+     "E": 0.201132,
+     "F": 0.137956,
+     "envelope": 0.073545
+    },
+    "Candlestick": {
+     "D": 0.283219,
+     "envelope": 0.716781
+    },
+    "Col. Mustard": {
+     "A": 0.204281,
+     "B": 0.275615,
+     "D": 0.101115,
+     "E": 0.198333,
+     "F": 0.136188,
+     "envelope": 0.084469
+    },
+    "Conservatory": {
+     "A": 0.206933,
+     "B": 0.279319,
+     "D": 0.101115,
+     "E": 0.201132,
+     "F": 0.137956,
+     "envelope": 0.073545
+    },
+    "Dagger": {
+     "A": 0.202721,
+     "B": 0.273292,
+     "D": 0.101115,
+     "E": 0.196958,
+     "F": 0.135147,
+     "envelope": 0.090767
+    },
+    "Dining Room": {
+     "A": 0.206933,
+     "B": 0.279319,
+     "D": 0.101115,
+     "E": 0.201132,
+     "F": 0.137956,
+     "envelope": 0.073545
+    },
+    "Dr. Orchid": {
+     "C": 1.0
+    },
+    "Hall": {
+     "D": 1.0
+    },
+    "Kitchen": {
+     "A": 0.295968,
+     "B": 0.406357,
+     "F": 0.197312,
+     "envelope": 0.100362
+    },
+    "Lead Pipe": {
+     "A": 0.202721,
+     "B": 0.273292,
+     "D": 0.101115,
+     "E": 0.196958,
+     "F": 0.135147,
+     "envelope": 0.090767
+    },
+    "Library": {
+     "C": 1.0
+    },
+    "Lounge": {
+     "A": 0.284567,
+     "D": 0.140456,
+     "E": 0.281837,
+     "F": 0.189712,
+     "envelope": 0.103427
+    },
+    "Miss Scarlet": {
+     "A": 0.248078,
+     "E": 0.491786,
+     "F": 0.165386,
+     "envelope": 0.09475
+    },
+    "Mr. Green": {
+     "A": 0.291416,
+     "B": 0.399807,
+     "F": 0.194277,
+     "envelope": 0.1145
+    },
+    "Mrs. Peacock": {
+     "D": 0.378187,
+     "envelope": 0.621813
+    },
+    "Prof. Plum": {
+     "A": 0.204281,
+     "B": 0.275615,
+     "D": 0.101115,
+     "E": 0.198333,
+     "F": 0.136188,
+     "envelope": 0.084469
+    },
+    "Revolver": {
+     "F": 1.0
+    },
+    "Rope": {
+     "A": 0.246756,
+     "E": 0.487055,
+     "F": 0.164504,
+     "envelope": 0.101684
+    },
+    "Study": {
+     "A": 0.198409,
+     "B": 0.258065,
+     "E": 0.345343,
+     "F": 0.132273,
+     "envelope": 0.065911
+    },
+    "Wrench": {
+     "C": 1.0
+    }
+   },
+   "certain_holder": {
+    "Dr. Orchid": "C",
+    "Hall": "D",
+    "Library": "C",
+    "Revolver": "F",
+    "Wrench": "C"
+   },
+   "deductions": [
+    "D must hold Hall"
+   ],
+   "best": [
+    "Mrs. Peacock",
+    "Candlestick",
+    "Ballroom"
+   ],
+   "best_prob": 0.1535,
+   "accuse": false,
+   "suggestions": [
+    {
+     "room": "Ballroom",
+     "score": 1.0
+    },
+    {
+     "room": "Billiard Room",
+     "score": 1.0
+    },
+    {
+     "room": "Conservatory",
+     "score": 1.0
+    }
+   ],
+   "threat": {
+    "opponents": {
+     "A": {
+      "n_possible": 48,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 1
+     },
+     "B": {
+      "n_possible": 42,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 1
+     },
+     "D": {
+      "n_possible": 64,
+      "p_win_next_turn": 0.5,
+      "unrefuted": true,
+      "repeat_suggestion": false,
+      "known_cards": 1
+     },
+     "E": {
+      "n_possible": 48,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 0
+     },
+     "F": {
+      "n_possible": 56,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 1
+     }
+    },
+    "max_threat": 0.5,
+    "most_dangerous": "D",
+    "p_any_wins_before_my_turn": 0.5
+   },
+   "advice_first": "68 candidate solutions remain; most likely: Mrs. Peacock / Candlestick / Ballroom at p=0.15."
+  }
+ },
+ "contradiction": {
+  "session": {
+   "edition": "classic",
+   "players": [
+    "Me",
+    "Alice",
+    "Bob",
+    "Cara"
+   ],
+   "me": "Me",
+   "my_cards": [
+    "Miss Scarlet",
+    "Rope",
+    "Hall",
+    "Study",
+    "Candlestick"
+   ],
+   "faceup": [],
+   "observations": [
+    {
+     "type": "suggestion",
+     "suggester": "Me",
+     "suspect": "Prof. Plum",
+     "weapon": "Dagger",
+     "room": "Lounge",
+     "disprover": "Bob",
+     "shown_card": "Dagger"
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Prof. Plum",
+     "has": true
+    }
+   ]
+  },
+  "expected": {
+   "hand_sizes": {
+    "Me": 5,
+    "Alice": 5,
+    "Bob": 4,
+    "Cara": 4
+   },
+   "ok": true,
+   "consistent": false,
+   "exact": true,
+   "n_possible": 84,
+   "combos": {
+    "Col. Mustard | Lead Pipe | Ballroom": 0.011006,
+    "Col. Mustard | Lead Pipe | Billiard Room": 0.011006,
+    "Col. Mustard | Lead Pipe | Conservatory": 0.011006,
+    "Col. Mustard | Lead Pipe | Dining Room": 0.011006,
+    "Col. Mustard | Lead Pipe | Kitchen": 0.011006,
+    "Col. Mustard | Lead Pipe | Library": 0.011006,
+    "Col. Mustard | Lead Pipe | Lounge": 0.017296,
+    "Col. Mustard | Revolver | Ballroom": 0.011006,
+    "Col. Mustard | Revolver | Billiard Room": 0.011006,
+    "Col. Mustard | Revolver | Conservatory": 0.011006,
+    "Col. Mustard | Revolver | Dining Room": 0.011006,
+    "Col. Mustard | Revolver | Kitchen": 0.011006,
+    "Col. Mustard | Revolver | Library": 0.011006,
+    "Col. Mustard | Revolver | Lounge": 0.017296,
+    "Col. Mustard | Wrench | Ballroom": 0.011006,
+    "Col. Mustard | Wrench | Billiard Room": 0.011006,
+    "Col. Mustard | Wrench | Conservatory": 0.011006,
+    "Col. Mustard | Wrench | Dining Room": 0.011006,
+    "Col. Mustard | Wrench | Kitchen": 0.011006,
+    "Col. Mustard | Wrench | Library": 0.011006,
+    "Col. Mustard | Wrench | Lounge": 0.017296,
+    "Mr. Green | Lead Pipe | Ballroom": 0.011006,
+    "Mr. Green | Lead Pipe | Billiard Room": 0.011006,
+    "Mr. Green | Lead Pipe | Conservatory": 0.011006,
+    "Mr. Green | Lead Pipe | Dining Room": 0.011006,
+    "Mr. Green | Lead Pipe | Kitchen": 0.011006,
+    "Mr. Green | Lead Pipe | Library": 0.011006,
+    "Mr. Green | Lead Pipe | Lounge": 0.017296,
+    "Mr. Green | Revolver | Ballroom": 0.011006,
+    "Mr. Green | Revolver | Billiard Room": 0.011006,
+    "Mr. Green | Revolver | Conservatory": 0.011006,
+    "Mr. Green | Revolver | Dining Room": 0.011006,
+    "Mr. Green | Revolver | Kitchen": 0.011006,
+    "Mr. Green | Revolver | Library": 0.011006,
+    "Mr. Green | Revolver | Lounge": 0.017296,
+    "Mr. Green | Wrench | Ballroom": 0.011006,
+    "Mr. Green | Wrench | Billiard Room": 0.011006,
+    "Mr. Green | Wrench | Conservatory": 0.011006,
+    "Mr. Green | Wrench | Dining Room": 0.011006,
+    "Mr. Green | Wrench | Kitchen": 0.011006,
+    "Mr. Green | Wrench | Library": 0.011006,
+    "Mr. Green | Wrench | Lounge": 0.017296,
+    "Mrs. Peacock | Lead Pipe | Ballroom": 0.011006,
+    "Mrs. Peacock | Lead Pipe | Billiard Room": 0.011006,
+    "Mrs. Peacock | Lead Pipe | Conservatory": 0.011006,
+    "Mrs. Peacock | Lead Pipe | Dining Room": 0.011006,
+    "Mrs. Peacock | Lead Pipe | Kitchen": 0.011006,
+    "Mrs. Peacock | Lead Pipe | Library": 0.011006,
+    "Mrs. Peacock | Lead Pipe | Lounge": 0.017296,
+    "Mrs. Peacock | Revolver | Ballroom": 0.011006,
+    "Mrs. Peacock | Revolver | Billiard Room": 0.011006,
+    "Mrs. Peacock | Revolver | Conservatory": 0.011006,
+    "Mrs. Peacock | Revolver | Dining Room": 0.011006,
+    "Mrs. Peacock | Revolver | Kitchen": 0.011006,
+    "Mrs. Peacock | Revolver | Library": 0.011006,
+    "Mrs. Peacock | Revolver | Lounge": 0.017296,
+    "Mrs. Peacock | Wrench | Ballroom": 0.011006,
+    "Mrs. Peacock | Wrench | Billiard Room": 0.011006,
+    "Mrs. Peacock | Wrench | Conservatory": 0.011006,
+    "Mrs. Peacock | Wrench | Dining Room": 0.011006,
+    "Mrs. Peacock | Wrench | Kitchen": 0.011006,
+    "Mrs. Peacock | Wrench | Library": 0.011006,
+    "Mrs. Peacock | Wrench | Lounge": 0.017296,
+    "Mrs. White | Lead Pipe | Ballroom": 0.011006,
+    "Mrs. White | Lead Pipe | Billiard Room": 0.011006,
+    "Mrs. White | Lead Pipe | Conservatory": 0.011006,
+    "Mrs. White | Lead Pipe | Dining Room": 0.011006,
+    "Mrs. White | Lead Pipe | Kitchen": 0.011006,
+    "Mrs. White | Lead Pipe | Library": 0.011006,
+    "Mrs. White | Lead Pipe | Lounge": 0.017296,
+    "Mrs. White | Revolver | Ballroom": 0.011006,
+    "Mrs. White | Revolver | Billiard Room": 0.011006,
+    "Mrs. White | Revolver | Conservatory": 0.011006,
+    "Mrs. White | Revolver | Dining Room": 0.011006,
+    "Mrs. White | Revolver | Kitchen": 0.011006,
+    "Mrs. White | Revolver | Library": 0.011006,
+    "Mrs. White | Revolver | Lounge": 0.017296,
+    "Mrs. White | Wrench | Ballroom": 0.011006,
+    "Mrs. White | Wrench | Billiard Room": 0.011006,
+    "Mrs. White | Wrench | Conservatory": 0.011006,
+    "Mrs. White | Wrench | Dining Room": 0.011006,
+    "Mrs. White | Wrench | Kitchen": 0.011006,
+    "Mrs. White | Wrench | Library": 0.011006,
+    "Mrs. White | Wrench | Lounge": 0.017296
+   },
+   "card_probs": {
+    "Ballroom": 0.132075,
+    "Billiard Room": 0.132075,
+    "Candlestick": 0.0,
+    "Col. Mustard": 0.25,
+    "Conservatory": 0.132075,
+    "Dagger": 0.0,
+    "Dining Room": 0.132075,
+    "Hall": 0.0,
+    "Kitchen": 0.132075,
+    "Lead Pipe": 0.333333,
+    "Library": 0.132075,
+    "Lounge": 0.207547,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.25,
+    "Mrs. Peacock": 0.25,
+    "Mrs. White": 0.25,
+    "Prof. Plum": 0.0,
+    "Revolver": 0.333333,
+    "Rope": 0.0,
+    "Study": 0.0,
+    "Wrench": 0.333333
+   },
+   "holder_probs": {
+    "Ballroom": {
+     "Alice": 0.339623,
+     "Bob": 0.226415,
+     "Cara": 0.301887,
+     "envelope": 0.132075
+    },
+    "Billiard Room": {
+     "Alice": 0.339623,
+     "Bob": 0.226415,
+     "Cara": 0.301887,
+     "envelope": 0.132075
+    },
+    "Candlestick": {
+     "Me": 1.0
+    },
+    "Col. Mustard": {
+     "Alice": 0.29434,
+     "Bob": 0.195283,
+     "Cara": 0.260377,
+     "envelope": 0.25
+    },
+    "Conservatory": {
+     "Alice": 0.339623,
+     "Bob": 0.226415,
+     "Cara": 0.301887,
+     "envelope": 0.132075
+    },
+    "Dagger": {
+     "Bob": 1.0
+    },
+    "Dining Room": {
+     "Alice": 0.339623,
+     "Bob": 0.226415,
+     "Cara": 0.301887,
+     "envelope": 0.132075
+    },
+    "Hall": {
+     "Me": 1.0
+    },
+    "Kitchen": {
+     "Alice": 0.339623,
+     "Bob": 0.226415,
+     "Cara": 0.301887,
+     "envelope": 0.132075
+    },
+    "Lead Pipe": {
+     "Alice": 0.261635,
+     "Bob": 0.173585,
+     "Cara": 0.231447,
+     "envelope": 0.333333
+    },
+    "Library": {
+     "Alice": 0.339623,
+     "Bob": 0.226415,
+     "Cara": 0.301887,
+     "envelope": 0.132075
+    },
+    "Lounge": {
+     "Bob": 0.339623,
+     "Cara": 0.45283,
+     "envelope": 0.207547
+    },
+    "Miss Scarlet": {
+     "Me": 1.0
+    },
+    "Mr. Green": {
+     "Alice": 0.29434,
+     "Bob": 0.195283,
+     "Cara": 0.260377,
+     "envelope": 0.25
+    },
+    "Mrs. Peacock": {
+     "Alice": 0.29434,
+     "Bob": 0.195283,
+     "Cara": 0.260377,
+     "envelope": 0.25
+    },
+    "Mrs. White": {
+     "Alice": 0.29434,
+     "Bob": 0.195283,
+     "Cara": 0.260377,
+     "envelope": 0.25
+    },
+    "Prof. Plum": {
+     "Alice": 1.0
+    },
+    "Revolver": {
+     "Alice": 0.261635,
+     "Bob": 0.173585,
+     "Cara": 0.231447,
+     "envelope": 0.333333
+    },
+    "Rope": {
+     "Me": 1.0
+    },
+    "Study": {
+     "Me": 1.0
+    },
+    "Wrench": {
+     "Alice": 0.261635,
+     "Bob": 0.173585,
+     "Cara": 0.231447,
+     "envelope": 0.333333
+    }
+   },
+   "certain_holder": {
+    "Candlestick": "Me",
+    "Dagger": "Bob",
+    "Hall": "Me",
+    "Miss Scarlet": "Me",
+    "Prof. Plum": "Alice",
+    "Rope": "Me",
+    "Study": "Me"
+   },
+   "deductions": [],
+   "best": null,
+   "best_prob": 0.0,
+   "accuse": false,
+   "suggestions": [],
+   "threat": {
+    "opponents": {},
+    "max_threat": 0.0,
+    "most_dangerous": null,
+    "p_any_wins_before_my_turn": 0.0
+   },
+   "advice_first": "Your observations are contradictory - at least one entry must be wrong:"
+  }
+ }
+}

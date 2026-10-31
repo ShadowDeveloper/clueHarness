@@ -45,6 +45,7 @@ clue play --players baseline:expert,baseline,baseline,baseline,baseline,baseline
 | [docs/observation_schema.md](docs/observation_schema.md) | every field an agent sees, with a real example |
 | [docs/replay_format.md](docs/replay_format.md) | JSONL records, redaction rules, hash, checkpoints |
 | [docs/tools.md](docs/tools.md) | symbolic deduction tools and their algorithms |
+| [docs/analyst.md](docs/analyst.md) | `clue analyze`: probabilities + coaching for a real-table game (TUI, CLI, web, [GitHub Pages](https://shadowdeveloper.github.io/clueHarness/)) |
 | [docs/strategies.md](docs/strategies.md) | writing and measuring strategy prompts |
 | [docs/extending.md](docs/extending.md) | new provider / agent / rule variant / metric / UI |
 | [docs/pondering.md](docs/pondering.md) | parallel thinking between turns (UCI-style ponder): lifecycle, interrupts, isolation |
@@ -86,6 +87,12 @@ clue live-eval --model nvidia/nemotron-3-super-120b-a12b:free --games 5 --max-us
 # any compatible model/API: Chat or legacy Completions, Responses, or Anthropic Messages
 # (set OPENAI_API_KEY or CLUE_LLM_API_KEY first; --api-key and YAML llm.api_key are also supported)
 clue play --players llm:bayesian:gpt-4o-mini,baseline,baseline --provider openai --api responses
+
+# playing Clue at a real table? type in your cards + what you observe, get probabilities + coaching
+# (solver, hard deductions, opponent threat, suggestion EV). Also on the web UI at /analyze and, fully
+# client-side, at https://shadowdeveloper.github.io/clueHarness/
+clue analyze                               # full-screen TUI with a setup wizard; ctrl+s saves the session
+clue analyze mygame.json --ui cli          # one-shot report for a saved session (add --out report.json)
 
 clue replay replays/game_7.jsonl           # pretty-print a replay
 clue replay replays/game_7.jsonl --tui     # step through it on the board (n/b, space, v = viewer redaction)
