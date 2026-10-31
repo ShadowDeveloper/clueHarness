@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:pages": "tsc --noEmit && VITE_STATIC=1 vite build --base \"${PAGES_BASE:-/}\" --outDir dist && cp dist/index.html dist/404.html",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "preview": "vite preview"
