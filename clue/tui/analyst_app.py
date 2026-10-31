@@ -19,17 +19,20 @@ from textual.widgets import Button, DataTable, Footer, Header, Input, OptionList
 from textual.widgets.option_list import Option
 
 from clue.rules.cards import EDITIONS, edition_def, rooms, suspects, weapons
-from clue.tools.analyst import AnalysisSession, FactObservation, SuggestionObservation, analyze
+from clue.tools.analyst import AnalysisSession, FactObservation, SuggestionObservation, analyze, display_name
 
 NOBODY = "(nobody could disprove)"
 UNSEEN = "(card not seen)"
 
 
-def observation_label(ob: SuggestionObservation | FactObservation) -> str:
+def observation_label(ob: SuggestionObservation | FactObservation, names: dict[str, str] | None = None) -> str:
+    def lab(c: str) -> str:
+        return ((names or {}).get(c) or c).strip() or c
+
     if isinstance(ob, FactObservation):
-        return f"fact: {ob.player} {'holds' if ob.has else 'lacks'} {ob.card}"
-    tail = f"{ob.disprover} showed {ob.shown_card}" if ob.shown_card else (f"{ob.disprover} disproved" if ob.disprover else "nobody disproved")
-    return f"{ob.suggester}: {ob.suspect} / {ob.weapon} / {ob.room} -> {tail}"
+        return f"fact: {ob.player} {'holds' if ob.has else 'lacks'} {lab(ob.card)}"
+    tail = f"{ob.disprover} showed {lab(ob.shown_card)}" if ob.shown_card else (f"{ob.disprover} disproved" if ob.disprover else "nobody disproved")
+    return f"{ob.suggester}: {lab(ob.suspect)} / {lab(ob.weapon)} / {lab(ob.room)} -> {tail}"
 
 
 class AnalystApp(App[None]):
@@ -61,6 +64,7 @@ class AnalystApp(App[None]):
         Binding("f", "add_fact", "Fact"),
         Binding("u", "undo", "Undo last"),
         Binding("e", "setup", "Edit setup"),
+        Binding("n", "rename", "Rename card"),
         Binding("ctrl+s", "save", "Save session"),
         Binding("escape", "cancel", "Back"),
         Binding("q", "quit_app", "Quit"),
@@ -118,6 +122,22 @@ class AnalystApp(App[None]):
     def _edition_cards(self) -> list[str]:
         ed = self.session.edition
         return list(suspects(ed)) + list(weapons(ed)) + list(rooms(ed))
+
+    def _lab(self, card: str) -> str:
+        """Display label for a canonical card (user renames, e.g. localisation)."""
+        return display_name(self.session, card)
+
+    def action_rename(self) -> None:
+        if not self.session.players:
+            self.action_setup()
+            return
+        self._flow_kind = "rename"
+        self._collect = {}
+        self._flow = [
+            {"key": "card", "title": "Rename which card? (how it is printed on YOUR copy of the game)", "options": "cards", "kind": "pick"},
+            {"key": "label", "title": "New name (leave empty to restore the standard name):", "kind": "input", "value": ""},
+        ]
+        self._next_step()
 
     def action_setup(self) -> None:
         self._flow_kind = "setup"
@@ -195,7 +215,8 @@ class AnalystApp(App[None]):
         if step["kind"] == "pick":
             opts = step["options"] if isinstance(step["options"], list) else self._dynamic_options(step["options"])
             choices.clear_options()
-            choices.add_options([Option(o, id=f"opt{i}") for i, o in enumerate(opts)])
+            deck = set(self._edition_cards())
+            choices.add_options([Option(self._lab(o) if o in deck else o, id=f"opt{i}") for i, o in enumerate(opts)])
             self._step["resolved"] = opts
             choices.highlighted = 0
             choices.focus()
@@ -203,10 +224,16 @@ class AnalystApp(App[None]):
             opts = step["options"] if isinstance(step["options"], list) else self._dynamic_options(step["options"])
             picked = set(getattr(self.session, str(step.get("selected")), []) or [])
             multi.clear_options()
-            multi.add_options([(o, o, o in picked) for o in opts])
+            deck = set(self._edition_cards())
+            multi.add_options([(self._lab(o) if o in deck else o, o, o in picked) for o in opts])
             multi.focus()
         else:
-            inp.value = str(step.get("value", ""))
+            value = str(step.get("value", ""))
+            if self._flow_kind == "rename" and step["key"] == "label":
+                card = str(self._collect.get("card", ""))
+                cur = self._lab(card)
+                value = "" if cur == card else cur
+            inp.value = value
             inp.focus()
         self._status(f"{self._flow_kind}: {len(self._flow)} step(s) left - Enter/Confirm to continue, Esc to cancel")
 
@@ -229,9 +256,15 @@ class AnalystApp(App[None]):
                 )
             elif self._flow_kind == "fact":
                 self.session.observations.append(FactObservation(player=str(c["player"]), card=str(c["card"]), has=c["has"] == "holds the card"))
+            elif self._flow_kind == "rename":
+                card, label = str(c["card"]), str(c.get("label", "")).strip()
+                if not label or label == card:
+                    self.session.card_names.pop(card, None)
+                else:
+                    self.session.card_names[card] = label
         finally:
             self._flow_kind, self._step, self._flow = "", None, []
-            self.query_one("#entry_title", Static).update("[dim]s = add suggestion   f = add fact   u = undo   e = edit setup[/dim]")
+            self.query_one("#entry_title", Static).update("[dim]s = add suggestion   f = add fact   u = undo   n = rename card   e = edit setup[/dim]")
             self.query_one("#entry_choices", OptionList).clear_options()
             self.query_one("#entry_multi", SelectionList).clear_options()
             self.query_one("#entry_input", Input).display = False
@@ -258,8 +291,13 @@ class AnalystApp(App[None]):
     @on(Input.Submitted, "#entry_input")
     def _typed(self, ev: Input.Submitted) -> None:
         if self._step is not None and self._step["kind"] == "input":
-            names = [n.strip() for n in ev.value.split(",") if n.strip()]
-            self._advance(names)
+            self._advance(self._input_value(ev.value))
+
+    def _input_value(self, raw: str) -> Any:
+        """Input steps: the rename label is a raw string; the players step is a comma list."""
+        if self._step is not None and self._step["key"] == "label":
+            return raw.strip()
+        return [n.strip() for n in raw.split(",") if n.strip()]
 
     @on(Button.Pressed, "#b_confirm")
     def _confirm(self) -> None:
@@ -273,7 +311,7 @@ class AnalystApp(App[None]):
                 self._advance(self._step["resolved"][ol.highlighted])
         else:
             inp = self.query_one("#entry_input", Input)
-            self._advance([n.strip() for n in inp.value.split(",") if n.strip()])
+            self._advance(self._input_value(inp.value))
 
     @on(Button.Pressed, "#b_back")
     def action_cancel(self) -> None:
@@ -287,7 +325,7 @@ class AnalystApp(App[None]):
     def action_undo(self) -> None:
         if self.session.observations:
             dropped = self.session.observations.pop()
-            self._status(f"removed: {observation_label(dropped)}")
+            self._status(f"removed: {observation_label(dropped, self.session.card_names)}")
             self.recompute()
 
     def action_save(self) -> None:
@@ -313,16 +351,18 @@ class AnalystApp(App[None]):
         ed = edition_def(s.edition).label if s.edition in EDITIONS else s.edition
         lines = [
             f"[b]{ed}[/b] - {len(s.players)} players: " + ", ".join(f"[b]{p}[/b]" if p == s.me else p for p in s.players),
-            f"your hand ({len(s.my_cards)}): " + (", ".join(s.my_cards) or "[dim]none entered[/dim]"),
+            f"your hand ({len(s.my_cards)}): " + (", ".join(self._lab(c) for c in s.my_cards) or "[dim]none entered[/dim]"),
         ]
         if s.faceup:
-            lines.append("face-up: " + ", ".join(s.faceup))
+            lines.append("face-up: " + ", ".join(self._lab(c) for c in s.faceup))
+        if s.card_names:
+            lines.append(f"[dim]{len(s.card_names)} card(s) renamed (n to rename)[/dim]")
         self.query_one("#session", Static).update("\n".join(lines) if s.players else "[dim]press e to set up the session[/dim]")
 
     def _render_observations(self) -> None:
         ol = self.query_one("#observations", OptionList)
         ol.clear_options()
-        ol.add_options([Option(f"{i}. {observation_label(ob)}") for i, ob in enumerate(self.session.observations, 1)])
+        ol.add_options([Option(f"{i}. {observation_label(ob, self.session.card_names)}") for i, ob in enumerate(self.session.observations, 1)])
 
     def _render_report(self) -> None:
         table = self.query_one("#probs", DataTable)
@@ -358,10 +398,10 @@ class AnalystApp(App[None]):
             for card in cards:
                 env = env_probs.get(card, 0.0)
                 env_cell = f"[b yellow]{100 * env:.0f}[/b yellow]" if env >= 0.5 else (f"{100 * env:.0f}" if env > 0.0005 else "[dim].[/dim]")
-                table.add_row(card, env_cell, *[cell(card, p) for p in players])
+                table.add_row(self._lab(card), env_cell, *[cell(card, p) for p in players])
         sol = r["solution"]
         mark = "" if sol["exact"] else " [dim](estimated)[/dim]"
-        top = "\n".join(f"  {100 * p:5.1f}%  {combo}" for combo, p in list(sol["combos"].items())[:6])
+        top = "\n".join(f"  {100 * p:5.1f}%  {' | '.join(self._lab(c) for c in combo.split(' | '))}" for combo, p in list(sol["combos"].items())[:6])
         cand.update(f"[b]{sol['n_possible']}[/b] candidate(s){mark}\n{top}" if sol["n_possible"] else "[red]no consistent solution - an observation must be wrong[/red]")
         g = r["guide"]
         lines = [f"[b]{line}[/b]" if i == 0 else line for i, line in enumerate(g["advice"])]
@@ -370,13 +410,13 @@ class AnalystApp(App[None]):
             lines.extend(f" - {d}" for d in r["deductions"][:8])
         if g["suggestions"]:
             lines.append("\n[b]Best suggestions to make next[/b]:")
-            lines.extend(f" - {t['suspect']} + {t['weapon']} in {t['room']}  (score {t['score']:.2f})" for t in g["suggestions"])
+            lines.extend(f" - {self._lab(t['suspect'])} + {self._lab(t['weapon'])} in {self._lab(t['room'])}  (score {t['score']:.2f})" for t in g["suggestions"])
         th = r["threat"]
         if th["opponents"]:
             lines.append("\n[b]Opponent threat[/b]:")
             lines.extend(f" - {p}: ~{d['n_possible']} candidates left, p(win next) {d['p_win_next_turn']:.2f}" for p, d in th["opponents"].items())
         guide.update("\n".join(lines))
-        self._status(f"{len(self.session.observations)} observation(s) - s suggestion, f fact, u undo, ctrl+s save, q quit")
+        self._status(f"{len(self.session.observations)} observation(s) - s suggestion, f fact, n rename, u undo, ctrl+s save, q quit")
 
     def _status(self, msg: str) -> None:
         self.query_one("#status", Static).update(msg)

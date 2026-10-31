@@ -15,6 +15,11 @@ you type leaves the page).
 * the cards in your hand, plus any face-up cards dealt to nobody;
 * optional explicit `hand_sizes` (defaults to an even deal, with your seat pinned to the number of cards
   you entered — enter them explicitly for uneven house deals);
+* optional `card_names` display renames — canonical card → the name printed on *your* copy of the game
+  (localisations, house variants, "Rev. Green" vs "Mr. Green", …). Renames are purely cosmetic: the solver
+  and the session JSON always store canonical names, but every surface (TUI, CLI report, web page, guide
+  and deduction sentences) renders through the mapping. Validation rejects unknown cards, empty labels,
+  two cards sharing a label, and a label that still belongs to a different card;
 * a list of **observations**:
   * **suggestion** — who suggested which suspect/weapon/room, who disproved it (or nobody), and, when you
     were the suggester or the disprover, which card was shown. Players seated between the suggester and
@@ -47,9 +52,10 @@ clue analyze                      # setup wizard, then the live analyst screen
 clue analyze mygame.json          # resume a saved session (autosaved back to the same file)
 ```
 
-Keys: `s` add a suggestion, `f` add a fact, `u` undo the last observation, `e` edit the setup,
-`ctrl+s` save the session JSON, `q` quit. Every change re-runs the solver and refreshes the probability
-grid, candidate list, and guide.
+Keys: `s` add a suggestion, `f` add a fact, `u` undo the last observation, `n` rename a card (how it is
+printed on your copy; empty restores the standard name), `e` edit the setup, `ctrl+s` save the session
+JSON, `q` quit. Every change re-runs the solver and refreshes the probability grid, candidate list, and
+guide.
 
 ## Plain CLI / scripting
 
@@ -68,6 +74,7 @@ Session JSON shape (also what the TUI saves and the web page imports/exports):
   "my_cards": ["Miss Scarlet", "Rope", "Hall", "Study", "Candlestick"],
   "faceup": [],
   "hand_sizes": null,
+  "card_names": {"Lead Pipe": "Pipe", "Mrs. White": "Dr. Orchid"},
   "observations": [
     {"type": "suggestion", "suggester": "Me", "suspect": "Prof. Plum", "weapon": "Dagger",
      "room": "Lounge", "disprover": "Bob", "shown_card": "Dagger"},
@@ -91,7 +98,13 @@ the same page is deployed standalone to GitHub Pages by `.github/workflows/pages
 as the JSON above — the same files work in the TUI.
 
 `POST /api/analyze` (body = session JSON, optional `?threshold=`) returns the authoritative Python
-report for API users; `GET /api/docs` has the schema.
+report for API users; `GET /api/docs` has the schema. Structured report fields (combos, holders,
+marginals) stay canonical; the report's `card_names` echo lets clients label them, and the
+human-readable `deductions`/`advice` strings arrive already labelled.
+
+The page is **mobile-friendly** (it is the surface you would use at a real table): single-column layout,
+larger touch targets, and a horizontally scrollable probability grid with a sticky card column on
+phones. The **Rename cards** editor in the setup panel adapts the card names to your copy of the game.
 
 ## Guarantees and limits
 

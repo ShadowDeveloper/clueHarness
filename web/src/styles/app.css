@@ -220,3 +220,37 @@ h1, h2 { overflow-wrap: anywhere; }
 .coachbox { border-color: #3f7a5a; }
 .coachbox .lead { font-weight: 700; color: #e8f4e6; margin-bottom: 4px; }
 .coachbox .subhead { margin: 10px 0 3px; color: var(--brass); text-transform: uppercase; letter-spacing: 1px; font-size: 10.5px; }
+
+/* ---- Analyst: card renames + mobile ---- */
+.linkish { background: none; border: none; padding: 2px 0; color: var(--info); font-size: 12px; }
+.linkish:hover { color: var(--accent); }
+.rename-row select { max-width: 55%; }
+.scroll-x { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+.scroll-x .prob-table th { position: sticky; top: 0; background: var(--panel); z-index: 2; }
+.scroll-x .prob-table td.name, .scroll-x .prob-table th:first-child { position: sticky; left: 0; background: var(--panel); z-index: 1; max-width: 38vw; overflow: hidden; text-overflow: ellipsis; }
+
+/* Phones / small tablets: the analyst (and the nav) are the mobile-facing surfaces (GitHub Pages). */
+@media (max-width: 760px) {
+  :root { font-size: 14px; }
+  .nav { height: auto; min-height: 42px; flex-wrap: wrap; gap: 10px 14px; padding: 8px 12px; }
+  .page { padding: 10px; }
+  .page.grid { gap: 10px; }
+  .analyze-grid { grid-template-columns: 1fr; }
+  .panel { padding: 10px; }
+  /* touch targets */
+  .analyze-grid button { min-height: 38px; }
+  .analyze-grid .chip { min-height: 30px; padding: 4px 10px; font-size: 12.5px; }
+  .analyze-grid .obs-list .obs button, .analyze-grid .linkish { min-height: 30px; }
+  .analyze-grid select, .analyze-grid input:not([type="checkbox"]) { min-height: 38px; flex: 1 1 45%; }
+  .analyze-grid input[type="checkbox"] { width: 20px; height: 20px; }
+  .analyze-grid .row { row-gap: 6px; }
+  .obs-list { max-height: 200px; }
+  .prob-table { font-size: 12px; }
+  .prob-table td { padding: 3px 5px; }
+  .prob-table td.p { min-width: 34px; }
+  .bar { max-width: 70px; }
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .analyze-grid { grid-template-columns: 1fr 1fr; }
+  .analyze-grid > :first-child { grid-column: 1 / -1; }
+}

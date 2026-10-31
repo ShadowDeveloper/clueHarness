@@ -57,6 +57,30 @@ class AnalysisSession(BaseModel):
     faceup: list[str] = Field(default_factory=list)
     hand_sizes: dict[str, int] | None = None  # optional explicit sizes; defaults to an even deal
     observations: list[ObservationEvent] = Field(default_factory=list)
+    # Display renames: canonical card -> the name printed on YOUR copy of the game (localisation, house
+    # variants, "Rev. Green", ...). Purely cosmetic - the solver and the session always store canonical
+    # names; every UI (TUI, CLI, web) renders through this mapping.
+    card_names: dict[str, str] = Field(default_factory=dict)
+
+
+def display_name(session: AnalysisSession, card: str) -> str:
+    """The label to show for a canonical card (falls back to the canonical name)."""
+    return (session.card_names.get(card) or card).strip() or card
+
+
+def label_text(session: AnalysisSession, text: str) -> str:
+    """Rewrite canonical card names inside a human-readable sentence with the user's renames.
+
+    Card names are never substrings of one another within an edition, so longest-first whole-name
+    replacement is unambiguous (players named exactly like a card would also be rewritten - don't).
+    """
+    renames = {c: v.strip() for c, v in session.card_names.items() if v.strip() and v.strip() != c}
+    if not renames:
+        return text
+    import re
+
+    pattern = re.compile("|".join(re.escape(c) for c in sorted(renames, key=len, reverse=True)))
+    return pattern.sub(lambda m: renames[m.group(0)], text)
 
 
 def default_hand_sizes(session: AnalysisSession) -> dict[str, int]:
@@ -112,6 +136,23 @@ def validate_session(session: AnalysisSession) -> list[str]:
             errors.append(f"hand sizes must sum to {edition_def(ed).n_dealt - len(session.faceup)} (deck minus envelope and face-up)")
         elif session.me in session.hand_sizes and session.my_cards and session.hand_sizes[session.me] != len(session.my_cards):
             errors.append(f"hand_sizes[{session.me}] = {session.hand_sizes[session.me]} but you entered {len(session.my_cards)} cards")
+    if session.card_names:
+        seen_labels: dict[str, str] = {}
+        for card, label in session.card_names.items():
+            if card not in deck:
+                errors.append(f"card_names: {card!r} is not a {ed}-edition card")
+                continue
+            lab = label.strip()
+            if not lab:
+                errors.append(f"card_names: the label for {card!r} is empty")
+                continue
+            low = lab.lower()
+            if low in seen_labels and seen_labels[low] != card:
+                errors.append(f"card_names: two cards share the label {lab!r}")
+            seen_labels[low] = card
+            other = next((c for c in deck if c.lower() == low and c != card and session.card_names.get(c, c).strip().lower() == low), None)
+            if other is not None:
+                errors.append(f"card_names: {card!r} is renamed to {lab!r}, which is still the name of {other!r}")
     for i, ob in enumerate(session.observations, 1):
         where = f"observation {i}"
         if isinstance(ob, SuggestionObservation):
@@ -218,7 +259,8 @@ def analyze(session: AnalysisSession, accuse_threshold: float = 0.9, top_suggest
             "me": me,
             "hand_sizes": sizes,
             "consistent": False,
-            "conflicts": conflicts,
+            "conflicts": [label_text(session, c) for c in conflicts],
+            "card_names": dict(session.card_names),
             "solution": {"n_possible": 0, "combos": {}, "cards": {}, "best": None, "best_prob": 0.0, "exact": True},
             "holders": {},
             "deductions": [],
@@ -227,13 +269,13 @@ def analyze(session: AnalysisSession, accuse_threshold: float = 0.9, top_suggest
             "guide": {
                 "accusal": {"accuse": False, "reason": "notebook inconsistent", "best": None, "confidence": 0.0, "threshold": accuse_threshold, "exact": True},
                 "suggestions": [],
-                "advice": ["Your observations are contradictory - at least one entry must be wrong:"] + [f"  - {c}" for c in conflicts],
+                "advice": ["Your observations are contradictory - at least one entry must be wrong:"] + [f"  - {label_text(session, c)}" for c in conflicts],
             },
         }
     sol = solve(nb, players, sizes, ed)
     post = solution_probabilities(nb, players, sizes, ed)
     accusal = can_accuse_confidently(nb, players, accuse_threshold, sizes, ed)
-    deductions = hard_deductions(nb, players, sizes, ed)
+    deductions = [label_text(session, d) for d in hard_deductions(nb, players, sizes, ed)]
     threat = opponent_threat(nb, players, me, sizes, ed, session_events(session), sol=sol)
     ranked: list[dict[str, Any]] = []
     for room in rooms(ed):
@@ -250,6 +292,7 @@ def analyze(session: AnalysisSession, accuse_threshold: float = 0.9, top_suggest
         "hand_sizes": sizes,
         "consistent": post["n_possible"] > 0,
         "conflicts": [],
+        "card_names": dict(session.card_names),
         "solution": post,
         "holders": {c: {h: round(p, 4) for h, p in probs.items()} for c, probs in sol.holder_probs.items()},
         "deductions": deductions,
@@ -258,7 +301,7 @@ def analyze(session: AnalysisSession, accuse_threshold: float = 0.9, top_suggest
         "guide": {
             "accusal": accusal,
             "suggestions": ranked[:top_suggestions],
-            "advice": _advice(post, accusal, deductions, threat, ranked[:1]),
+            "advice": [label_text(session, a) for a in _advice(post, accusal, deductions, threat, ranked[:1])],
         },
     }
     return report

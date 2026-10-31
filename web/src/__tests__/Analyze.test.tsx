@@ -64,3 +64,49 @@ describe("Analyze page", () => {
     expect(screen.getByText(/Your hand \(1\)/)).toBeInTheDocument();
   });
 });
+
+describe("Analyze page card renames", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("renames cards everywhere and supports restoring", () => {
+    render(<Analyze />);
+    fireEvent.click(screen.getByRole("button", { name: "Lead Pipe" }));
+    // open the rename editor and rename Lead Pipe
+    fireEvent.click(screen.getByRole("button", { name: /Rename cards \(0\)/ }));
+    const combos = screen.getAllByRole("combobox");
+    const renameSelect = combos[2]; // [0]=edition [1]=you-are [2]=rename picker (suggestion selects come later)
+    fireEvent.change(renameSelect, { target: { value: "Lead Pipe" } });
+    const input = screen.getByPlaceholderText("name on your cards");
+    fireEvent.change(input, { target: { value: "Bleirohr" } });
+    fireEvent.click(screen.getByRole("button", { name: "Set" }));
+    // chip, probability grid, and selects now use the label; canonical name is gone from the grid
+    expect(screen.getByRole("button", { name: "Bleirohr" })).toBeInTheDocument();
+    expect(screen.getByText(/Rename cards \(1\)/)).toBeInTheDocument();
+    for (const el of screen.getAllByTitle("Lead Pipe")) expect(el).toHaveTextContent("Bleirohr");
+    // observation labels use it too
+    const all = screen.getAllByRole("combobox");
+    fireEvent.change(all[all.length - 5], { target: { value: "P2" } }); // suggester
+    fireEvent.change(all[all.length - 3], { target: { value: "Lead Pipe" } }); // weapon
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    expect(screen.getByText(/P2: Miss Scarlet \/ Bleirohr \/ Hall/)).toBeInTheDocument();
+    // restore the canonical name
+    fireEvent.click(screen.getByTitle("restore standard name"));
+    expect(screen.getByText(/Rename cards \(0\)/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Lead Pipe" })).toBeInTheDocument();
+  });
+
+  it("rejects duplicate labels via validation", () => {
+    render(<Analyze />);
+    fireEvent.click(screen.getByRole("button", { name: /Rename cards \(0\)/ }));
+    const combos = screen.getAllByRole("combobox");
+    const input = screen.getByPlaceholderText("name on your cards");
+    fireEvent.change(combos[2], { target: { value: "Rope" } });
+    fireEvent.change(input, { target: { value: "Knife" } });
+    fireEvent.click(screen.getByRole("button", { name: "Set" }));
+    fireEvent.change(combos[2], { target: { value: "Dagger" } });
+    fireEvent.change(input, { target: { value: "knife" } });
+    fireEvent.click(screen.getByRole("button", { name: "Set" }));
+    expect(screen.getByText(/Fix the session first/)).toBeInTheDocument();
+    expect(screen.getByText(/two cards share the label 'knife'/)).toBeInTheDocument();
+  });
+});
