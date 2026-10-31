@@ -290,3 +290,98 @@ def test_cli_analyze_report(tmp_path: Path, capsys: Any) -> None:
     _print_analysis(report)
     out = capsys.readouterr().out
     assert "candidate solution(s)" in out and "Guide" in out and "Best suggestions" in out
+
+
+# ---------------------------------------------------------------- card renames (display labels)
+
+
+def test_card_names_validation() -> None:
+    s = demo_session()
+    s.card_names = {"Nope": "X", "Rope": " ", "Dagger": "Blade", "Lead Pipe": "blade", "Revolver": "Candlestick"}
+    errs = "\n".join(validate_session(s))
+    assert "'Nope' is not a classic-edition card" in errs
+    assert "label for 'Rope' is empty" in errs
+    assert "two cards share the label 'blade'" in errs
+    assert "still the name of 'Candlestick'" in errs
+    s.card_names = {"Mrs. White": "Dr. Orchid", "Lead Pipe": "Pipe"}
+    assert validate_session(s) == []
+
+
+def test_label_text_and_display_name() -> None:
+    from clue.tools.analyst import display_name, label_text
+
+    s = demo_session()
+    s.card_names = {"Lead Pipe": "Pipe", "Mrs. Peacock": "Senora Azul", "Hall": "Grand Hall"}
+    assert display_name(s, "Lead Pipe") == "Pipe" and display_name(s, "Rope") == "Rope"
+    assert label_text(s, "Bob must hold Lead Pipe") == "Bob must hold Pipe"
+    assert label_text(s, "SOLVED: Mrs. Peacock / Lead Pipe / Hall") == "SOLVED: Senora Azul / Pipe / Grand Hall"
+    s.card_names = {}
+    assert label_text(s, "Bob must hold Lead Pipe") == "Bob must hold Lead Pipe"
+
+
+def test_analyze_report_uses_labels_in_display_strings() -> None:
+    hands = {
+        "Me": ["Miss Scarlet", "Rope", "Hall", "Study", "Candlestick"],
+        "Alice": ["Col. Mustard", "Dagger", "Lounge", "Library", "Mrs. White"],
+        "Bob": ["Lead Pipe", "Kitchen", "Ballroom", "Mr. Green"],
+        "Cara": ["Revolver", "Conservatory", "Billiard Room", "Prof. Plum"],
+    }
+    s = AnalysisSession(players=list(hands), me="Me", my_cards=hands["Me"], card_names={"Mrs. Peacock": "Senora Azul", "Wrench": "Llave", "Dining Room": "Comedor"})
+    for p, cs in hands.items():
+        if p != "Me":
+            s.observations.extend(FactObservation(player=p, card=c) for c in cs)
+    r = analyze(s)
+    assert r["ok"] and r["card_names"]["Wrench"] == "Llave"
+    # structured data stays canonical; display strings are labelled
+    assert r["solution"]["best"] == ["Mrs. Peacock", "Wrench", "Dining Room"]
+    assert r["guide"]["advice"][0] == "SOLVED - the envelope must be Senora Azul / Llave / Comedor. Accuse on your turn."
+    assert any(d == "SOLVED: Senora Azul / Llave / Comedor" for d in r["deductions"])
+    # conflict path is labelled too
+    s2 = demo_session()
+    s2.card_names = {"Prof. Plum": "Professor Pflaume"}
+    s2.observations.append(FactObservation(player="Alice", card="Prof. Plum", has=True))
+    r2 = analyze(s2)
+    assert not r2["consistent"] and any("Professor Pflaume" in c for c in r2["conflicts"])
+
+
+@pytest.mark.asyncio
+async def test_analyst_app_rename_flow() -> None:
+    app = AnalystApp(demo_session())
+    async with app.run_test(size=(170, 50)) as pilot:
+        await pilot.pause()
+        app.action_rename()
+        await pilot.pause()
+        ol = app.query_one("#entry_choices", OptionList)
+        assert app._step is not None
+        ol.highlighted = app._step["resolved"].index("Lead Pipe")
+        await pilot.press("enter")
+        await pilot.pause()
+        inp = app.query_one("#entry_input", Input)
+        inp.value = "Bleirohr"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert app.session.card_names == {"Lead Pipe": "Bleirohr"}
+        # the probability grid and card pickers now show the label
+        rows = [str(app.query_one("#probs", DataTable).get_row_at(i)[0]) for i in range(app.query_one("#probs", DataTable).row_count)]
+        assert any("Bleirohr" in r for r in rows) and not any("Lead Pipe" in r for r in rows)
+        # renaming back to empty restores the canonical name
+        app.action_rename()
+        await pilot.pause()
+        ol.highlighted = app._step["resolved"].index("Lead Pipe")
+        await pilot.press("enter")
+        await pilot.pause()
+        app.query_one("#entry_input", Input).value = ""
+        await pilot.press("enter")
+        await pilot.pause()
+        assert app.session.card_names == {}
+
+
+def test_cli_analyze_report_with_labels(capsys: Any) -> None:
+    from clue.__main__ import _print_analysis
+
+    s = demo_session()
+    s.card_names = {"Lead Pipe": "Pipe-o-matic", "Ballroom": "Tanzsaal"}
+    _print_analysis(analyze(s))
+    out = capsys.readouterr().out
+    assert "Pipe-o-matic" in out and "Tanzsaal" in out
+    assert "Lead Pipe" not in out

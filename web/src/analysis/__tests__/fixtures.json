@@ -1290,6 +1290,294 @@
    "advice_first": "68 candidate solutions remain; most likely: Mrs. Peacock / Candlestick / Ballroom at p=0.15."
   }
  },
+ "renamed_solved_deal": {
+  "session": {
+   "edition": "classic",
+   "players": [
+    "Me",
+    "Alice",
+    "Bob",
+    "Cara"
+   ],
+   "me": "Me",
+   "my_cards": [
+    "Miss Scarlet",
+    "Rope",
+    "Hall",
+    "Study",
+    "Candlestick"
+   ],
+   "faceup": [],
+   "card_names": {
+    "Mrs. Peacock": "Senora Azul",
+    "Wrench": "Llave Inglesa",
+    "Dining Room": "Comedor",
+    "Miss Scarlet": "Mlle Rose"
+   },
+   "observations": [
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Col. Mustard",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Dagger",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Lounge",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Library",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Alice",
+     "card": "Mrs. White",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Lead Pipe",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Kitchen",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Ballroom",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Bob",
+     "card": "Mr. Green",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Revolver",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Conservatory",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Billiard Room",
+     "has": true
+    },
+    {
+     "type": "fact",
+     "player": "Cara",
+     "card": "Prof. Plum",
+     "has": true
+    }
+   ]
+  },
+  "expected": {
+   "hand_sizes": {
+    "Me": 5,
+    "Alice": 5,
+    "Bob": 4,
+    "Cara": 4
+   },
+   "ok": true,
+   "consistent": true,
+   "exact": true,
+   "n_possible": 1,
+   "combos": {
+    "Mrs. Peacock | Wrench | Dining Room": 1.0
+   },
+   "card_probs": {
+    "Ballroom": 0.0,
+    "Billiard Room": 0.0,
+    "Candlestick": 0.0,
+    "Col. Mustard": 0.0,
+    "Conservatory": 0.0,
+    "Dagger": 0.0,
+    "Dining Room": 1.0,
+    "Hall": 0.0,
+    "Kitchen": 0.0,
+    "Lead Pipe": 0.0,
+    "Library": 0.0,
+    "Lounge": 0.0,
+    "Miss Scarlet": 0.0,
+    "Mr. Green": 0.0,
+    "Mrs. Peacock": 1.0,
+    "Mrs. White": 0.0,
+    "Prof. Plum": 0.0,
+    "Revolver": 0.0,
+    "Rope": 0.0,
+    "Study": 0.0,
+    "Wrench": 1.0
+   },
+   "holder_probs": {
+    "Ballroom": {
+     "Bob": 1.0
+    },
+    "Billiard Room": {
+     "Cara": 1.0
+    },
+    "Candlestick": {
+     "Me": 1.0
+    },
+    "Col. Mustard": {
+     "Alice": 1.0
+    },
+    "Conservatory": {
+     "Cara": 1.0
+    },
+    "Dagger": {
+     "Alice": 1.0
+    },
+    "Dining Room": {
+     "envelope": 1.0
+    },
+    "Hall": {
+     "Me": 1.0
+    },
+    "Kitchen": {
+     "Bob": 1.0
+    },
+    "Lead Pipe": {
+     "Bob": 1.0
+    },
+    "Library": {
+     "Alice": 1.0
+    },
+    "Lounge": {
+     "Alice": 1.0
+    },
+    "Miss Scarlet": {
+     "Me": 1.0
+    },
+    "Mr. Green": {
+     "Bob": 1.0
+    },
+    "Mrs. Peacock": {
+     "envelope": 1.0
+    },
+    "Mrs. White": {
+     "Alice": 1.0
+    },
+    "Prof. Plum": {
+     "Cara": 1.0
+    },
+    "Revolver": {
+     "Cara": 1.0
+    },
+    "Rope": {
+     "Me": 1.0
+    },
+    "Study": {
+     "Me": 1.0
+    },
+    "Wrench": {
+     "envelope": 1.0
+    }
+   },
+   "certain_holder": {
+    "Ballroom": "Bob",
+    "Billiard Room": "Cara",
+    "Candlestick": "Me",
+    "Col. Mustard": "Alice",
+    "Conservatory": "Cara",
+    "Dagger": "Alice",
+    "Dining Room": "envelope",
+    "Hall": "Me",
+    "Kitchen": "Bob",
+    "Lead Pipe": "Bob",
+    "Library": "Alice",
+    "Lounge": "Alice",
+    "Miss Scarlet": "Me",
+    "Mr. Green": "Bob",
+    "Mrs. Peacock": "envelope",
+    "Mrs. White": "Alice",
+    "Prof. Plum": "Cara",
+    "Revolver": "Cara",
+    "Rope": "Me",
+    "Study": "Me",
+    "Wrench": "envelope"
+   },
+   "deductions": [
+    "Comedor is in the envelope",
+    "Senora Azul is in the envelope",
+    "Llave Inglesa is in the envelope",
+    "SOLVED: Senora Azul / Llave Inglesa / Comedor"
+   ],
+   "best": [
+    "Mrs. Peacock",
+    "Wrench",
+    "Dining Room"
+   ],
+   "best_prob": 1.0,
+   "accuse": true,
+   "suggestions": [
+    {
+     "room": "Dining Room",
+     "score": 1.0
+    },
+    {
+     "room": "Ballroom",
+     "score": 0.833
+    },
+    {
+     "room": "Billiard Room",
+     "score": 0.833
+    }
+   ],
+   "threat": {
+    "opponents": {
+     "Alice": {
+      "n_possible": 140,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 5
+     },
+     "Bob": {
+      "n_possible": 175,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 4
+     },
+     "Cara": {
+      "n_possible": 175,
+      "p_win_next_turn": 0.0,
+      "unrefuted": false,
+      "repeat_suggestion": false,
+      "known_cards": 4
+     }
+    },
+    "max_threat": 0.0,
+    "most_dangerous": null,
+    "p_any_wins_before_my_turn": 0.0
+   },
+   "advice_first": "SOLVED - the envelope must be Senora Azul / Llave Inglesa / Comedor. Accuse on your turn."
+  }
+ },
  "contradiction": {
   "session": {
    "edition": "classic",

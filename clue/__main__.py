@@ -374,11 +374,16 @@ def _print_analysis(report: dict[str, Any]) -> None:
         raise typer.Exit(1)
     from clue.rules.cards import rooms, suspects, weapons
 
+    names: dict[str, str] = report.get("card_names") or {}
+
+    def lab(card: str) -> str:
+        return (names.get(card) or card).strip() or card
+
     sol = report["solution"]
     mark = "" if sol["exact"] else " (estimated - large table)"
     console.print(f"\n[bold]{sol['n_possible']}[/bold] candidate solution(s){mark}")
     for combo, p in list(sol["combos"].items())[:8]:
-        console.print(f"  {100 * p:5.1f}%  {combo}")
+        console.print(f"  {100 * p:5.1f}%  {' | '.join(lab(c) for c in combo.split(' | '))}")
     t = Table(title="P(%) card is in the envelope / held by...", show_lines=False)
     t.add_column("Card")
     t.add_column("Env", justify="right")
@@ -390,7 +395,7 @@ def _print_analysis(report: dict[str, Any]) -> None:
         for card in cards:
             probs = holders.get(card, {})
             cells = [f"{100 * probs.get(h, 0.0):.0f}" if probs.get(h, 0.0) > 0.0005 else "." for h in ["envelope", *report["players"]]]
-            t.add_row(card, *cells)
+            t.add_row(lab(card), *cells)
     console.print(t)
     if report["deductions"]:
         console.print("[bold]Hard deductions[/bold] (provable facts):")
@@ -400,7 +405,7 @@ def _print_analysis(report: dict[str, Any]) -> None:
     for line in report["guide"]["advice"]:
         console.print(f"  {line}")
     if report["guide"]["suggestions"]:
-        console.print("  Best suggestions: " + "; ".join(f"{s['suspect']} + {s['weapon']} in {s['room']} ({s['score']:.2f})" for s in report["guide"]["suggestions"]))
+        console.print("  Best suggestions: " + "; ".join(f"{lab(s['suspect'])} + {lab(s['weapon'])} in {lab(s['room'])} ({s['score']:.2f})" for s in report["guide"]["suggestions"]))
 
 
 @app.command()

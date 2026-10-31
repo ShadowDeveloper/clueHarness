@@ -66,6 +66,19 @@ SESSIONS: dict[str, dict] = {
             {"type": "fact", "player": "B", "card": "Lounge", "has": False},
         ],
     },
+    "renamed_solved_deal": {
+        "edition": "classic",
+        "players": ["Me", "Alice", "Bob", "Cara"],
+        "me": "Me",
+        "my_cards": ["Miss Scarlet", "Rope", "Hall", "Study", "Candlestick"],
+        "faceup": [],
+        "card_names": {"Mrs. Peacock": "Senora Azul", "Wrench": "Llave Inglesa", "Dining Room": "Comedor", "Miss Scarlet": "Mlle Rose"},
+        "observations": (
+            [{"type": "fact", "player": "Alice", "card": c, "has": True} for c in ["Col. Mustard", "Dagger", "Lounge", "Library", "Mrs. White"]]
+            + [{"type": "fact", "player": "Bob", "card": c, "has": True} for c in ["Lead Pipe", "Kitchen", "Ballroom", "Mr. Green"]]
+            + [{"type": "fact", "player": "Cara", "card": c, "has": True} for c in ["Revolver", "Conservatory", "Billiard Room", "Prof. Plum"]]
+        ),
+    },
     "contradiction": {
         "edition": "classic",
         "players": ["Me", "Alice", "Bob", "Cara"],

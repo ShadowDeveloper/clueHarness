@@ -32,16 +32,44 @@ export interface AnalysisSession {
   faceup: string[];
   hand_sizes?: Record<string, number> | null;
   observations: Observation[];
+  /** Display renames: canonical card -> the name printed on YOUR copy of the game. Purely cosmetic:
+   *  the solver and the session always store canonical names; UIs render through this mapping. */
+  card_names?: Record<string, string>;
 }
 
 export function emptySession(): AnalysisSession {
-  return { edition: "classic", players: [], me: "", my_cards: [], faceup: [], hand_sizes: null, observations: [] };
+  return { edition: "classic", players: [], me: "", my_cards: [], faceup: [], hand_sizes: null, observations: [], card_names: {} };
 }
 
-export function observationLabel(ob: Observation): string {
-  if (ob.type === "fact") return `fact: ${ob.player} ${ob.has ? "holds" : "lacks"} ${ob.card}`;
-  const tail = ob.shown_card ? `${ob.disprover} showed ${ob.shown_card}` : ob.disprover ? `${ob.disprover} disproved` : "nobody disproved";
-  return `${ob.suggester}: ${ob.suspect} / ${ob.weapon} / ${ob.room} -> ${tail}`;
+/** The label to show for a canonical card (falls back to the canonical name). */
+export function labelFor(session: AnalysisSession, card: string): string {
+  return (session.card_names?.[card] ?? card).trim() || card;
+}
+
+const RE_ESCAPE = /[.*+?^${}()|[\]\\]/g;
+
+/** Rewrite canonical card names inside a human-readable sentence with the user's renames
+ *  (longest-first whole-name replacement; card names are never substrings of one another). */
+export function labelText(session: AnalysisSession, text: string): string {
+  const renames = Object.entries(session.card_names ?? {}).filter(([c, v]) => v.trim() && v.trim() !== c);
+  if (renames.length === 0) return text;
+  const map = new Map(renames.map(([c, v]) => [c, v.trim()]));
+  const pattern = new RegExp(
+    renames
+      .map(([c]) => c)
+      .sort((a, b) => b.length - a.length)
+      .map((c) => c.replace(RE_ESCAPE, "\\$&"))
+      .join("|"),
+    "g",
+  );
+  return text.replace(pattern, (m) => map.get(m) ?? m);
+}
+
+export function observationLabel(ob: Observation, names?: Record<string, string>): string {
+  const lab = (c: string): string => (names?.[c] ?? c).trim() || c;
+  if (ob.type === "fact") return `fact: ${ob.player} ${ob.has ? "holds" : "lacks"} ${lab(ob.card)}`;
+  const tail = ob.shown_card ? `${ob.disprover} showed ${lab(ob.shown_card)}` : ob.disprover ? `${ob.disprover} disproved` : "nobody disproved";
+  return `${ob.suggester}: ${lab(ob.suspect)} / ${lab(ob.weapon)} / ${lab(ob.room)} -> ${tail}`;
 }
 
 // ---------------------------------------------------------------- validation + hand sizes
@@ -89,6 +117,27 @@ export function validateSession(session: AnalysisSession): string[] {
     else if (Object.values(session.hand_sizes).reduce((a, b) => a + b, 0) !== expected) errors.push(`hand sizes must sum to ${expected} (deck minus envelope and face-up)`);
     else if (session.my_cards.length > 0 && session.hand_sizes[session.me] !== session.my_cards.length)
       errors.push(`hand_sizes[${session.me}] = ${session.hand_sizes[session.me]} but you entered ${session.my_cards.length} cards`);
+  }
+  const cardNames = session.card_names ?? {};
+  if (Object.keys(cardNames).length > 0) {
+    const seenLabels = new Map<string, string>();
+    for (const [card, label] of Object.entries(cardNames)) {
+      if (!deck.has(card)) {
+        errors.push(`card_names: '${card}' is not a ${ed}-edition card`);
+        continue;
+      }
+      const lab = label.trim();
+      if (!lab) {
+        errors.push(`card_names: the label for '${card}' is empty`);
+        continue;
+      }
+      const low = lab.toLowerCase();
+      const prev = seenLabels.get(low);
+      if (prev !== undefined && prev !== card) errors.push(`card_names: two cards share the label '${lab}'`);
+      seenLabels.set(low, card);
+      const other = [...deck].find((c) => c.toLowerCase() === low && c !== card && (cardNames[c] ?? c).trim().toLowerCase() === low);
+      if (other !== undefined) errors.push(`card_names: '${card}' is renamed to '${lab}', which is still the name of '${other}'`);
+    }
   }
   session.observations.forEach((ob, i) => {
     const where = `observation ${i + 1}`;
@@ -353,6 +402,7 @@ export interface AnalysisReport {
   hand_sizes: Record<string, number>;
   consistent: boolean;
   conflicts: string[];
+  card_names: Record<string, string>;
   solution: {
     n_possible: number;
     combos: { suspect: string; weapon: string; room: string; p: number }[];
@@ -390,6 +440,7 @@ export function analyze(session: AnalysisSession, accuseThreshold = 0.9, topSugg
     hand_sizes: {},
     consistent: false,
     conflicts: [],
+    card_names: { ...(session.card_names ?? {}) },
     solution: { n_possible: 0, combos: [], cards: {}, best: null, best_prob: 0, exact: true },
     holders: {},
     deductions: [],
@@ -410,15 +461,16 @@ export function analyze(session: AnalysisSession, accuseThreshold = 0.9, topSugg
     rooms: d.rooms.filter((c) => !knownNotInSolution.has(c)),
   };
   if (conflicts.length > 0) {
+    const labelled = conflicts.map((c) => labelText(session, c));
     return {
       ...base,
       ok: true,
       hand_sizes: sizes,
-      conflicts,
+      conflicts: labelled,
       unseen,
       guide: {
         ...base.guide,
-        advice: ["Your observations are contradictory - at least one entry must be wrong:", ...conflicts.map((c) => `  - ${c}`)],
+        advice: ["Your observations are contradictory - at least one entry must be wrong:", ...labelled.map((c) => `  - ${c}`)],
       },
     };
   }
@@ -440,7 +492,7 @@ export function analyze(session: AnalysisSession, accuseThreshold = 0.9, topSugg
     holders[c] = {};
     for (const [h, p] of Object.entries(probs)) holders[c][h] = round4(p);
   }
-  const deductions = hardDeductions(sol, nb);
+  const deductions = hardDeductions(sol, nb).map((d) => labelText(session, d));
   const accusal = {
     accuse: sol.nPossible > 0 && bestProb >= accuseThreshold,
     best,
@@ -463,7 +515,7 @@ export function analyze(session: AnalysisSession, accuseThreshold = 0.9, topSugg
     deductions,
     unseen,
     threat,
-    guide: { accusal, suggestions, advice: advice(solution, accusal, deductions, threat, suggestions) },
+    guide: { accusal, suggestions, advice: advice(solution, accusal, deductions, threat, suggestions).map((a) => labelText(session, a)) },
   };
 }
 

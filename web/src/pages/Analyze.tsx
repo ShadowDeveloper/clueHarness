@@ -8,6 +8,7 @@ import {
   analyze,
   emptySession,
   FactObservation,
+  labelFor,
   Observation,
   observationLabel,
   SuggestionObservation,
@@ -49,6 +50,9 @@ export default function Analyze() {
   const ed = useMemo(() => editionDef(EDITION_IDS.includes(session.edition as never) ? session.edition : "classic"), [session.edition]);
   const [sg, setSg] = useState({ suggester: "", suspect: "", weapon: "", room: "", disprover: NOBODY, shown: NOT_SEEN });
   const [fact, setFact] = useState({ player: "", has: true, card: "" });
+  const [renaming, setRenaming] = useState(false);
+  const [renameCard, setRenameCard] = useState("");
+  const [renameLabel, setRenameLabel] = useState("");
 
   useEffect(() => {
     localStorage.setItem(STORE, JSON.stringify(session));
@@ -56,6 +60,23 @@ export default function Analyze() {
 
   const report = useMemo(() => analyze(session), [session]);
   const patch = (p: Partial<AnalysisSession>) => setSession((s) => ({ ...s, ...p }));
+  const label = (c: string) => labelFor(session, c);
+  const renames = session.card_names ?? {};
+
+  const applyRename = () => {
+    const card = renameCard || ed.suspects[0];
+    const lab = renameLabel.trim();
+    const next = { ...renames };
+    if (!lab || lab === card) delete next[card];
+    else next[card] = lab;
+    patch({ card_names: next });
+    setRenameLabel("");
+  };
+  const clearRename = (card: string) => {
+    const next = { ...renames };
+    delete next[card];
+    patch({ card_names: next });
+  };
 
   const applyPlayers = (text: string) => {
     const names = text.split(",").map((t) => t.trim()).filter(Boolean);
@@ -134,7 +155,7 @@ export default function Analyze() {
           <h3>Your table</h3>
           <div className="row">
             <label className="dim">Edition</label>
-            <select value={session.edition} onChange={(e) => patch({ edition: e.target.value, my_cards: [], faceup: [], observations: [] })}>
+            <select value={session.edition} onChange={(e) => patch({ edition: e.target.value, my_cards: [], faceup: [], observations: [], card_names: {} })}>
               {EDITION_IDS.map((id) => (
                 <option key={id} value={id}>{EDITIONS[id].label}</option>
               ))}
@@ -164,9 +185,9 @@ export default function Analyze() {
           </div>
           <div style={{ marginTop: 8 }}>
             <div className="dim" style={{ fontSize: 12 }}>Your hand ({session.my_cards.length}) — click to toggle{showFaceup ? "; shift-click marks face-up" : ""}</div>
-            {cardGroups.map(([label, cards]) => (
-              <div className="row" key={label} style={{ marginTop: 4 }}>
-                <span className="dim" style={{ width: 64, fontSize: 11 }}>{label}</span>
+            {cardGroups.map(([groupName, cards]) => (
+              <div className="row" key={groupName} style={{ marginTop: 4 }}>
+                <span className="dim" style={{ width: 64, fontSize: 11 }}>{groupName}</span>
                 <span className="row" style={{ gap: 4 }}>
                   {cards.map((c) => (
                     <button
@@ -175,12 +196,44 @@ export default function Analyze() {
                       title={session.faceup.includes(c) ? `${c} (face-up)` : c}
                       onClick={(e) => toggleCard(showFaceup && e.shiftKey ? "faceup" : "my_cards", c)}
                     >
-                      {c}
+                      {label(c)}
                     </button>
                   ))}
                 </span>
               </div>
             ))}
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <button className="linkish" onClick={() => setRenaming(!renaming)}>
+              {renaming ? "▾" : "▸"} Rename cards ({Object.keys(renames).length}) — match your copy of the game
+            </button>
+            {renaming && (
+              <div className="grid" style={{ gap: 6, marginTop: 6 }}>
+                <div className="row rename-row">
+                  <select value={renameCard || ed.suspects[0]} onChange={(e) => { setRenameCard(e.target.value); setRenameLabel((renames[e.target.value] ?? "").trim()); }}>
+                    {cardGroups.map(([groupName, cards]) => (
+                      <optgroup key={groupName} label={groupName}>
+                        {cards.map((c) => <option key={c} value={c}>{renames[c] ? `${renames[c]} (${c})` : c}</option>)}
+                      </optgroup>
+                    ))}
+                  </select>
+                  <input
+                    style={{ flex: 1, minWidth: 110 }}
+                    placeholder="name on your cards"
+                    value={renameLabel}
+                    onChange={(e) => setRenameLabel(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && applyRename()}
+                  />
+                  <button className="primary" onClick={applyRename}>Set</button>
+                </div>
+                {Object.entries(renames).map(([c, v]) => (
+                  <div className="row" key={c} style={{ fontSize: 12 }}>
+                    <span className="dim">{c}</span> → <span>{v}</span>
+                    <button title="restore standard name" style={{ marginLeft: "auto", padding: "0 6px", fontSize: 11 }} onClick={() => clearRename(c)}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -197,13 +250,13 @@ export default function Analyze() {
                 </select>
                 <span className="dim">suggested</span>
                 <select value={sg.suspect || ed.suspects[0]} onChange={(e) => setSg({ ...sg, suspect: e.target.value, shown: NOT_SEEN })}>
-                  {ed.suspects.map((c) => <option key={c}>{c}</option>)}
+                  {ed.suspects.map((c) => <option key={c} value={c}>{label(c)}</option>)}
                 </select>
                 <select value={sg.weapon || ed.weapons[0]} onChange={(e) => setSg({ ...sg, weapon: e.target.value, shown: NOT_SEEN })}>
-                  {ed.weapons.map((c) => <option key={c}>{c}</option>)}
+                  {ed.weapons.map((c) => <option key={c} value={c}>{label(c)}</option>)}
                 </select>
                 <select value={sg.room || ed.rooms[0]} onChange={(e) => setSg({ ...sg, room: e.target.value, shown: NOT_SEEN })}>
-                  {ed.rooms.map((c) => <option key={c}>{c}</option>)}
+                  {ed.rooms.map((c) => <option key={c} value={c}>{label(c)}</option>)}
                 </select>
               </div>
               <div className="row">
@@ -217,7 +270,7 @@ export default function Analyze() {
                     <span className="dim">card shown (if you saw it)</span>
                     <select value={sg.shown} onChange={(e) => setSg({ ...sg, shown: e.target.value })}>
                       <option value={NOT_SEEN}>not seen</option>
-                      {suggestCards.map((c) => <option key={c}>{c}</option>)}
+                      {suggestCards.map((c) => <option key={c} value={c}>{label(c)}</option>)}
                     </select>
                   </>
                 )}
@@ -234,9 +287,9 @@ export default function Analyze() {
                 <option value="lacks">lacks</option>
               </select>
               <select value={fact.card || ed.suspects[0]} onChange={(e) => setFact({ ...fact, card: e.target.value })}>
-                {cardGroups.map(([label, cards]) => (
-                  <optgroup key={label} label={label}>
-                    {cards.map((c) => <option key={c}>{c}</option>)}
+                {cardGroups.map(([groupName, cards]) => (
+                  <optgroup key={groupName} label={groupName}>
+                    {cards.map((c) => <option key={c} value={c}>{label(c)}</option>)}
                   </optgroup>
                 ))}
               </select>
@@ -252,7 +305,7 @@ export default function Analyze() {
             {session.observations.map((ob, i) => (
               <div className="row obs" key={i}>
                 <span className="dim mono" style={{ width: 18 }}>{i + 1}</span>
-                <span style={{ flex: 1 }}>{observationLabel(ob)}</span>
+                <span style={{ flex: 1 }}>{observationLabel(ob, renames)}</span>
                 <button title="remove" onClick={() => removeObservation(i)}>✕</button>
               </div>
             ))}
@@ -276,7 +329,7 @@ export default function Analyze() {
               {report.errors.map((e, i) => <div key={i} className="dim">• {e}</div>)}
             </div>
           ) : (
-            <table className="prob-table">
+            <div className="scroll-x"><table className="prob-table">
               <thead>
                 <tr>
                   <th />
@@ -285,15 +338,15 @@ export default function Analyze() {
                 </tr>
               </thead>
               <tbody>
-                {cardGroups.map(([label, cards]) => (
+                {cardGroups.map(([groupName, cards]) => (
                   [
-                    <tr key={label} className="group"><td colSpan={2 + report.players.length}>{label}</td></tr>,
+                    <tr key={groupName} className="group"><td colSpan={2 + report.players.length}>{groupName}</td></tr>,
                     ...cards.map((card) => {
                       const env = report.conflicts.length ? 0 : sol.cards[card] ?? 0;
                       const hp = report.holders[card] ?? {};
                       return (
                         <tr key={card}>
-                          <td className="name">{card}{session.faceup.includes(card) ? " ◇" : ""}</td>
+                          <td className="name" title={card}>{label(card)}{session.faceup.includes(card) ? " ◇" : ""}</td>
                           <td className="p env" style={{ background: heat(env) }}>{pct(env)}</td>
                           {report.players.map((p) => (
                             <td key={p} className="p" style={{ background: hp[p] && hp[p] >= 0.9995 ? "rgba(63,122,90,0.55)" : undefined }}>
@@ -306,7 +359,7 @@ export default function Analyze() {
                   ]
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
       </div>
@@ -323,7 +376,7 @@ export default function Analyze() {
                 <div className="row" key={`${c.suspect}|${c.weapon}|${c.room}`} style={{ gap: 6 }}>
                   <span className="mono dim" style={{ width: 48, textAlign: "right" }}>{(c.p * 100).toFixed(1)}%</span>
                   <div className="bar"><div style={{ width: `${Math.max(2, c.p * 100)}%` }} /></div>
-                  <span style={{ flex: 1 }}>{c.suspect} / {c.weapon} / {c.room}</span>
+                  <span style={{ flex: 1 }}>{label(c.suspect)} / {label(c.weapon)} / {label(c.room)}</span>
                 </div>
               ))}
             </>
@@ -344,7 +397,7 @@ export default function Analyze() {
             <>
               <div className="subhead">Best suggestions to make next</div>
               {report.guide.suggestions.map((s, i) => (
-                <div key={i}>• {s.suspect} + {s.weapon} in the {s.room} <span className="dim">(score {s.score.toFixed(2)})</span></div>
+                <div key={i}>• {label(s.suspect)} + {label(s.weapon)} in the {label(s.room)} <span className="dim">(score {s.score.toFixed(2)})</span></div>
               ))}
             </>
           )}
