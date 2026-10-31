@@ -3,7 +3,7 @@
 **When to use:** Short tournaments where only wins count, 3-player games (fewer cards to find), or when an opponent has made an unrefuted suggestion.
 
 ## DO
-- Accuse when `confidence >= 0.6` or `n_possible <= 3`.
+- When `analysis.posterior.exact` is true, accuse when `confidence >= 0.6` or `n_possible <= 3`. With sampled inference, treat confidence as an estimate and do not accuse solely because the candidate list is small.
 - Accuse immediately if an opponent's suggestion went unrefuted and it matches your top combo.
 - Read `analysis.opponent_threat`: if `p_any_wins_before_my_turn` exceeds your `confidence`, accusing now beats waiting.
 - Suggest the top posterior combo's suspect/weapon to confirm quickly.

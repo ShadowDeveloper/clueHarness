@@ -9,7 +9,7 @@ from clue.agents.baselines import BaselineHeuristicBot, BaselineRandomBot
 from clue.agents.expert import BaselineExpertBot
 from clue.agents.human import HumanCLIAgent
 from clue.agents.llm_agent import LLMPlayerAgent
-from clue.agents.llm_client import LLMClient
+from clue.agents.llm_client import LLMClient, LLMConnection
 from clue.manager.game_manager import PlayerSpec
 
 STRATEGY_ALIASES = {
@@ -52,7 +52,15 @@ def parse_players_arg(arg: str) -> list[PlayerSpec]:
     return specs
 
 
-def make_agent(spec: PlayerSpec, seed: int = 0, client: LLMClient | None = None, provider: str | None = None, input_fn: Any = None, ui: str = "cli") -> PlayerAgent:
+def make_agent(
+    spec: PlayerSpec,
+    seed: int = 0,
+    client: LLMClient | None = None,
+    provider: str | None = None,
+    input_fn: Any = None,
+    ui: str = "cli",
+    connection: LLMConnection | None = None,
+) -> PlayerAgent:
     if spec.kind == "human":
         if ui == "tui":
             from clue.tui.app import TUIHumanAgent
@@ -60,11 +68,16 @@ def make_agent(spec: PlayerSpec, seed: int = 0, client: LLMClient | None = None,
             return TUIHumanAgent(spec.id)
         return HumanCLIAgent(spec.id, input_fn) if input_fn else HumanCLIAgent(spec.id)
     if spec.kind == "baseline":
-        if (spec.bot or "heuristic") == "random":
+        bot = (spec.bot or "heuristic").strip().lower()
+        if bot == "none":
+            bot = "heuristic"
+        if bot == "random":
             return BaselineRandomBot(spec.id, seed=seed)
-        if spec.bot == "expert":
+        if bot == "expert":
             return BaselineExpertBot(spec.id, seed=seed)
-        return BaselineHeuristicBot(spec.id, seed=seed)
+        if bot == "heuristic":
+            return BaselineHeuristicBot(spec.id, seed=seed)
+        raise ValueError(f"unknown baseline bot {spec.bot!r}; choose none, heuristic, random, or expert")
     if spec.kind == "llm":
         return LLMPlayerAgent(
             spec.id,
@@ -77,5 +90,6 @@ def make_agent(spec: PlayerSpec, seed: int = 0, client: LLMClient | None = None,
             seed=seed,
             tool_mode=spec.tool_mode,
             prompt_profile=spec.prompt_profile,
+            connection=connection,
         )
     raise ValueError(f"unknown kind {spec.kind}")

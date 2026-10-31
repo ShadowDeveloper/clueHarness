@@ -15,6 +15,7 @@ from clue.manager.runner import run_game
 from clue.rules import GameConfig, new_game
 from clue.rules import board as B
 from clue.rules.cards import all_cards, category, edition_def, max_players, rooms, suspects
+from clue.tools.deduction import can_accuse_confidently, solution_probabilities
 from clue.tools.solver import solve
 
 
@@ -97,6 +98,19 @@ def test_expert_plays_large_edition():
     for e in gm.events:
         if e.type == "accuse" and e.player == "P1":
             assert e.public.get("correct") is True
+
+
+def test_large_solution_probabilities_report_sampling():
+    gm = GameManager.create(
+        [PlayerSpec(id=f"P{i + 1}", kind="baseline") for i in range(3)],
+        seed=13,
+        config=GameConfig(edition="large", num_players=3),
+    )
+    sizes = {p.id: len(p.hand) for p in gm.state.players}
+    result = solution_probabilities(gm.notebooks["P1"], gm.player_ids(), sizes, "large")
+    assert result["exact"] is False
+    verdict = can_accuse_confidently(gm.notebooks["P1"], gm.player_ids(), hand_sizes=sizes, edition="large")
+    assert verdict["exact"] is False
 
 
 def test_sampled_solver_is_sound_on_large_table():

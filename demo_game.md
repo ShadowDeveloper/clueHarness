@@ -1,5 +1,7 @@
 # Demo game transcript — Human (P1) + 3 AI
 
+> Checked-in Classic seed-42 transcript snapshot generated with `python eval/make_demo.py`; it illustrates the interface and is not a substitute for running the current checkout.
+
 Config: `game.yaml` (seed 42, 2 dice, edition classic). Players: P1=human, P2=llm:mock:bayesian_probabilist, P3=llm:mock:deceptive_misdirector, P4=baseline:heuristic
 
 The human seat is driven by a scripted stdin here so the transcript is reproducible; the numbered menus are exactly what an interactive player sees.

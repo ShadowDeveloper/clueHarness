@@ -11,10 +11,10 @@ import queue
 from dataclasses import dataclass, field
 from typing import Any
 
-from textual import on
+from textual import events, on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, ScrollableContainer, Vertical, VerticalScroll
 from textual.widgets import Button, DataTable, Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
@@ -103,8 +103,24 @@ class OmniscientView(DataTable[str]):
     """Spectator table: the TRUE holder of every card (hands, face-up, envelope) plus what each seat has deduced."""
 
     def refresh_from(self, gm: GameManager) -> None:
-        self.clear(columns=True)
         st = gm.state
+        signature = (
+            tuple((p.id, tuple(p.hand)) for p in st.players),
+            tuple(st.faceup),
+            tuple(st.solution),
+            tuple(
+                (
+                    pid,
+                    tuple(sorted(nb.my_hand)),
+                    tuple(sorted(nb.known_holder.items())),
+                    tuple((player, tuple(sorted(cards))) for player, cards in sorted(nb.not_held.items())),
+                )
+                for pid, nb in sorted(gm.notebooks.items())
+            ),
+        )
+        if getattr(self, "_render_signature", None) == signature:
+            return
+        self.clear(columns=True)
         players = [p.id for p in st.players]
         self.add_columns("Card", "Truth", *[f"{p} knows" for p in players])
         holder = {c: p.id for p in st.players for c in p.hand}
@@ -132,6 +148,7 @@ class OmniscientView(DataTable[str]):
                         n_out = sum(1 for q in players if q != p and c in nb.not_held.get(q, []))
                         row.append(f"[dim]?{'✘' * n_out}[/]" if n_out else "[dim]?[/]")
                 self.add_row(c, tcell, *row, key=f"omni:{c}")
+        self._render_signature = signature
 
 
 # --------------------------------------------------------------------------- app
@@ -139,8 +156,9 @@ class ClueApp(App[None]):
     CSS = """
     Screen { layout: vertical; }
     #top { height: 1fr; }
-    #board { width: 56; height: 100%; border: round $accent; padding: 0 1; }
-    #middle { width: 1fr; min-width: 50; }
+    #board { width: 56; height: 100%; border: round $accent; padding: 0 1; scrollbar-size: 1 1; }
+    #board_content { height: auto; }
+    #middle { width: 1fr; min-width: 24; }
     #notebook { height: 1fr; border: round $secondary; }
     #omni { height: 1fr; border: round $secondary; display: none; }
     #facts { height: auto; max-height: 9; border: round $secondary; padding: 0 1; }
@@ -195,12 +213,17 @@ class ClueApp(App[None]):
         self._selected: str | None = None
         self.coach = False  # coach mode: on-demand exact-solver hints for the human viewer (never auto-shown)
         self._coach_used = 0
+        # Two display cells per board square, plus the four-cell row label.
+        self._board_content_width = 4 + 2 * B.board_for(gm.config.edition).cols
+        self._board_content_height = 0
+        self._board_render_key: tuple[Any, ...] | None = None
 
     # ---------------- layout
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
         with Horizontal(id="top"):
-            yield Static(id="board")
+            with ScrollableContainer(id="board"):
+                yield Static(id="board_content")
             with Vertical(id="middle"):
                 yield NotebookView(id="notebook", zebra_stripes=True, cursor_type="none")
                 yield OmniscientView(id="omni", zebra_stripes=True, cursor_type="none")
@@ -227,10 +250,10 @@ class ClueApp(App[None]):
 
     def on_mount(self) -> None:
         self.title = "Clue"
-        self.sub_title = "  ".join(f"{s.id}: {s.label()}" for s in self.gm.specs)
+        self.sub_title = "  ".join(f"{s.id}: {s.display_label()}" for s in self.gm.specs)
         if self.human:
             self.human.app = self
-        self.query_one("#board", Static).border_title = "Board"
+        self.query_one("#board", ScrollableContainer).border_title = "Board"
         self.query_one("#notebook", NotebookView).border_title = "Notebook  ✔ has  ✘ hasn't  ? unknown"
         self.query_one("#facts", Static).border_title = "Deductions"
         self.query_one("#log", RichLog).border_title = "What happened"
@@ -239,6 +262,25 @@ class ClueApp(App[None]):
         self._set_banner("[dim]Waiting for the game to start…[/]")
         self.refresh_view()
         self.run_worker(self._game_loop, thread=True, exclusive=True)
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._fit_board(event.size.width, event.size.height)
+
+    def _fit_board(self, screen_width: int | None = None, screen_height: int | None = None) -> None:
+        """Give the board its natural width when possible; scroll instead of wrapping when space is tight."""
+        if not self.query("#board_content"):
+            return  # Resize can arrive before compose has finished.
+        screen_width = self.size.width if screen_width is None else screen_width
+        screen_height = self.size.height if screen_height is None else screen_height
+        right_width = 60 if screen_width >= 150 else 44
+        middle_min = 24 if screen_width >= 120 else 16
+        self.query_one("#right", Vertical).styles.width = right_width
+        self.query_one("#middle", Vertical).styles.min_width = middle_min
+        # Header/status/footer and the board border consume five rows outside the board content.
+        needs_vertical_scrollbar = self._board_content_height > max(0, screen_height - 5)
+        natural_width = self._board_content_width + 4 + int(needs_vertical_scrollbar)  # border, padding, scrollbar
+        available = max(24, screen_width - right_width - middle_min)
+        self.query_one("#board", ScrollableContainer).styles.width = min(natural_width, available)
 
     # ---------------- game loop (worker thread)
     def _game_loop(self) -> None:
@@ -267,6 +309,20 @@ class ClueApp(App[None]):
             return
         self.call_from_thread(self._finish, self.gm.summary())
 
+    def _seat_label(self, player_id: str) -> str:
+        """Display a configured name alongside the stable player ID."""
+        spec = next((s for s in self.gm.specs if s.id == player_id), None)
+        return f"{spec.name} ({player_id})" if spec and spec.name else player_id
+
+    def _describe_event(self, event: dict[str, Any]) -> str:
+        """Render participant IDs with configured display names in the live event log."""
+        display_event = dict(event)
+        for key in ("player", "disprover", "suggester", "winner"):
+            value = display_event.get(key)
+            if isinstance(value, str):
+                display_event[key] = self._seat_label(value)
+        return describe_event(display_event)
+
     def _on_events(self, evs: list[dict[str, Any]]) -> None:
         for e in evs:
             style = ""
@@ -281,7 +337,7 @@ class ClueApp(App[None]):
                 style = "bold green"
             elif t == "suggest":
                 style = "bold"
-            line = describe_event(e)
+            line = self._describe_event(e)
             if t == "turn_start" and e.get("player") == self.viewer and self.human is not None:
                 line = "━━━ YOUR TURN ━━━"
             self.log_line(f"[{style}]{line}[/]" if style else line)
@@ -328,9 +384,26 @@ class ClueApp(App[None]):
         vid = self._view_id()
         omni = self.human is None and self.viewer is None
         obs = self.gm.get_observation(vid)
-        hl = set(obs["board"]["your_legal_moves"]) if self.mode == "move" or obs["turn"]["roll"] else set()
-        board_txt = render_board(obs["board"]["token_positions"], obs["cards"]["suspects"], hl, obs["board"]["weapon_positions"], obs["you"]["suspect_token"], self.emoji, obs["config"]["edition"])
-        self.query_one("#board", Static).update(board_txt)
+        board = obs["board"]
+        hl = set(board["your_legal_moves"]) if self.mode == "move" or obs["turn"]["roll"] else set()
+        board_key = (
+            tuple(sorted(board["token_positions"].items())),
+            tuple(obs["cards"]["suspects"]),
+            tuple(sorted(hl)),
+            tuple(sorted(board["weapon_positions"].items())),
+            obs["you"]["suspect_token"],
+            self.emoji,
+            obs["config"]["edition"],
+        )
+        if board_key != self._board_render_key:
+            board_txt = render_board(board["token_positions"], obs["cards"]["suspects"], hl, board["weapon_positions"], obs["you"]["suspect_token"], self.emoji, obs["config"]["edition"])
+            board_content = self.query_one("#board_content", Static)
+            self._board_content_height = len(board_txt.plain.splitlines())
+            board_content.styles.width = self._board_content_width
+            board_content.styles.height = self._board_content_height
+            board_content.update(board_txt)
+            self._board_render_key = board_key
+            self._fit_board()
         nbv, ov = self.query_one("#notebook", NotebookView), self.query_one("#omni", OmniscientView)
         nbv.display, ov.display = not omni, omni
         if omni:
@@ -358,10 +431,11 @@ class ClueApp(App[None]):
         you = obs["you"]
         pos = you["position"] if B.is_room(you["position"]) else f"corridor {you['position']}"
         glyph = token_glyph(token_labels(obs["cards"]["suspects"])[you["suspect_token"]], self.emoji).strip()
-        st = f"You are {glyph} {you['suspect_token']} ({you['id']}) in the {pos}   ·   your cards: {', '.join(you['hand'])}   ·   turn {obs['turn']['number']}"
+        seat_name = self._seat_label(you["id"])
+        st = f"You are {glyph} {you['suspect_token']} ({seat_name}) in the {pos}   ·   your cards: {', '.join(you['hand'])}   ·   turn {obs['turn']['number']}"
         if self.human is None:
             sol = " · ".join(self.gm.state.solution)
-            seat = f"{glyph} {you['suspect_token']} ({you['id']}) in the {pos} · hand: {', '.join(you['hand'])}"
+            seat = f"{glyph} {you['suspect_token']} ({seat_name}) in the {pos} · hand: {', '.join(you['hand'])}"
             view = f"omniscient · envelope: [bold red]{sol}[/] · now playing {seat}" if omni else f"viewing as {seat}"
             st = f"Spectating {'⏸ paused' if self.paused else '▶'} {self.delay:.1f}s/event · turn {obs['turn']['number']} · {view}"
         if self.ponder:

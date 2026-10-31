@@ -1,0 +1,61 @@
+# Test fixture for named Large-edition seats and TUI layout, not a live-ready provider config.
+# Replace the placeholder model: openai entries with a real model id/provider (or mock) before playing.
+edition: large
+ponder: true
+spectate: true
+
+players:
+  - id: P1
+    name: Probabalist
+    kind: llm
+    model: openai
+    strategy: bayesian
+
+  - id: P2
+    name: Note-taker
+    kind: llm
+    model: openai
+    strategy: conservative
+
+  - id: P3
+    name: Accuser
+    kind: llm
+    model: openai
+    strategy: aggressive
+
+  - id: P4
+    name: Hunter
+    kind: llm
+    model: openai
+    strategy: info
+
+  - id: P5
+    name: Liar
+    kind: llm
+    model: openai
+    strategy: deceptive
+
+  - id: P6
+    name: Rusher
+    kind: llm
+    model: openai
+    strategy: room_rusher
+
+  - id: P7
+    name: Baseline
+    kind: baseline
+
+  - id: P8
+    name: Heuristic
+    kind: baseline
+    bot: heuristic
+
+  - id: P9
+    name: Expert
+    kind: baseline
+    bot: expert
+
+  - id: P10
+    name: Random
+    kind: baseline
+    bot: random

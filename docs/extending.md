@@ -1,21 +1,38 @@
 # Extending the harness
 
 ## Add an LLM provider
-`clue/agents/llm_client.py`
+Most providers need no new class. Choose one of the four wire implementations in
+`clue/agents/llm_client.py` and supply a model, versioned base URL, and key:
+
+| `api` | Client | Native tools / JSON |
+|---|---|---|
+| `chat_completions` | `OpenAICompatibleClient` | Chat tools / `response_format` |
+| `completions` | `OpenAICompletionsClient` | No native channel; prompt-rendered history and JSON instruction |
+| `responses` | `OpenAIResponsesClient` | Flattened function tools / `text.format`; reasoning-item round trips |
+| `messages` | `AnthropicClient` | `tool_use` / `output_config.format`; thinking-block round trips |
+
+Use `--provider openai|local|anthropic --api ... --base-url ... --api-key ...`, YAML `llm:`, or the
+corresponding environment variables. `CLUE_LLM_API_KEY` works with every API; OpenAI-wire clients send a
+Bearer token and Messages sends `x-api-key`. Provider-specific key variables remain supported.
+
+For a genuinely different protocol, implement the same interface:
 ```python
 class MyClient:
     model: str
-    def complete(self, system: str, messages: list[dict[str, str]], temperature: float = 0.2) -> LLMResponse:
-        ...  # return LLMResponse(text=..., raw=..., usage=...)
+    def complete(
+        self, system: str, messages: list[dict[str, Any]], temperature: float = 0.2,
+        tools: list[dict[str, Any]] | None = None, json_mode: bool = False,
+    ) -> LLMResponse:
+        ...  # normalized text, tool calls, prompt_tokens/completion_tokens, and cost
 ```
-Register in `make_client`: `if provider == "my": return MyClient(model, os.environ["MY_API_KEY"])`.
-Select with `CLUE_LLM_PROVIDER=my` or `--provider my`. Anything speaking the OpenAI chat-completions format
-needs no code: use `provider=local` with `OPENAI_BASE_URL`.
+Register it in `make_client`. Subclassing `BaseHTTPClient` supplies retries, caching, authentication,
+usage normalization, and budget accounting.
 
 ### Native function calling (optional)
-`LLMPlayerAgent` currently pre-computes tools into the prompt (one round-trip per decision, deterministic
-cost). To let a model call tools itself: pass `TOOL_SPECS` (from `clue.tools`) to your provider, loop on
-tool-call responses and dispatch to `LLMPlayerAgent._tool(obs, name, **args)`, which already logs calls.
+`LLMPlayerAgent` pre-computes tools into the prompt as a baseline. In `native` mode it passes `TOOL_SPECS`
+to the client, dispatches each returned `ToolCall` through `_tool` (which logs it), and appends portable
+assistant/tool messages. Each wire client translates those messages to its API's required tool-call and
+tool-result items. Legacy Completions cannot emit native calls and therefore answers directly.
 
 ## Add an agent
 ```python
@@ -36,10 +53,10 @@ for the live `Notebook` when calling `clue.tools` functions. Returning an illega
 rejects it, retries once with `observation["last_error"]`, then substitutes a legal fallback and logs both.
 
 ## Add a UI / transport
-Everything a UI needs is `GameManager.get_observation(pid)`, `legal_actions(pid)`, `step(action)` and
-`export_replay(viewer)`. The TUI (`clue/tui/app.py`) is ~300 lines on top of these; a FastAPI server would
-expose the same four calls and run `run_game` in a background task with a queue-backed agent exactly like
-`TUIHumanAgent`.
+The TUI and shipped FastAPI/React web UI are adapters over `GameManager.get_observation(pid)`,
+`legal_actions(pid)`, `step(action)`, and `export_replay(viewer)`. The web implementation lives in `clue/web/`
+and `web/`; its `WebHumanAgent` uses the same request/queue pattern as `TUIHumanAgent`. Use
+[`web.md`](web.md) for current routes and frontend development instructions.
 
 ## Add a rule variant
 1. Add a field to `GameConfig` (`clue/rules/state.py`) with the official behaviour as default.
@@ -59,7 +76,7 @@ DOORS`), so renaming rooms means updating both; suspects/weapons are free-standi
 ## Development workflow
 ```
 pip install -e ".[dev]"
-pytest -q                     # 98 tests incl. headless TUI, solver, expert bot, glue/CLI (~6 min); pytest -n is not used, use --workers in tournaments instead
+pytest -q                     # full Python test suite (includes headless TUI, solver, expert bot, glue/CLI); use --workers in tournaments for parallel games
 pytest -q tests/test_rules.py # engine only (~2 s)
 ruff format . && ruff check . && mypy clue
 python eval/make_demo.py            # regenerate demo_game.md
@@ -67,8 +84,8 @@ python eval/make_tui_screenshot.py  # regenerate docs/tui_screenshot.*
 python -m clue eval --games 50      # regenerate eval/report.md + charts.png
 ```
 Invariants to preserve: `clue.rules` imports nothing outside itself; the manager contains no strategy text;
-every action applied goes through `rules.is_legal`; every private datum is carried in `Event.private` with
-an explicit `private_to`.
+every action applied goes through `rules.is_legal`; event-level sensitive payloads stay in `Event.private` with
+an explicit `private_to` (private action/log records use the corresponding `LogRecord` fields).
 
 ## Web UI
 

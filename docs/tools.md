@@ -1,65 +1,76 @@
 # Symbolic deduction tools
 
-Location: `clue/tools/deduction.py`. Pure functions over a `Notebook` (+ player list and hand sizes).
-They are used three ways:
-1. **Pre-computed** into the LLM prompt as `analysis` (default, `tools: true`).
-2. **Callable** by `LLMPlayerAgent._tool(name, **args)` — the `TOOL_SPECS` list is an OpenAI-style
-   function schema if you wire native function calling (see `extending.md`).
-3. By `BaselineHeuristicBot`, so the heuristic bot and the LLM's `recommended_action` share one brain.
+Location: `clue/tools/deduction.py`. The functions reason from a viewer's `Notebook`, player list,
+hand sizes, and edition; they do not inspect hidden game state. They are used in three ways:
 
-Every invocation is written to the replay as a `tool_call` record (private to the caller).
+1. Precomputed in the LLM prompt as `analysis` when tools are enabled (the default).
+2. Called by `LLMPlayerAgent._tool`; `TOOL_SPECS` provides schemas for supported native function-calling APIs.
+3. Used by baseline agents, including the heuristic and expert bots.
+
+Tool calls made through an active game manager are recorded privately in the replay for the calling player.
 
 | Tool | Signature | Returns |
 |---|---|---|
-| `get_unseen_cards` | `(nb, edition)` | `{suspects, weapons, rooms}` not in hand / face-up / shown to you |
-| `get_possible_solutions` | `(nb, players, hand_sizes, edition)` | list of `(suspect, weapon, room)` consistent with all constraints |
-| `solution_probabilities` | `(nb, players, hand_sizes, edition)` | exact `{n_possible, combos (top-10), cards (marginals), best, best_prob, exact}` |
-| `holder_probabilities` | `(nb, players, hand_sizes, edition)` | exact `card -> {player or envelope: probability}` |
-| `hard_deductions` | `(nb, players, hand_sizes, edition)` | forced facts beyond the notebook, e.g. `"P3 must hold Lounge"`, `"SOLVED: …"` |
-| `opponent_threat` | `(nb, players, me, hand_sizes, edition, history, eliminated)` | per rival `{n_possible, p_win_next_turn, unrefuted, repeat_suggestion, known_cards}` + `max_threat`, `most_dangerous`, `p_any_wins_before_my_turn` |
-| `suggestion_ev` | `(nb, players, me, suspect, weapon, room, edition)` | `{novelty, possible_disprovers, first_unknown_disprover, own_cards_included, score}` |
-| `can_accuse_confidently` | `(nb, players, threshold, hand_sizes, edition)` | `{accuse, best, confidence, n_possible, threshold}` |
-| `update_notebook` | `(nb, note)` | appends to `nb.notes` |
-| `best_suggestion` | `(nb, players, me, room, edition, rng)` | argmax of `suggestion_ev` over (suspect, weapon) with seeded tie-break |
+| `get_unseen_cards` | `(nb, edition)` | Suspects, weapons, and rooms not in your hand, face-up, or shown to you |
+| `get_possible_solutions` | `(nb, players, hand_sizes, edition)` | Exact path: exhaustive feasible triples. Sampled path: potential triples surviving propagation, which may include unverified candidates |
+| `solution_probabilities` | `(nb, players, hand_sizes, edition)` | `{n_possible, combos (top 10), cards (marginals), best, best_prob, exact}`; on sampled Large results, `n_possible` counts candidates surviving propagation, not verified assignments |
+| `holder_probabilities` | `(nb, players, hand_sizes, edition)` | `card -> {player or envelope: probability}`; exact when counted exhaustively, estimated when sampled |
+| `hard_deductions` | `(nb, players, hand_sizes, edition)` | Sound forced facts beyond the notebook, e.g. `"P3 must hold Lounge"` or `"SOLVED: …"` |
+| `opponent_threat` | `(nb, players, me, hand_sizes, edition, history, eliminated)` | Per-rival candidate/threat estimates, plus `max_threat`, `most_dangerous`, and `p_any_wins_before_my_turn` |
+| `suggestion_ev` | `(nb, players, me, suspect, weapon, room, edition)` | Heuristic novelty/disprover score and related details |
+| `can_accuse_confidently` | `(nb, players, threshold, hand_sizes, edition)` | Best combo and confidence vs. threshold, plus `exact` to identify exhaustive counting vs. sampling |
+| `update_notebook` | `(nb, note)` | Appends a note to the caller's private notebook |
+| `best_suggestion` | `(nb, players, me, room, edition, rng)` | Highest-`suggestion_ev` suspect/weapon pair, with a seeded tie-break |
 
-## Algorithms
+## Inference and solver limits
 
-### Exact solver (`clue/tools/solver.py`)
-`solve(nb, players, hand_sizes, edition) -> Solution` enumerates every candidate envelope triple and, for
-each, **counts the number of complete hand assignments** consistent with the notebook: known holders,
-`not_held`, every `has_one_of` triple, exact hand sizes. Cards not mentioned by any constraint are handled
-combinatorially (multinomial over remaining capacity) so the search only branches over constrained cards;
-`_count_assignments` is memoised. Output: `combos` (triple → count), exact `card_probs` (P(card in envelope)),
-exact `holder_probs` (card → {player|envelope: p}) and `certain_holder` (forced facts). Verified against a
-brute-force enumerator; typical call < 20 ms, worst observed 0.3 s in 5-player games.
+`solve(nb, players, hand_sizes, edition) -> Solution` counts full card assignments consistent with known
+holders, `not_held`, `has_one_of` constraints, and exact hand sizes. Unconstrained cards are counted
+combinatorially rather than branched on individually. The exact dynamic-programming path is used only when
+there are at most 6 players, at most 22 constrained cards in the solver's head set, and at most 21 cards in
+the edition's deck. These are implementation bounds, not user-configurable guarantees. The 36-card Large
+edition always uses constraint propagation plus deterministic sampling (`SAMPLES = 400`, with a node budget);
+`Solution.exact` is false for that path. Large-edition candidate lists and posterior probabilities are
+therefore estimates, not exhaustive results.
 
-`get_possible_solutions`, `solution_probabilities` (`exact: True`), `can_accuse_confidently`,
-`holder_probabilities` and `hard_deductions` are all thin wrappers over `solve()`. **Hard deductions are
-never auto-written into a human player's notebook** — they are shown only in coach mode / analysis payloads
-for bots and LLMs, so humans still get to deduce for themselves.
+The sampled path's propagation establishes only sound forced facts; `hard_deductions` does not promote
+sampling frequency into certainty. In exact cases, `combos` stores counts of complete assignments per
+solution triple, and the solver derives exact envelope and holder marginals. In sampled cases, candidate
+triples are retained when propagation has not ruled them out, and sample counts are smoothed over that set;
+thus the candidate list can include triples not verified by a complete deal, while the posterior frequencies
+remain estimates. `solution_probabilities` returns `exact: true` or `false` from the underlying result
+(including the no-candidate case). Treat a singleton sampled candidate list as uncertain.
 
-### Opponent modelling (`clue/tools/opponent.py`)
-For each rival we build a **shadow notebook** from the public history plus everything we personally showed
-them, seed it with the cards our own posterior places in their hand with certainty, and fill each disproof
-they received from a third party with the card the shower most probably holds (from our posterior). Running
-`solve()` on the shadow gives an estimate of the rival's candidate count, discounted by 0.75 per card of
-their hand we could not place. Calibration over full games: correlation 0.97 with the rival's true solver
-count; every rival that was actually solved was estimated at ≤ 3 candidates. ~40 ms per call. Used by
-`BaselineExpertBot` for its decision-theoretic gamble rule and injected as `analysis.opponent_threat` for LLMs.
+Hard deductions are not auto-written into a human's notebook; the TUI's coach mode is gated, while bots and
+LLMs can use the facts in their analysis.
 
-### Information value (`suggestion_ev`)
-`score = 0.5·novelty + 0.3·(possible_disprovers / (n−1)) + 0.2·(1 − own_cards/3)` where *novelty* is the
-fraction of the three cards still unknown to you and *possible_disprovers* counts opponents who are not
-proven to lack all three. Heuristic, not an exact entropy computation — chosen for speed (it is evaluated 36
-times per suggestion opportunity).
+## Opponent model (`clue/tools/opponent.py`)
+
+For each rival, the model constructs a shadow notebook from public history and information available to the
+viewer. It estimates a rival's remaining candidate count and chance to win before the viewer's next turn. The
+estimate uses the same edition-aware solver, so Large-edition threat values inherit its sampling limits. The
+reported correlation (0.97) is a historical calibration result on the project's Classic test games, not a
+formal guarantee. The expert bot uses the estimate in its gamble decision; LLMs receive it as
+`analysis.opponent_threat`.
+
+## Suggestion value (`suggestion_ev`)
+
+The score is `0.5 * novelty + 0.3 * (possible_disprovers / max(1, players - 1)) + 0.2 * (1 - own_cards / 3)`.
+Novelty is the fraction of the three cards not already known outside the envelope; possible disprovers are
+opponents not known to lack all three. This is a fast heuristic, not entropy or an exact expected information
+gain calculation.
 
 ## Guarantees and limits
-* Tools only ever read the viewer's notebook; they cannot peek at hidden state (they don't receive it).
-* They never mutate game state; `update_notebook` mutates only the caller's own notebook.
-* Approximate posterior ⇒ a strategy asking for "≥ 90 % confidence" gets a Monte-Carlo estimate; with
-  `n_possible == 1` the estimate is exactly 1.0.
+
+- Tools use only the viewer's notebook and public observation context; they cannot peek at hidden hands or the solution.
+- They do not mutate game state. `update_notebook` changes only the caller's notebook notes.
+- Exactness is exposed by `Solution.exact` and `solution_probabilities.exact`. Strategies should treat confidence
+  as an estimate whenever `exact` is false; `n_possible == 1` in a sampled candidate list alone does not prove
+  that only one solution exists.
 
 ## Ablation
-`tools: false` (or `--no-tools`) skips the bundle and the recommendation entirely; the model receives the
-raw observation only. Offline result (50 games, `eval/report.md`): win-rate 0.30 → 0.04 and
-false-accusation rate 0.00 → 0.86 without tools.
+
+`tools: false` (or `--no-tools`) skips the precomputed analysis bundle and recommendation; the model receives
+the raw observation. Native tool mode still has the precomputed analysis as a floor when tools are enabled.
+The offline ablation figures in `eval/report.md` are a historical benchmark snapshot; rerun `python -m clue eval`
+to regenerate results for the current code.

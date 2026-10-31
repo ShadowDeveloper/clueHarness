@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clue.agents.llm_client import MockLLMClient
+from clue.agents.llm_client import LLMConnection, MockLLMClient
 from clue.eval.tournament import markdown_table, run_tournament
 from clue.manager import PlayerSpec
 
@@ -22,7 +22,14 @@ def _client(live: bool) -> Any:
     return MockLLMClient(garbage_rate=0.02)
 
 
-def run_eval(games: int = 50, seed: int = 0, out_dir: str = "eval", live: bool = False) -> dict[str, Any]:
+def run_eval(
+    games: int = 50,
+    seed: int = 0,
+    out_dir: str = "eval",
+    live: bool = False,
+    provider: str | None = None,
+    connection: LLMConnection | None = None,
+) -> dict[str, Any]:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     client = _client(live)
@@ -34,7 +41,7 @@ def run_eval(games: int = 50, seed: int = 0, out_dir: str = "eval", live: bool =
         PlayerSpec(id="P3", kind="llm", model=model, strategy="strategies/bayesian_probabilist.md", tools=True),
         PlayerSpec(id="P4", kind="llm", model=model, strategy="strategies/bayesian_probabilist.md", tools=False),
     ]
-    main = run_tournament(main_specs, games, seed=seed, client=client)
+    main = run_tournament(main_specs, games, seed=seed, client=client, provider=provider, connection=connection)
 
     strat_specs = [
         PlayerSpec(id="P1", kind="llm", model=model, strategy="strategies/conservative_notebook.md"),
@@ -42,7 +49,7 @@ def run_eval(games: int = 50, seed: int = 0, out_dir: str = "eval", live: bool =
         PlayerSpec(id="P3", kind="llm", model=model, strategy="strategies/bayesian_probabilist.md"),
         PlayerSpec(id="P4", kind="llm", model=model, strategy="strategies/room_rusher.md"),
     ]
-    strat = run_tournament(strat_specs, games, seed=seed + 10_000, client=client)
+    strat = run_tournament(strat_specs, games, seed=seed + 10_000, client=client, provider=provider, connection=connection)
 
     report = {"main": main, "strategies": strat, "live": live}
     (out / "report.json").write_text(json.dumps(report, indent=1))

@@ -5,7 +5,7 @@
 ## DO
 - Check `analysis.opponent_threat.max_threat`; lower your accusation bar when a rival is about to win.
 - Read `posterior.cards`: pick the suggestion whose three cards have the most *uncertain* (near 0.3–0.6) probabilities.
-- Accuse when `best_prob >= 0.8`, or `n_possible == 1`.
+- Accuse when `best_prob >= 0.8`; use `n_possible == 1` as proof of uniqueness only when `analysis.posterior.exact` is true. With sampled inference, both values are estimates, not certainty.
 - Use `has_one_of` constraints: if a player disproved a suggestion where you already know 2 of the 3 cards, they hold the third.
 - Record derived facts as notes ("P4 must hold Lounge").
 

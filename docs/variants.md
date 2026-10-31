@@ -1,8 +1,10 @@
 # Variance-reduction variants (opt-in)
 
-Classic Clue is noisy: the deal, the dice and who sits where decide a large share of games, so it takes many
-games to tell two agents apart. These six options each cut one source of luck. **All are off by default** — the
-classic rules (RULES_SPEC.md) are unchanged unless you switch something on — and they compose freely.
+Classic Clue is noisy: the deal, dice, and seating affect game outcomes, so it takes many games to compare
+agents. This page documents four opt-in `GameConfig` rule settings (B–E), one duplicate-deal tournament
+evaluation mode (A), and the choice of table size (F). A and F are not `GameConfig` switches. The rule
+settings and duplicate evaluation are opt-in; choosing fewer seats is an ordinary game setup choice. The
+classic defaults in `RULES_SPEC.md` remain unchanged.
 
 | | Variant | Where it lives | Switch |
 |---|---|---|---|
@@ -11,11 +13,12 @@ classic rules (RULES_SPEC.md) are unchanged unless you switch something on — a
 | C | Private disproofs | `GameConfig.private_disproofs` | YAML `private_disproofs: true`, `--variants private`, lobby ☑ |
 | D | Skip-turn penalty | `GameConfig.wrong_accusation`, `accusation_penalty_turns` | YAML `wrong_accusation: skip_turns`, `--variants skip[=N]`, lobby *wrong accusation* |
 | E | Shuffled seats | `GameConfig.shuffle_seats` | YAML `shuffle_seats: true`, `--variants shuffle`, lobby ☑ |
-| F | Table size | `GameConfig.num_players` | just play fewer seats (guidance below) |
+| F | Table size | ordinary game setup (`num_players` / seat list) | play fewer seats (guidance below); not a variance-rule toggle |
 
 `--variants` takes a comma list, e.g. `clue play --players human,baseline:expert,baseline,baseline --variants private,skip=2`.
-The rules engine enforces every variant (`legal_actions` / `apply_action`), the manager keeps redaction server-side,
-and every UI (CLI, TUI, web) just renders the events it is allowed to see — no UI-side rule logic.
+The rules engine enforces rule settings B–E in `legal_actions` / `apply_action`; A is handled by the tournament
+runner and F by the selected seat count. The manager keeps redaction server-side, and each UI renders only the
+events it is allowed to see — no UI-side rule logic.
 
 ---
 

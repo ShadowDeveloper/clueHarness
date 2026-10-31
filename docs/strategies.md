@@ -13,6 +13,10 @@ action regardless of what the prompt says, and a strategy cannot switch tools on
 ```
 Test: `test_strategy_prompt_is_appended_not_replacing_base`.
 
+The thresholds in strategy files are prompt guidance, not engine rules. For Classic tables within solver bounds,
+posterior values are exact; Large edition uses deterministic sampling and exposes `analysis.posterior.exact: false`.
+A strategy should treat sampled probabilities as estimates and Large-edition candidate lists as potential triples not ruled out by propagation, not as verified feasible assignments.
+
 ## Shipped strategies
 | File | Alias | Accusation threshold | Signature behaviour |
 |---|---|---|---|

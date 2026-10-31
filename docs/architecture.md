@@ -28,15 +28,16 @@
 * `clue.rules` imports only `clue.rules`. No I/O, no randomness except the `random.Random` passed in.
 * `clue.manager` imports `clue.rules` and the abstract `clue.agents.base.PlayerAgent` (runner only). It has
   no knowledge of strategies beyond the opaque `PlayerSpec.strategy` path stored for labelling/replays.
-* `clue.tools` imports `clue.manager.notebook` (data class) and `clue.rules.cards` only.
+* Core inference modules in `clue.tools` use `clue.manager.notebook` (data) and `clue.rules.cards`; the optional
+  `coach.py` UI helper also adapts a live `GameManager`/`Action` for human coaching.
 * `clue.agents` may import everything below it. `clue.tui` imports agents + manager.
 * Strategies are data. Nothing in code branches on strategy content.
 
 ## Data flow of one decision
 1. `run_game` asks the manager who acts (`acting_player()`: disprover during `disprove`, else current).
 2. `gm.get_observation(pid)` builds the redacted view (see `observation_schema.md`) and
-   `gm.legal_actions(pid, include_accusations=False)` enumerates concrete actions (accusations are a
-   324-element family validated structurally via `can_accuse` / `is_legal` instead of enumerated).
+   `gm.legal_actions(pid, include_accusations=False)` enumerates concrete actions; accusation combinations are
+   validated structurally via `can_accuse` / `is_legal` instead of enumerated (the family size depends on the edition's card lists).
 3. The agent returns an `Action`. `LLMPlayerAgent` first runs the tool bundle, prompts, parses, validates.
 4. The runner re-validates with `rules.is_legal`. Invalid → logged `illegal_action`, the observation gets a
    `last_error`, one retry; still invalid → a safe fallback action (`end_turn`/`roll`/first move/first card)
@@ -48,7 +49,7 @@
 ## Key types (`clue/rules/state.py`)
 | Type | Purpose |
 |---|---|
-| `GameConfig` | edition, dice, deal_remainder, num_players, max_turns |
+| `GameConfig` | edition, dice, deal_remainder, num_players, max_turns, teams, private_disproofs, wrong_accusation, accusation_penalty_turns, shuffle_seats |
 | `PlayerState` | id, seat, hand, position, eliminated, may_suggest, left_room |
 | `GameState` | players, solution, token/weapon positions, current, phase, roll, pending_suggestion, disprover_index, winner, finished |
 | `Action` | `type ∈ {roll, move, passage, suggest, accuse, show_card, end_turn}` + fields; `key()` gives a stable label |

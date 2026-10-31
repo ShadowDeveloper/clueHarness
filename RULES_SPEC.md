@@ -2,8 +2,11 @@
 
 **Source edition:** Hasbro / Parker Brothers *CLUE Classic Detective Game* instructions
 (https://www.hasbro.com/common/instruct/clueins.pdf — the 2002 US edition, which uses **two dice**).
-Where the 1996 one-die edition differs, it is available via config and noted below.
-Every edge-case decision is listed here and enforced in `clue/rules/`.
+Where the 1996 one-die edition differs, it is available via config. This specification documents the Classic
+baseline; Modern substitutes Dr. Orchid for Mrs. White, while the Large edition uses a 36-card set, 3–12 seats,
+and its own board geometry and passage pairs. The core turn and deduction rules are shared. Edition-specific
+cards, limits, boards, and the solver's sampling behavior are documented in `README.md`, `docs/configuration.md`,
+and `docs/tools.md`. Every Classic baseline edge-case decision is enforced in `clue/rules/`.
 
 ## 1. Components
 | Category | Cards |

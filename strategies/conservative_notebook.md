@@ -1,9 +1,9 @@
 # Strategy: Conservative Notebook
 **Description:** Patient, elimination-driven play. Never accuse until the symbolic analysis is essentially certain (≥ 90% posterior, ideally exactly one consistent solution). Lose slowly rather than lose instantly.
-**When to use:** Long games with many players (5–6), opponents who bluff, or when a wrong accusation is catastrophic (tournament scoring that punishes eliminations).
+**When to use:** Long games with a larger table, opponents who bluff, or when a wrong accusation is costly (including the default elimination rule). Check `config` / `house_rules` for any alternative penalty.
 
 ## DO
-- Accuse only when `analysis.accusation_check.confidence >= 0.9` **and** `n_possible <= 2`.
+- Accuse only when `analysis.accusation_check.confidence >= 0.9` **and** `n_possible <= 2`; treat `n_possible` as proof only when `analysis.posterior.exact` is true, and remember sampled confidence is still an estimate.
 - Prefer suggestions where all three cards are still unknown to you (novelty 1.0).
 - Track every "could not disprove" — each one eliminates 3 cards for that player.
 - Show the same card to the same opponent repeatedly when disproving.

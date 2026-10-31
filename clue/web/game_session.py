@@ -277,7 +277,7 @@ class GameSession:
             {
                 "id": q.id,
                 "name": next((s.name for s in gm.specs if s.id == q.id), None),
-                "label": next((s.label() for s in gm.specs if s.id == q.id), q.id),
+                "label": next((s.display_label() for s in gm.specs if s.id == q.id), q.id),
                 "kind": next((s.kind for s in gm.specs if s.id == q.id), "baseline"),
                 "suspect_token": sus[q.seat],
                 "position": q.position,

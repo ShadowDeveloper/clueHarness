@@ -25,7 +25,8 @@ class ReplayState:
     def __init__(self, records: list[dict[str, Any]]) -> None:
         self.records = records
         start = next((r for r in records if r.get("type") == "game_start"), {})
-        self.edition = str((start.get("config") or {}).get("edition", "classic"))
+        self.config: dict[str, Any] = dict(start.get("config") or {})
+        self.edition = str(self.config.get("edition", "classic"))
         self.players: list[dict[str, Any]] = list(start.get("players", []))
         self.suspects = list(suspects(self.edition))
         self.hands: dict[str, list[str]] = dict(start.get("hands", {}))
@@ -42,6 +43,47 @@ class ReplayState:
         self.idx = 0
         self.eliminated: set[str] = set()
         self.last_suggestion: dict[str, Any] | None = None
+
+    def team_of(self, player: str | None) -> set[str]:
+        if player is None:
+            return set()
+        for team in self.config.get("teams") or []:
+            if player in team:
+                return set(team)
+        return {player}
+
+    def event_visible(self, ev: dict[str, Any], viewer: str | None) -> bool:
+        """Whether a seated viewer would receive this event under the recorded house rules."""
+        if viewer is None or not self.config.get("private_disproofs"):
+            return True
+        if ev.get("type") not in ("can_disprove", "cannot_disprove"):
+            return True
+        # Each pass/disproof opportunity is visible to the suggester's team and the player asked;
+        # the called player's teammates learn who actually showed a card only in the `disproved` event.
+        involved = self.team_of(ev.get("suggester")) | {str(ev.get("player"))}
+        return viewer in involved
+
+    def visible_event_indices(self, viewer: str | None) -> list[int]:
+        """Indices a viewer can step through, without exposing the number of hidden events."""
+        return [i for i, ev in enumerate(self.events) if self.event_visible(ev, viewer)]
+
+    def redact_event(self, ev: dict[str, Any] | None, viewer: str | None) -> dict[str, Any] | None:
+        """Redact private disproof details for a selected seat; `None` is the omniscient view."""
+        if ev is None:
+            return None
+        d = dict(ev)
+        if viewer is None:
+            return d
+        if not self.event_visible(d, viewer):
+            return None
+        if d.get("type") == "disproved":
+            involved = self.team_of(d.get("suggester")) | self.team_of(d.get("disprover"))
+            if viewer not in involved:
+                d.pop("card", None)
+                if self.config.get("private_disproofs"):
+                    d.pop("disprover", None)
+                    d["player"] = None
+        return d
 
     def apply(self, ev: dict[str, Any]) -> None:
         t, who = ev.get("type"), ev.get("player")

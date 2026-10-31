@@ -28,7 +28,7 @@ the game loop thread through a queue.
  You are Miss Scarlet (P1) in the Ballroom · your cards: … · turn 24                       ┛
  r Roll  p Passage  s Suggest  a Accuse  e End turn  esc Back  space Pause  + -  q Quit
 ```
-`docs/tui_screenshot.txt` is a real capture.
+`docs/tui_screenshot.txt` is a real but static capture snapshot; regenerate it with `python eval/make_tui_screenshot.py`.
 
 ### Board
 Rooms are shaded blocks with their names; `·` corridor squares; `▢` the square outside a door; `⇄` in a
@@ -83,7 +83,7 @@ your decision.
    ends movement.
 3. If you entered a room: `suggest …`, or `end_turn`. Suggesting moves the named suspect token (and weapon)
    into your room; the first clockwise player who can disprove does so privately.
-4. Optionally `ACCUSE …` — from anywhere, any time on your own turn. Wrong = eliminated (you still disprove).
+4. Optionally `ACCUSE …` — from anywhere, any time on your own turn. Under the default rules, a wrong accusation eliminates you (you still disprove); with `wrong_accusation: skip_turns`, you instead sit out the configured number of turns.
 5. `end_turn`.
 
 If you were dragged into a room by someone's suggestion, on your next turn you may `suggest …` there
@@ -126,8 +126,9 @@ in `demo_game.md`; every prompt is a plain `input()` so it works over SSH or in 
 ## Coach mode (`h`)
 
 Press `h` at any time in the TUI to toggle the coach panel: number of envelope combinations still consistent
-with *your* notebook, the most likely one, up to four forced facts from the exact solver ("P3 must hold
-Lounge"), and what `baseline:expert` would do from your seat. It is strictly opt-in: nothing is written to
+with *your* notebook, the most likely solution (an estimate for Large edition), up to four sound forced facts
+(exact assignment counting when tractable; propagation for Large, e.g. "P3 must hold Lounge"), and what
+`baseline:expert` would do from your seat. It is strictly opt-in: nothing is written to
 your notebook, and every activation is logged as an `agent_note` (`coach_mode_on`) in the replay so a
 coached game is distinguishable from an uncoached one.
 

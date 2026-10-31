@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from clue.agents.factory import make_agent
-from clue.agents.llm_client import LLMClient
+from clue.agents.llm_client import LLMClient, LLMConnection
 from clue.manager import GameManager, PlayerSpec
 from clue.manager.runner import run_game
 from clue.rules import GameConfig
@@ -78,14 +78,17 @@ def _elo_update(ratings: dict[str, float], winner: str | None, players: list[str
         ratings[p] -= k * (1 - ea)
 
 
-def _play_one(args: tuple[list[dict[str, Any]], int, dict[str, Any] | None, str | None, bool, bool, str | None, bool, int], client: LLMClient | None = None) -> dict[str, Any]:
+def _play_one(
+    args: tuple[list[dict[str, Any]], int, dict[str, Any] | None, str | None, LLMConnection | None, bool, bool, str | None, bool, int],
+    client: LLMClient | None = None,
+) -> dict[str, Any]:
     """Play one tournament game and return its record. Called directly, from a thread (live LLM) or from a worker process
     (offline: args are plain dicts so they pickle; `client` is then None and each process builds its own via make_agent).
 
     `rotation` (duplicate-deal mode, A): the deal seed is shared by a whole block of games while the agents are cyclically
     shifted through the seats, so every label plays the same deal from every seat; the block's games differ only by who
     sits where."""
-    spec_dicts, gseed, cfg_dict, provider, rotate_seats, ponder, replay_dir, probe, rotation = args
+    spec_dicts, gseed, cfg_dict, provider, connection, rotate_seats, ponder, replay_dir, probe, rotation = args
     specs = [PlayerSpec(**d) for d in spec_dicts]
     config = GameConfig(**cfg_dict) if cfg_dict else None
     order = list(specs)
@@ -96,7 +99,7 @@ def _play_one(args: tuple[list[dict[str, Any]], int, dict[str, Any] | None, str 
     gspecs = [s.model_copy(update={"id": f"P{i + 1}"}) for i, s in enumerate(order)]
     lab_of = {s.id: s.label() for s in gspecs}
     gm = GameManager.create(gspecs, seed=gseed, config=config)
-    agents = {s.id: make_agent(s, seed=gseed + i, client=client, provider=provider) for i, s in enumerate(gspecs)}
+    agents = {s.id: make_agent(s, seed=gseed + i, client=client, provider=provider, connection=connection) for i, s in enumerate(gspecs)}
     pr = _Probe(gm) if probe else None
     run_game(gm, agents, on_events=pr, ponder=ponder)
     s = gm.summary()
@@ -125,12 +128,14 @@ def resolve_workers(workers: int) -> int:
     return workers if workers > 0 else max(1, os.cpu_count() or 1)
 
 
-def _needs_live_llm(specs: list[PlayerSpec], provider: str | None) -> bool:
+def _needs_live_llm(specs: list[PlayerSpec], provider: str | None, connection: LLMConnection | None = None) -> bool:
     """True when at least one seat will talk to a real (non-mock) LLM -> use threads, not processes."""
-    if not any(s.kind == "llm" for s in specs):
+    if not any(s.kind == "llm" and s.model != "mock" for s in specs):
         return False
-    prov = (provider or os.getenv("CLUE_LLM_PROVIDER") or "mock").lower()
-    return prov != "mock"
+    configured = provider or os.getenv("CLUE_LLM_PROVIDER")
+    prov = (configured or "mock").lower()
+    api_selected = bool((connection and connection.api) or os.getenv("CLUE_LLM_API"))
+    return prov != "mock" or (configured is None and api_selected)
 
 
 def run_tournament(
@@ -148,6 +153,7 @@ def run_tournament(
     on_game: Any = None,
     workers: int = 1,
     duplicate: bool = False,
+    connection: LLMConnection | None = None,
 ) -> dict[str, Any]:
     """Play `games` games, up to `workers` at a time (0 = all cores).
 
@@ -170,9 +176,9 @@ def run_tournament(
     if duplicate:
         blocks = -(-games // n)
         games = blocks * n
-        jobs = [(sd, seed + b, cd, provider, False, ponder, rd, probe, r) for b in range(blocks) for r in range(n)]
+        jobs = [(sd, seed + b, cd, provider, connection, False, ponder, rd, probe, r) for b in range(blocks) for r in range(n)]
     else:
-        jobs = [(sd, seed + g, cd, provider, rotate_seats, ponder, rd, probe, 0) for g in range(games)]
+        jobs = [(sd, seed + g, cd, provider, connection, rotate_seats, ponder, rd, probe, 0) for g in range(games)]
     workers = min(resolve_workers(workers), max(1, games))
     labels = {s.id: s.label() for s in specs}
     by_seed: dict[tuple[int, int], dict[str, Any]] = {}
@@ -188,7 +194,7 @@ def run_tournament(
         for i, job in enumerate(jobs):
             _done(_play_one(job, client), i + 1)
     else:
-        threaded = client is not None or _needs_live_llm(specs, provider)
+        threaded = client is not None or _needs_live_llm(specs, provider, connection)
         pool: Executor = ThreadPoolExecutor(max_workers=workers) if threaded else ProcessPoolExecutor(max_workers=workers)
         with pool as ex:
             futs = [ex.submit(_play_one, job, client) if threaded else ex.submit(_play_one, job) for job in jobs]

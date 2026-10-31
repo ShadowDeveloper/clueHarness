@@ -6,24 +6,32 @@ another player's hand, the envelope, or a card shown between two other players.
 
 | Key | Type | Description |
 |---|---|---|
-| `you.id` / `you.name` / `you.suspect_token` | str | Your seat |
+| `you.id` / `you.name` / `you.suspect_token` | str | Your stable seat id, optional configured display name, and edition-specific token |
+| `you.team`, `you.team_hands` | list / dict or null | Set only when teams are enabled; contains teammate ids and their hands |
+| `you.skip_turns` | int | Remaining penalty turns (zero when not penalized) |
 | `you.hand` | list[str] | Your private cards (sorted) |
 | `you.position` | str | Room name or `"row,col"` |
 | `you.in_room`, `you.eliminated`, `you.may_suggest` | bool | `may_suggest` = entered a room this turn or was summoned since your last turn |
-| `board.token_positions` | dict[suspect → pos] | All six suspect tokens (unused ones stay on their start squares) |
+| `board.token_positions` | dict[suspect → pos] | All suspect tokens in this edition (unused tokens stay on their start squares; six in Classic/Modern, twelve in Large) |
 | `board.weapon_positions` | dict[weapon → room] | Cosmetic |
-| `board.players[]` | id, suspect_token, position, eliminated, **hand_size** | Never hands |
-| `board.secret_passages` | dict | Lounge⇄Conservatory, Kitchen⇄Study |
+| `board.players[]` | id, suspect_token, position, eliminated, **hand_size**, team | Never hands; `team` is `null` unless teams are enabled |
+| `board.secret_passages` | dict | Edition-specific passage pairs (e.g. Classic/Modern: Lounge⇄Conservatory and Kitchen⇄Study) |
 | `board.your_legal_moves` | list[str] | Destinations after a roll (empty otherwise) |
 | `turn.number`, `turn.current_player`, `turn.phase`, `turn.roll` | | `phase ∈ move, suggest, accuse, disprove, end` |
 | `turn.pending_suggestion` | obj or null | Present while a disproof is pending |
 | `turn.you_are_acting` | bool | |
 | `public_history[]` | list[event] | Redacted events (see `replay_format.md`); `game_start` is omitted |
 | `notebook` | Notebook | Mechanically derived facts — see below |
-| `legal_actions[]` | list[Action] | Everything legal **except** accusations (324 permutations) |
+| `legal_actions[]` | list[Action] | Concrete legal actions **except** accusations; accusation combinations are supplied by the current `cards` lists and validated separately |
 | `can_accuse` | bool | If true, any `{type: accuse, suspect, weapon, room}` is legal |
 | `cards.suspects / weapons / rooms / faceup` | lists | Canonical spellings for this edition |
-| `config` | GameConfig | edition, dice, deal_remainder, num_players, max_turns |
+| `config` | full `GameConfig.model_dump()` | edition, dice, deal_remainder, num_players, max_turns, teams, private_disproofs, wrong_accusation, accusation_penalty_turns, shuffle_seats |
+
+All configured players also receive `board.players[].team` (null with teams disabled). The example below is an ordinary
+Classic, non-team observation; when teams are enabled, `you.team` and `you.team_hands` are populated and the
+board/config fields reflect the selected edition and rules. The serialized `config` always includes every
+`GameConfig` field, including defaults and null values; this short schema table summarizes the fields most
+relevant to agents, not a reduced config object.
 
 Two non-serialisable handles are attached by the runner for in-process agents and stripped before any
 prompt: `_notebook_obj` (the live `Notebook` for the symbolic tools) and `_manager` (for tool-call logging).
@@ -32,8 +40,8 @@ prompt: `_notebook_obj` (the live `Notebook` for the symbolic tools) and `_manag
 ## Notebook fields
 | Field | Meaning |
 |---|---|
-| `my_hand`, `faceup` | Cards known not in the solution |
-| `known_holder` | card → player, for your hand and cards shown **to you** |
+| `my_hand`, `faceup` | Cards known not in the solution; `my_hand` also includes teammates' hands when teams are enabled |
+| `known_holder` | card → player, for your hand/team hands and cards shown **to you** |
 | `not_held` | player → cards they provably lack (failed to disprove; or a suggestion nobody disproved) |
 | `has_one_of[]` | `{player, cards, turn, suggester}` — player disproved but not to you |
 | `unrefuted_suggestions[]` | suggestions nobody could disprove |
@@ -58,7 +66,10 @@ prompt: `_notebook_obj` (the live `Notebook` for the symbolic tools) and `_manag
   "position": "Conservatory",
   "in_room": true,
   "eliminated": false,
-  "may_suggest": false
+  "skip_turns": 0,
+  "may_suggest": false,
+  "team": null,
+  "team_hands": null
  },
  "board": {
   "token_positions": {
@@ -83,28 +94,32 @@ prompt: `_notebook_obj` (the live `Notebook` for the symbolic tools) and `_manag
     "suspect_token": "Miss Scarlet",
     "position": "Conservatory",
     "eliminated": false,
-    "hand_size": 5
+    "hand_size": 5,
+    "team": null
    },
    {
     "id": "P2",
     "suspect_token": "Col. Mustard",
     "position": "Ballroom",
     "eliminated": false,
-    "hand_size": 5
+    "hand_size": 5,
+    "team": null
    },
    {
     "id": "P3",
     "suspect_token": "Mrs. White",
     "position": "10,8",
     "eliminated": false,
-    "hand_size": 4
+    "hand_size": 4,
+    "team": null
    },
    {
     "id": "P4",
     "suspect_token": "Mr. Green",
     "position": "Ballroom",
     "eliminated": false,
-    "hand_size": 4
+    "hand_size": 4,
+    "team": null
    }
   ],
   "secret_passages": {
@@ -276,7 +291,12 @@ prompt: `_notebook_obj` (the live `Notebook` for the symbolic tools) and `_manag
   "dice": 2,
   "deal_remainder": "uneven",
   "num_players": 4,
-  "max_turns": 400
+  "max_turns": 400,
+  "teams": null,
+  "private_disproofs": false,
+  "wrong_accusation": "eliminate",
+  "accusation_penalty_turns": 2,
+  "shuffle_seats": false
  }
 }
 
@@ -285,5 +305,7 @@ prompt: `_notebook_obj` (the live `Notebook` for the symbolic tools) and `_manag
 ## LLM view
 `LLMPlayerAgent` sends the same object, minus `_`-prefixed keys, with `public_history` truncated to the last
 40 events, a placeholder `suggest` entry in `legal_actions`, and — when tools are enabled — an `analysis`
-block: `unseen_cards`, `posterior` (`n_possible`, top `combos`, per-card `cards`, `best`, `best_prob`),
-`accusation_check`, `top_suggestions[]`, `recommended_action`. See `tools.md`.
+block: `unseen_cards`, `posterior` (`n_possible`, top `combos`, per-card `cards`, `best`, `best_prob`,
+`exact`), `accusation_check` (also reports `exact`), `certain_facts`, `opponent_threat`,
+`top_suggestions[]` when a suggestion is legal, and `recommended_action`. For Large edition, candidate counts and
+probabilities are estimates; see `tools.md`.

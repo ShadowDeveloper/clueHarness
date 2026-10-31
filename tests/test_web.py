@@ -365,6 +365,59 @@ def test_remote_host_can_force_start_and_idle_lobby_is_reclaimed(tmp_path: Path)
 # ---------------------------------------------------------------- replays
 
 
+def test_replay_private_disproofs_hide_bystander_details(tmp_path: Path) -> None:
+    from clue.web.replay_session import ReplaySession
+
+    records = [
+        {
+            "seq": 0,
+            "kind": "event",
+            "type": "game_start",
+            "players": [{"id": f"P{i}", "kind": "baseline"} for i in range(1, 5)],
+            "config": {
+                "edition": "classic",
+                "private_disproofs": True,
+                "teams": [["P1"], ["P2", "P4"], ["P3"]],
+            },
+            "solution": ["Prof. Plum", "Rope", "Study"],
+            "hands": {f"P{i}": [] for i in range(1, 5)},
+        },
+        {"seq": 1, "kind": "event", "type": "can_disprove", "turn": 1, "player": "P2", "suggester": "P1"},
+        {
+            "seq": 2,
+            "kind": "event",
+            "type": "disproved",
+            "turn": 1,
+            "player": None,
+            "suggester": "P1",
+            "disprover": "P2",
+            "card": "Rope",
+        },
+    ]
+    path = tmp_path / "private.jsonl"
+    path.write_text("\n".join(json.dumps(record) for record in records) + "\n")
+    session = ReplaySession("test", path)
+
+    bystander = session.frames("P3")
+    visible_events = [frame["event"] for frame in bystander["frames"] if frame["event"]]
+    assert all(event["type"] != "can_disprove" for event in visible_events)
+    disproved = next(event for event in visible_events if event["type"] == "disproved")
+    assert "card" not in disproved and "disprover" not in disproved and disproved["player"] is None
+    assert bystander["info"]["n_events"] == 1
+
+    involved = session.frames("P1")
+    visible_events = [frame["event"] for frame in involved["frames"] if frame["event"]]
+    assert any(event["type"] == "can_disprove" for event in visible_events)
+    disproved = next(event for event in visible_events if event["type"] == "disproved")
+    assert disproved["card"] == "Rope" and disproved["disprover"] == "P2"
+
+    teammate = session.frames("P4")
+    visible_events = [frame["event"] for frame in teammate["frames"] if frame["event"]]
+    assert all(event["type"] != "can_disprove" for event in visible_events)
+    disproved = next(event for event in visible_events if event["type"] == "disproved")
+    assert disproved["card"] == "Rope" and disproved["disprover"] == "P2"
+
+
 def test_replay_frames_redaction(client: TestClient) -> None:
     g = _create(client, "baseline,baseline,baseline", seed=13)
     with client.websocket_connect(f"/ws/games/{g['id']}?k={g['owner_token']}") as ws:

@@ -15,7 +15,7 @@ from typing import Any
 from clue.agents.base import PlayerAgent, PonderContext
 from clue.agents.base import PonderInterrupted as PonderInterrupted_
 from clue.agents.baselines import BaselineHeuristicBot
-from clue.agents.llm_client import BudgetExceeded, LLMClient, ToolCall, extract_json, make_client
+from clue.agents.llm_client import BudgetExceeded, LLMClient, LLMConnection, ToolCall, extract_json, make_client
 from clue.manager.notebook import Notebook
 from clue.rules import Action
 from clue.tools import (
@@ -84,9 +84,10 @@ class LLMPlayerAgent(PlayerAgent):
         tool_mode: str | None = None,
         prompt_profile: str = "full",
         max_tool_rounds: int = 4,
+        connection: LLMConnection | None = None,
     ) -> None:
         super().__init__(player_id)
-        self.client = client or make_client(provider, model)
+        self.client = client or make_client(provider, model, connection=connection)
         self.model = getattr(self.client, "model", model or "mock")
         self.temperature = temperature
         # tool_mode: "precomputed" (analysis bundle in the prompt), "native" (model calls tools via function

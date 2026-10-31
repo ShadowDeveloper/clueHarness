@@ -1,7 +1,7 @@
 # Web UI
 
-A browser front end with the same capabilities as the TUI, plus a replay viewer and a live tournament dashboard.
-Design and milestones: `web_ui_plan.md`. Backend: `clue/web/` (FastAPI). Frontend: `web/` (React + Vite + TypeScript),
+The shipped browser front end supports gameplay, replay viewing, tournaments, hot-seat play, and per-seat remote
+invites. Backend: `clue/web/` (FastAPI). Frontend: `web/` (React + Vite + TypeScript),
 prebuilt into `clue/web/static/` so **no node is needed to run it**.
 
 ```bash
@@ -17,8 +17,8 @@ API docs (OpenAPI): `/api/docs`.
 
 | Page | What it does |
 |---|---|
-| **Play** (`/`) | Lobby: 3–6 seats (`human` / `baseline: heuristic·expert·random` / `llm: strategy·tool mode·model`), seed, dice, uneven-deal toggle, AI pace, ponder, provider. Lists resumable checkpoints (`saves/`) and games running on the server. |
-| **Game** (`/game/<id>?k=<token>`) | Same screen as the TUI, in monospace: **Board** (character grid — `·` corridor, `▢` door, `⇄` passage, `░` cellar, coloured token glyphs, `◆` reachable squares you can click) \| **Notebook** (`✔ has  ✘ hasn't  ? unknown`, status column `yours` / `P3 has it` / `ENVELOPE!`) + **Deductions** + Coach \| **What happened** log + **Your move** panel; a status line (`You are ♛ Miss Scarlet (P1) in the Ballroom · your cards: …`) and the key bar at the bottom. |
+| **Play** (`/`) | Lobby: edition-aware seats (Classic/Modern: 3–6; Large: 3–12) (`human` / `baseline: heuristic·expert·random` / `llm: strategy·tool mode·model`), seed, rules, AI pace, ponder, provider. Lists resumable checkpoints (`saves/`) and games running on the server. |
+| **Game** (`/game/<id>?k=<token>`) | Responsive browser layout with an **SVG mansion board** (rooms, doors, passages, tokens, reachable-square overlay, and click-to-move), **Notebook** (`✔ has  ✘ hasn't  ? unknown`), **Deductions**, Coach, event log, and guided action panel. |
 | **Replays** (`/replays`) | Step through any replay file; choose the viewer (omniscient for unredacted files, or any seat) — redaction is applied server-side; shows the seat's private reasoning records. |
 | **Tournaments** (`/tournaments`) | Start AI-only tournaments (games, seed, `workers` 0 = all cores, ponder, `max $`), watch progress live, win-rate with 95 % CI, ELO, candidate-count curves, download CSV/JSON/MD. |
 
@@ -65,6 +65,9 @@ nobody joins is checkpointed and reclaimed like any abandoned human game.
 Security model is unchanged: a seat token is an HMAC of `game:seat:Pn`; `resolve_viewer()` maps it straight to that
 seat, `Access.human_seat()` refuses to act for any other seat, and the per-frame privacy test runs both seats of a
 remote game to completion (`test_remote_seats_two_browsers_play_to_completion_with_per_seat_privacy`).
+`CLUE_WEB_CREATE_RATE_PER_MINUTE` sets the per-client-IP limit for creating games/tournaments (default 20);
+`CLUE_WEB_IDLE_HUMAN_TIMEOUT` sets how long a disconnected human game may wait before checkpointing (default
+600 seconds). Other server settings are in `clue/web/settings.py`.
 
 ## Save / resume
 

@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clue.agents.llm_client import GLOBAL_COST, BudgetExceeded, configure_budget
+from clue.agents.llm_client import GLOBAL_COST, BudgetExceeded, LLMConnection, configure_budget
 from clue.eval.stats import wilson
 from clue.eval.tournament import markdown_table, run_tournament
 from clue.manager import PlayerSpec
@@ -37,6 +37,7 @@ def run_live_eval(
     profile: str = "compact",
     verbose: bool = True,
     workers: int = 1,
+    connection: LLMConnection | None = None,
 ) -> dict[str, Any]:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -60,7 +61,9 @@ def run_live_eval(
             (out / f"live_{_b}_{_n}.partial.json").write_text(json.dumps({"games": _p, "cost": GLOBAL_COST.summary()}, indent=1))
 
         try:
-            rep = run_tournament([spec, *OPPONENTS], games, seed=seed, config=cfg, provider=provider, rotate_seats=True, verbose=verbose, ponder=kw["ponder"], on_game=_save, workers=workers)
+            rep = run_tournament(
+                [spec, *OPPONENTS], games, seed=seed, config=cfg, provider=provider, rotate_seats=True, verbose=verbose, ponder=kw["ponder"], on_game=_save, workers=workers, connection=connection
+            )
         except BudgetExceeded as e:
             stopped = f"{bracket}/{name}: {e}"
             rep = _from_partial(partial, spec.label())
